@@ -1,0 +1,37 @@
+Voces de la Plaza. Un prototipo para traducir datos CCPC en historias accesibles sobre participación democrática.
+
+Villa Brisa es ficticia. Luz, Mateo e Inés nos ayudan a construir una exposición con fuentes y límites.
+
+La primera misión distingue registros con marca, sin marca y sin clasificación. La evidencia oficial determina la explicación.
+
+La misma historia se puede recorrer en HTML semántico, con controles de teclado, texto ampliable y tablas.
+
+CCPC federal 2024: 59.7% entre registros clasificados. El 6.4% sin clasificación usa otra base: la lista nominal analizada.
+
+La tasa de participación es SV dividido entre SV más NV. La clasificación desconocida se conserva aparte.
+
+NS no significa abstención ni voto nulo. Mostrar lo desconocido también forma parte de una historia veraz.
+
+Un ejemplo sintético nuevo permite revisar la idea sin memorizar las cifras oficiales.
+
+Aguascalientes tiene una tasa mayor. Baja California tiene más registros con marca. Comparar requiere explicar ambas bases.
+
+La visualización muestra conteos exactos y también una tabla que se puede leer sin depender del color.
+
+Un número mayor de registros no implica un porcentaje mayor. Cada tasa tiene su propio denominador.
+
+Las dos entidades juntas tienen una tasa de 50.12%. Primero sumamos los conteos y después dividimos.
+
+Los agregados no revelan motivos individuales ni permiten juzgar el valor cívico de una comunidad.
+
+Las pistas, explicaciones y reintentos permiten avanzar. La ayuda se registra por separado de la finalización.
+
+La consulta final es ficticia. Sus preferencias nunca se deducen del CCPC. Las reglas son visibles antes de decidir.
+
+Elegir un proyecto, dejar sin marcar o no participar permite completar la historia con el mismo reconocimiento.
+
+Participar también invita a preguntar qué se hizo con los recursos y qué necesidades siguen pendientes.
+
+El prototipo incluye fuentes, respaldo Linux y arte original. La evaluación con personas usuarias y los efectos de aprendizaje están pendientes.
+
+Demostración automatizada del prototipo. Fuente: INE, CCPC 2024. Revisión del equipo y publicación autorizada pendientes.

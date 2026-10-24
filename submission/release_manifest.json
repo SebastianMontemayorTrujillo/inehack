@@ -1,0 +1,965 @@
+{
+  "schema_version": "1.0.0",
+  "title": "Voces de la Plaza",
+  "track": "Reto 3",
+  "status": "local-review-candidate",
+  "created_at_utc": "2026-10-24T19:06:24.820368+00:00",
+  "team_name": null,
+  "working_tree": "uncommitted",
+  "godot_version": "4.7.2.stable",
+  "data": {
+    "source_sha256": "c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2",
+    "rows": 9773730,
+    "aggregates": 33
+  },
+  "tests": {
+    "python": 22,
+    "node": 17,
+    "gut": 9,
+    "gut_assertions": 40
+  },
+  "external_readiness": {
+    "signed_letters": "pending-team",
+    "hosting": "pending-authorization",
+    "deadline_timezone": "unconfirmed",
+    "user_pilot": "not-run",
+    "screen_reader_review": "not-run"
+  },
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 149,
+      "sha256": "bf206d6d87d6f428252bd77e8f210fa98cab1e4b98b2d9f19bb11b862ac1cd9c"
+    },
+    {
+      "path": ".tools/toolchain.json",
+      "bytes": 790,
+      "sha256": "7e460fe123895c8af712d0527053c292c2344521468e1630247adda7508e5a18"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 2740,
+      "sha256": "7076c9fb6fef8db50879d616006c4bf50bc5d2dd1f8434d91556659087e1f4fd"
+    },
+    {
+      "path": "CAPABILITY_MAP.md",
+      "bytes": 18569,
+      "sha256": "afed2ab625867c12350e50ad3c6c4a9fa7a5cdf254fbc8f00e40d9ffa3e5d252"
+    },
+    {
+      "path": "INEhack_Development_Blueprint.docx",
+      "bytes": 61953,
+      "sha256": "03e316b564941bab60ec158b272ba55b00bc9efe1fba98e1b63cdd999a05753f"
+    },
+    {
+      "path": "INEhack_Development_Blueprint.md",
+      "bytes": 43434,
+      "sha256": "272f415a15d7e682b589cbd64372008073eff233dae7715bd0d48cd8c12d3dfd"
+    },
+    {
+      "path": "INEhack_Learning_Evidence_and_Pitch_Outline.docx",
+      "bytes": 51289,
+      "sha256": "2597f22e8f5a7a421bc66d3257f89561e7cf6d057d4b5e9835e27b7eca3ce978"
+    },
+    {
+      "path": "INEhack_Learning_Evidence_and_Pitch_Outline.md",
+      "bytes": 24335,
+      "sha256": "27ff5f5aef4a7928c042cce387a66e47d2d30e9d191adcbeb8ea5049513ab232"
+    },
+    {
+      "path": "INEhack_Research_Annex.zip",
+      "bytes": 13234,
+      "sha256": "1e57663a0dd176bab94a07436071a4d0f436eab0478370d62ac60b1e38651ccf"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7756,
+      "sha256": "85f484124aa65f5b586cc139c847ae086590c0b2957aefbdb1df7e87e5c8d2f6"
+    },
+    {
+      "path": "Rúbrica de evaluación_Hackaton -1.pdf",
+      "bytes": 631728,
+      "sha256": "a5848c3f7100404a118cadd3efddaa73a8ad4c09942b452a345d86ab5b1f5f28"
+    },
+    {
+      "path": "SPEC-accessible-story.md",
+      "bytes": 4708,
+      "sha256": "ff0e9044ed7162f6bc89d8d166fef48f93f0f7ab25325e5e3a63e0a5bde5dbc3"
+    },
+    {
+      "path": "SPEC-ccpc-data.md",
+      "bytes": 6156,
+      "sha256": "a1d025188719439fcedc883677213027d8e83f60f0324012b53477d8eda7e472"
+    },
+    {
+      "path": "SPEC-community-choice.md",
+      "bytes": 4280,
+      "sha256": "ba63fbf760e5ef02231bc2a2b7552e37d9496b3c09cfc08faa44a28ddb1598b3"
+    },
+    {
+      "path": "SPEC-evidence-quests.md",
+      "bytes": 5106,
+      "sha256": "64f8229c743699d87e291e038ee89994433cfaa5e70096f9416d6075432d4504"
+    },
+    {
+      "path": "SPEC-play-session.md",
+      "bytes": 4662,
+      "sha256": "d191b51d300a2ece99bb770ce9aed881c9d09f70b30c2112dc36bd7f5b7ad9ad"
+    },
+    {
+      "path": "SPEC-submission-package.md",
+      "bytes": 5380,
+      "sha256": "83fef79f0ecb351923d410d045a1f6f2207246d05f8723e65f8425da09f62f69"
+    },
+    {
+      "path": "assets/licenses/interface-sounds-0.txt",
+      "bytes": 574,
+      "sha256": "f7966c773bbed0eca6a9c75081c44a178b38eae112724dbb5fdfbd4192d118a9"
+    },
+    {
+      "path": "assets/licenses/roguelike-characters-0.txt",
+      "bytes": 583,
+      "sha256": "6a0679aac00618d14ffcd1d6745cc1b96cc0b9b8e2c78c0738b08812b120f677"
+    },
+    {
+      "path": "assets/licenses/tiny-town-0.txt",
+      "bytes": 567,
+      "sha256": "c483c167cc3bdfe17c15f957ff847d409f64d81b410b28783636cf3b2b7814c5"
+    },
+    {
+      "path": "assets/licenses/ui-pack-0.txt",
+      "bytes": 565,
+      "sha256": "69f7eaa5e05913b4d09cf5848f75390b5c3c9a409ef8555777803d9ca0c171fb"
+    },
+    {
+      "path": "assets/original_manifest.json",
+      "bytes": 5220,
+      "sha256": "de3538e59630eeeb30bd2250ccb11dac2860294c05eb2f67d3a218d8f05934f2"
+    },
+    {
+      "path": "assets/reference_manifest.json",
+      "bytes": 7007,
+      "sha256": "1bf0375660b627531c26fcd496c0e1ea473620479e91f72d6a5035900930c2f3"
+    },
+    {
+      "path": "build/evidence/browser-results.json",
+      "bytes": 161,
+      "sha256": "72875d9850c4f2c5ac10027a6a5d08ba23a3912142c4d7e268caa13d834bf715"
+    },
+    {
+      "path": "build/evidence/browser-smoke.log",
+      "bytes": 107,
+      "sha256": "57d25cf44839a1d94786998a269ea4ba467960efa7c0827815bf6dfb8517fb73"
+    },
+    {
+      "path": "build/evidence/clean-candidate.json",
+      "bytes": 4859,
+      "sha256": "4c7b12f9733ace7752b23bf255d3a66655018d1ba6af969027c0d5bf8ab8513e"
+    },
+    {
+      "path": "build/evidence/compiled-pack-journeys.log",
+      "bytes": 144,
+      "sha256": "4d1c51e8a8d822d5d9be8a26f49be41497d2c6b47ac1fec5363c002f3f8d65da"
+    },
+    {
+      "path": "build/evidence/godot-browser.png",
+      "bytes": 106795,
+      "sha256": "4389a33c370712bf76f6244df5af3cf8d54ee2eeba36cd9d5de97376f495ca06"
+    },
+    {
+      "path": "build/evidence/godot-plaza.png",
+      "bytes": 85726,
+      "sha256": "f0379b7b9298fafe9ee8e0ffd03ddcc797d32876be065b36f42648f5064a15c3"
+    },
+    {
+      "path": "build/evidence/godot-tests.log",
+      "bytes": 1053,
+      "sha256": "42ebc57ceb3e5f290af073e9eb6e19aff7948c28b90963368a6ed9c6becd7d0f"
+    },
+    {
+      "path": "build/evidence/html-desktop.png",
+      "bytes": 423497,
+      "sha256": "6f83d0d9ea1a411ccb11f828785f0b3f685b78b3b491d00401006f11ea9da80e"
+    },
+    {
+      "path": "build/evidence/html-overview.png",
+      "bytes": 133672,
+      "sha256": "31d53f3dc80ded66e923a5c13ee62c93c32a61c9d0d5bc1feb296ad0778294a1"
+    },
+    {
+      "path": "build/evidence/linux-boot.log",
+      "bytes": 73,
+      "sha256": "6d1c065383a27c36804949b6ffa4b09714470b112e5dacc0bd5aeb7b9c147c4e"
+    },
+    {
+      "path": "build/evidence/linux-build.log",
+      "bytes": 83,
+      "sha256": "7daf8a71d95648823d51b42bd2e82478ee5407f3595e0e9f7ecf37919fab549e"
+    },
+    {
+      "path": "build/evidence/linux-export.log",
+      "bytes": 10285,
+      "sha256": "0982d863e79a88b6e4465816ad323a701fa51f3439c2b86389f52c8919560489"
+    },
+    {
+      "path": "build/evidence/linux-import.log",
+      "bytes": 3590,
+      "sha256": "8b008c61b091dc971afc97317c662ef486431b78a4dd39bd529085f29ef040d6"
+    },
+    {
+      "path": "build/evidence/node-tests.log",
+      "bytes": 1773,
+      "sha256": "e1f42bf272e7b591c6f9f48d641fd75f72fc7b17aca2d013458aa05786b30941"
+    },
+    {
+      "path": "build/evidence/pitch-encoding.log",
+      "bytes": 11041,
+      "sha256": "25f5b26dc2b18e78cc96875b74ff5faeee3466c9c8da1b59d49a944c60ebbd8f"
+    },
+    {
+      "path": "build/evidence/python-tests.log",
+      "bytes": 121,
+      "sha256": "c11033e08ecba9293c0c13aa33a3fc5e1ade70f882ebc34c597d68599148fb8f"
+    },
+    {
+      "path": "build/evidence/verification.json",
+      "bytes": 4391,
+      "sha256": "8a09f8ea74e6edb6fb29205984f8a3cead65405113e727d5b49130ca22ff0b4f"
+    },
+    {
+      "path": "build/evidence/web-build.log",
+      "bytes": 72,
+      "sha256": "1688e4c84300d78d1ff13754b517a51c35424035e11f997e8d902f21b9ac5e9e"
+    },
+    {
+      "path": "build/evidence/web-export.log",
+      "bytes": 10285,
+      "sha256": "0982d863e79a88b6e4465816ad323a701fa51f3439c2b86389f52c8919560489"
+    },
+    {
+      "path": "build/evidence/web-import.log",
+      "bytes": 3590,
+      "sha256": "8b008c61b091dc971afc97317c662ef486431b78a4dd39bd529085f29ef040d6"
+    },
+    {
+      "path": "build/linux/licenses/GODOT_COPYRIGHT.txt",
+      "bytes": 100108,
+      "sha256": "cb1980c88089573bcacd7221d777c689bb8bbd778799f24c27fca0fe5f774d6d"
+    },
+    {
+      "path": "build/linux/licenses/GODOT_LICENSE.txt",
+      "bytes": 1149,
+      "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+    },
+    {
+      "path": "build/linux/licenses/OFL.txt",
+      "bytes": 4352,
+      "sha256": "f32d22b3908fcad2c86a74000614ec22e6a7f66ea7e867e616026a27aebdc143"
+    },
+    {
+      "path": "build/linux/licenses/THIRD_PARTY_NOTICES.txt",
+      "bytes": 899,
+      "sha256": "830ba5cfa3f6ac890c32ca7b9b2a63795d6bea2c3103bad3e03b8428ba7eef64"
+    },
+    {
+      "path": "build/linux/voces-de-la-plaza.pck",
+      "bytes": 287232,
+      "sha256": "3197b5c220c28d5e1265ce8ed45dcfe64fb092f92871c8c44b386de12c1f66b3"
+    },
+    {
+      "path": "build/linux/voces-de-la-plaza.x86_64",
+      "bytes": 73519416,
+      "sha256": "d9f79ab89b5ae369aeed11c6052d402e8218cd503bf85b4a235f9c30c46a7c63"
+    },
+    {
+      "path": "build/web/README.md",
+      "bytes": 5234,
+      "sha256": "385c880a0b80735d835b4d60aca06953cbe2777c90e1d860da59b6d3a0fbb836"
+    },
+    {
+      "path": "build/web/app.mjs",
+      "bytes": 28136,
+      "sha256": "66453a5a7dd7549d9a22cae520b38c9e27f267eb11089253f04bfdc30cb9aeac"
+    },
+    {
+      "path": "build/web/content/ccpc.json",
+      "bytes": 13234,
+      "sha256": "0abe5ec5b0314a2fede4fd1dd86d589f4cf87648de0105ab772f889bfb8db44c"
+    },
+    {
+      "path": "build/web/content/story.json",
+      "bytes": 2556,
+      "sha256": "42a17e2be237182c67bcb3396cf294466076159c5f490b119c6998b38053ea9e"
+    },
+    {
+      "path": "build/web/game/index.apple-touch-icon.png",
+      "bytes": 11944,
+      "sha256": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5"
+    },
+    {
+      "path": "build/web/game/index.audio.position.worklet.js",
+      "bytes": 2973,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+    },
+    {
+      "path": "build/web/game/index.audio.worklet.js",
+      "bytes": 7298,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+    },
+    {
+      "path": "build/web/game/index.html",
+      "bytes": 5447,
+      "sha256": "578174a8de78e0a690f0469f9ab07d49277558393d12a263f4f002a2ef1176ec"
+    },
+    {
+      "path": "build/web/game/index.icon.png",
+      "bytes": 5700,
+      "sha256": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5"
+    },
+    {
+      "path": "build/web/game/index.js",
+      "bytes": 279815,
+      "sha256": "33c94cb3175f3333b82e2a3be5e8e86f77986f0aa2042b1631f6367a4e5bb6ba"
+    },
+    {
+      "path": "build/web/game/index.pck",
+      "bytes": 287232,
+      "sha256": "4fa997569093f51cb25e73a91f9fd45dfd6ea651a221ffe1db6110fb578182bd"
+    },
+    {
+      "path": "build/web/game/index.png",
+      "bytes": 21443,
+      "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"
+    },
+    {
+      "path": "build/web/game/index.wasm",
+      "bytes": 39514754,
+      "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
+    },
+    {
+      "path": "build/web/index.html",
+      "bytes": 15629,
+      "sha256": "dec0d462c13f002f8cadf89c2fcae68fd8d7a4c10ff81c137099dddf9e98363d"
+    },
+    {
+      "path": "build/web/licenses/GODOT_COPYRIGHT.txt",
+      "bytes": 100108,
+      "sha256": "cb1980c88089573bcacd7221d777c689bb8bbd778799f24c27fca0fe5f774d6d"
+    },
+    {
+      "path": "build/web/licenses/GODOT_LICENSE.txt",
+      "bytes": 1149,
+      "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+    },
+    {
+      "path": "build/web/licenses/OFL.txt",
+      "bytes": 4352,
+      "sha256": "f32d22b3908fcad2c86a74000614ec22e6a7f66ea7e867e616026a27aebdc143"
+    },
+    {
+      "path": "build/web/licenses/THIRD_PARTY_NOTICES.txt",
+      "bytes": 899,
+      "sha256": "830ba5cfa3f6ac890c32ca7b9b2a63795d6bea2c3103bad3e03b8428ba7eef64"
+    },
+    {
+      "path": "build/web/logic.mjs",
+      "bytes": 12679,
+      "sha256": "0dcb1d6a7ae59f34bf210779abe7b96376eaf18b8d60948e9e3ff89a5dc952b0"
+    },
+    {
+      "path": "build/web/styles.css",
+      "bytes": 11492,
+      "sha256": "fd74ba362970d309829a9a96adc59b1e3d70f9ee91051b77b4c3ee9f546614d9"
+    },
+    {
+      "path": "data/validation_report.json",
+      "bytes": 902,
+      "sha256": "c46f412c060d040601d89cae7f0d905bfd2a32f416ae7eebd12cfaa00b08cd4e"
+    },
+    {
+      "path": "docs/architecture.md",
+      "bytes": 6990,
+      "sha256": "3e95aa2d44b3bb11ea6511e38ec9f3c24baefec6a6d340b61de807c94debd3c2"
+    },
+    {
+      "path": "docs/asset_register.md",
+      "bytes": 10706,
+      "sha256": "019a54ecdd476b350d258e9964d71099041db9367b7cd52261765fa2c73ca335"
+    },
+    {
+      "path": "docs/asset_replacement_briefs.md",
+      "bytes": 5855,
+      "sha256": "505b10d494e99c579bbd408aaedc4071ac8929aa810c67e9a5e348e488898820"
+    },
+    {
+      "path": "docs/deck_outline_es.md",
+      "bytes": 9188,
+      "sha256": "c510b7be2026d2fd70b98c9610d1f9cd630689cbd6c05e67c34f78e4dd1a96d0"
+    },
+    {
+      "path": "docs/facilitator.md",
+      "bytes": 4866,
+      "sha256": "4f9ef0e76373b00f75f63685b7252c54c296b2ffe3dacbb8291d62a7edcadce7"
+    },
+    {
+      "path": "docs/glossary_es_MX.md",
+      "bytes": 3664,
+      "sha256": "ed98b548935313ba392d636f074887be9312f8ecb5fc10115050a781121d8a08"
+    },
+    {
+      "path": "docs/handoff.md",
+      "bytes": 7453,
+      "sha256": "e6234c37ed97331e73ca6ef84368ddb44e540dca7c11ee5ce789a4e5b09bd63e"
+    },
+    {
+      "path": "docs/pitch_script_es.md",
+      "bytes": 5978,
+      "sha256": "ee9eeefbaf591f7a7b7c00c3d4e1f989a57592eab3aa89c5d806e6dbef0f5a34"
+    },
+    {
+      "path": "docs/product_brief.md",
+      "bytes": 4977,
+      "sha256": "2dc0d7b4d77bfb2ff75439afa5b74123bc7ef851ed9886b1bfe9aaf1f312f89e"
+    },
+    {
+      "path": "docs/source_register.md",
+      "bytes": 11394,
+      "sha256": "dd641b69fc716c8abc13b92746b1d562825968171b5669ab1ddf5f6e267cc4c8"
+    },
+    {
+      "path": "docs/storyline_and_dissemination_es.md",
+      "bytes": 13237,
+      "sha256": "074ca98417828b273f4bb43bd970457ed652bd5749884f7a57ec15f95f26085a"
+    },
+    {
+      "path": "docs/submission_checklist.md",
+      "bytes": 6030,
+      "sha256": "9db8bce7238f80d71751233cae42b2db84128c4e1069934aecb0fb2e935a923e"
+    },
+    {
+      "path": "docs/verification.md",
+      "bytes": 9071,
+      "sha256": "261cf6344a277863eeb24032c4cdcc6252ade7d8b9ca9f8a54edd500aa9101d7"
+    },
+    {
+      "path": "game/GODOT_COPYRIGHT.txt",
+      "bytes": 100108,
+      "sha256": "cb1980c88089573bcacd7221d777c689bb8bbd778799f24c27fca0fe5f774d6d"
+    },
+    {
+      "path": "game/GODOT_LICENSE.txt",
+      "bytes": 1149,
+      "sha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+    },
+    {
+      "path": "game/THIRD_PARTY_NOTICES.txt",
+      "bytes": 899,
+      "sha256": "830ba5cfa3f6ac890c32ca7b9b2a63795d6bea2c3103bad3e03b8428ba7eef64"
+    },
+    {
+      "path": "game/assets/catalogs/development.json",
+      "bytes": 10935,
+      "sha256": "7b2e72d8ce57a18f3b08744c2e2a2780c0a53838d0bd0c81e817e0ad8e4b9233"
+    },
+    {
+      "path": "game/assets/catalogs/original.json",
+      "bytes": 12130,
+      "sha256": "17dcd02910aa12733d2415019a7ec6262456c8488ccb1a8c983c06e1a8eb1210"
+    },
+    {
+      "path": "game/assets/fonts/AtkinsonHyperlegible-Bold.ttf",
+      "bytes": 55256,
+      "sha256": "5a3b0c8cc8ca545155150b4512a1fa248298df121c50d6557e651e61fbdab92f"
+    },
+    {
+      "path": "game/assets/fonts/AtkinsonHyperlegible-Bold.ttf.import",
+      "bytes": 813,
+      "sha256": "331736e09b4a73e3b0c9eaaac3b2fd9b15e40c72354b4010644ebc588d4be368"
+    },
+    {
+      "path": "game/assets/fonts/AtkinsonHyperlegible-Regular.ttf",
+      "bytes": 54348,
+      "sha256": "7fb917c89019896d0b52ee84b7cbb3304c18cb90b19a62f5e32712bd23e97669"
+    },
+    {
+      "path": "game/assets/fonts/AtkinsonHyperlegible-Regular.ttf.import",
+      "bytes": 822,
+      "sha256": "793929d6a84a44d59cd0204a9145f72ec1e11daf197b9345b745c5ad2f5610e7"
+    },
+    {
+      "path": "game/assets/fonts/OFL.txt",
+      "bytes": 4352,
+      "sha256": "f32d22b3908fcad2c86a74000614ec22e6a7f66ea7e867e616026a27aebdc143"
+    },
+    {
+      "path": "game/assets/original/building_archive.svg",
+      "bytes": 1448,
+      "sha256": "dcdfd6532dded598d6b8d8a0b5b4442bb88f2eb87dd0130c62bb65817a32423e"
+    },
+    {
+      "path": "game/assets/original/building_archive.svg.import",
+      "bytes": 1065,
+      "sha256": "e725de5221746da1a8271a8d6d305cc48b35ab35723426feda529e39e5230c7a"
+    },
+    {
+      "path": "game/assets/original/building_hall.svg",
+      "bytes": 1620,
+      "sha256": "55973548aac16be3bb74087b9b17dfdea01c05bccfc4ad5dce4292f388046dd8"
+    },
+    {
+      "path": "game/assets/original/building_hall.svg.import",
+      "bytes": 1056,
+      "sha256": "4cbda16fa6f74f763b75ae77aa4d326b01caa3b7999281931e3586db962ec765"
+    },
+    {
+      "path": "game/assets/original/building_printshop.svg",
+      "bytes": 1731,
+      "sha256": "b3f76baabe792ae4fa13c4a36653a4eafad0c2c484728a20448b9dece1ecc4c2"
+    },
+    {
+      "path": "game/assets/original/building_printshop.svg.import",
+      "bytes": 1071,
+      "sha256": "fa7704db0f489b6e44abb4c4f052d9ea9cc9619a392309202f687bd009719503"
+    },
+    {
+      "path": "game/assets/original/character_ines.svg",
+      "bytes": 8411,
+      "sha256": "6525b12d75e3b58227711e91f54893c2f9f35a522921d2aae8ecaa8bb67613d8"
+    },
+    {
+      "path": "game/assets/original/character_ines.svg.import",
+      "bytes": 1059,
+      "sha256": "e4e124f0ca7ff069bd42de651bdec85b05983c95ce697f832c7c7594090cd198"
+    },
+    {
+      "path": "game/assets/original/character_luz.svg",
+      "bytes": 8588,
+      "sha256": "aa8ee09a42a1307731b4d2988069eb9b1f7a7fcd017b08946366ae812e12a378"
+    },
+    {
+      "path": "game/assets/original/character_luz.svg.import",
+      "bytes": 1056,
+      "sha256": "b19cab24fafdb3fbd787fdfe17d770f7dc525a452262b468305d253c6cdd7414"
+    },
+    {
+      "path": "game/assets/original/character_mateo.svg",
+      "bytes": 7916,
+      "sha256": "be77b39304806e7a24e7db9176e877a77ef39b5b945ff31d71726fdd7db54d9d"
+    },
+    {
+      "path": "game/assets/original/character_mateo.svg.import",
+      "bytes": 1062,
+      "sha256": "9f7adf3164e2f07c9141a3d8f0e90402c7ce8a2468b3335fc6830e15e29214ea"
+    },
+    {
+      "path": "game/assets/original/character_player.svg",
+      "bytes": 7916,
+      "sha256": "34373dde19e76c3785d978e71dc8f63a011f743747e3b590e579f9241be032d5"
+    },
+    {
+      "path": "game/assets/original/character_player.svg.import",
+      "bytes": 1065,
+      "sha256": "c4bd3ee7f54a6e6693b09f549a26e4d2a507019691093ba7c7cd6cd28ab82a3f"
+    },
+    {
+      "path": "game/assets/original/icon_garden.svg",
+      "bytes": 572,
+      "sha256": "1429ab3510c3478e23d44813e388f2b718ef8bf429e49c32cfa44cb4ebec116a"
+    },
+    {
+      "path": "game/assets/original/icon_garden.svg.import",
+      "bytes": 1050,
+      "sha256": "ab98bf1ae00c23d403992d5a35e6411e22b40c4312b66514f9e2cc01c7e04112"
+    },
+    {
+      "path": "game/assets/original/icon_reading.svg",
+      "bytes": 629,
+      "sha256": "279afecde3e9e4f51c6383383924a9068e49f7f3d3b8cd02c2b953ae9a07d201"
+    },
+    {
+      "path": "game/assets/original/icon_reading.svg.import",
+      "bytes": 1053,
+      "sha256": "b642e79f55aafa0d75d3440df0f1e0b0a13566d8635532a7f3a511d348aaa90e"
+    },
+    {
+      "path": "game/assets/original/icon_shade.svg",
+      "bytes": 516,
+      "sha256": "305406bfc58183d9864a91cff81169e1858e7088c3b42802617441e8f8b2777a"
+    },
+    {
+      "path": "game/assets/original/icon_shade.svg.import",
+      "bytes": 1047,
+      "sha256": "ad60a84fd8382859fa588fa5fda86a4983c2fcfe8c5ee2c1106d7fd1d9a1d2b7"
+    },
+    {
+      "path": "game/assets/original/prop_ballotbox.svg",
+      "bytes": 513,
+      "sha256": "be25746ddc51e55a2a5efc6f7d5062731bece3216c6e287a3a1a27515b901018"
+    },
+    {
+      "path": "game/assets/original/prop_ballotbox.svg.import",
+      "bytes": 1058,
+      "sha256": "9f44e96ee9e211526b7320069033ca676e797e43b93820a071007b772e2e764a"
+    },
+    {
+      "path": "game/assets/original/prop_bench.svg",
+      "bytes": 516,
+      "sha256": "d9a4ea794b1db8e249b69c7d3b10089758f0133a34250915df65073e435dbb83"
+    },
+    {
+      "path": "game/assets/original/prop_bench.svg.import",
+      "bytes": 1046,
+      "sha256": "9cebb0b602478fb78c67db19582715c388121d860e4fa994285251e4bac56585"
+    },
+    {
+      "path": "game/assets/original/prop_noticeboard.svg",
+      "bytes": 797,
+      "sha256": "e221b5fe4a9c1450ee18537d3aa17e81a5c44f2ae51f782f0bcab2fbce723da6"
+    },
+    {
+      "path": "game/assets/original/prop_noticeboard.svg.import",
+      "bytes": 1064,
+      "sha256": "3f36824cb74ff7c59dead81dd6144417e359aae851293a94e2377015be23ce26"
+    },
+    {
+      "path": "game/assets/original/prop_printer.svg",
+      "bytes": 639,
+      "sha256": "904fe2cd238a8bf48aa9856770412a8113a9ab33a5a0b803674875a77a8f1850"
+    },
+    {
+      "path": "game/assets/original/prop_printer.svg.import",
+      "bytes": 1052,
+      "sha256": "f468ea74ec660315ac4613aad8d559de560800f56b5a1aa89207b07f129ceecd"
+    },
+    {
+      "path": "game/assets/original/prop_tree.svg",
+      "bytes": 634,
+      "sha256": "00511063a2f6a97d5040ba65cab9d51e3f39d0a35ae6d3db5206c5cea79e1a48"
+    },
+    {
+      "path": "game/assets/original/prop_tree.svg.import",
+      "bytes": 1044,
+      "sha256": "8ceb9fd4b3c886aebb0a39f79a070f428ed26e54fb1ea11923e9f8a59ef40b83"
+    },
+    {
+      "path": "game/assets/original/sound_chapter.wav",
+      "bytes": 34442,
+      "sha256": "e53012b5b57e6125aa355d6a4bedbc906037fe1704c8215dab532738f53e226a"
+    },
+    {
+      "path": "game/assets/original/sound_chapter.wav.import",
+      "bytes": 513,
+      "sha256": "44515e0af206ca843ab9ba4c35f257460a059bbf35e1814b94ac35b342ec1953"
+    },
+    {
+      "path": "game/assets/original/sound_corrective.wav",
+      "bytes": 14156,
+      "sha256": "eb9adcf9a412e7eac4a250715da1e5cc5539119a9da821300a06f7e69b7cb3c7"
+    },
+    {
+      "path": "game/assets/original/sound_corrective.wav.import",
+      "bytes": 522,
+      "sha256": "288b08d528aaf3b24915ade9ad68809c4a262b416b9b96cdc2e9b191acac8ab9"
+    },
+    {
+      "path": "game/assets/original/sound_focus.wav",
+      "bytes": 3352,
+      "sha256": "94b5bef29eae553494336e5b1c7399120bc668424431b276d555c12eb35de9f1"
+    },
+    {
+      "path": "game/assets/original/sound_focus.wav.import",
+      "bytes": 507,
+      "sha256": "323ac9ac7ff651ce9e418d3844770cf24090abe704cfd8e4282c07a0a53144f4"
+    },
+    {
+      "path": "game/assets/original/sound_journal.wav",
+      "bytes": 16802,
+      "sha256": "f59ca9542a3cdd9908755ccbf8e4adecfa591f0497cf6e7f9626ea44e33d4acf"
+    },
+    {
+      "path": "game/assets/original/sound_journal.wav.import",
+      "bytes": 512,
+      "sha256": "5e63c7d476220edbe3c55b60ded510a2a80770ccfba40572f66320be2f9556d6"
+    },
+    {
+      "path": "game/assets/original/sound_select.wav",
+      "bytes": 7542,
+      "sha256": "b8a7caf7c670736af2c3c281de2808bd94c1c52ae95b01c45d5b55a2e1c45a89"
+    },
+    {
+      "path": "game/assets/original/sound_select.wav.import",
+      "bytes": 509,
+      "sha256": "7900940d6f58cc48ed2995d6c8c9258038128e9dcfc98b11ec8584e75664466b"
+    },
+    {
+      "path": "game/assets/original/terrain_grass.svg",
+      "bytes": 512,
+      "sha256": "cb5893241e5c7540dc45ae00d909b241695273cf28c35bb747596de2cb9f368c"
+    },
+    {
+      "path": "game/assets/original/terrain_grass.svg.import",
+      "bytes": 1055,
+      "sha256": "752bfe662ee036ca785a5b5c7145f008c5f30a28e60fc40ea34ba849ddc23beb"
+    },
+    {
+      "path": "game/assets/original/terrain_path.svg",
+      "bytes": 345,
+      "sha256": "35a2fcbc3bf0de8b3e4cec4cd9e0c1d5c4e04e9799f3a8355e390cce91c93b1f"
+    },
+    {
+      "path": "game/assets/original/terrain_path.svg.import",
+      "bytes": 1053,
+      "sha256": "5fd2b2c36a22285b3c7affa167c57c1d7dcb65c6aab1e8434c7ee42572d283a4"
+    },
+    {
+      "path": "game/assets/original/terrain_paving.svg",
+      "bytes": 511,
+      "sha256": "1175e35485ffb4b0a0d7fb700ce69feb29ea47c9178dad0803dbd77c43942197"
+    },
+    {
+      "path": "game/assets/original/terrain_paving.svg.import",
+      "bytes": 1059,
+      "sha256": "7fa7db00af3ecdfb5bc6cc9e4ff8b8f3dd57a481792c6f0b68cf9f57bb283a98"
+    },
+    {
+      "path": "game/assets/original/terrain_water.svg",
+      "bytes": 511,
+      "sha256": "397f2cd20a4d8c2b73667efac681ed046dd36e26360ef304206436dbc668c80a"
+    },
+    {
+      "path": "game/assets/original/terrain_water.svg.import",
+      "bytes": 1055,
+      "sha256": "02c7c76d30ed5218f72faabb45e80c4e05635ee951b59a6df5a9762a795ce87e"
+    },
+    {
+      "path": "game/content/ccpc.json",
+      "bytes": 13234,
+      "sha256": "0abe5ec5b0314a2fede4fd1dd86d589f4cf87648de0105ab772f889bfb8db44c"
+    },
+    {
+      "path": "game/content/story.json",
+      "bytes": 2556,
+      "sha256": "42a17e2be237182c67bcb3396cf294466076159c5f490b119c6998b38053ea9e"
+    },
+    {
+      "path": "game/export_presets.cfg",
+      "bytes": 1429,
+      "sha256": "07294599aa5dccbc1aa8ad5cf2f4de2c38d807834300e14b51cebedab32c2bde"
+    },
+    {
+      "path": "game/project.godot",
+      "bytes": 688,
+      "sha256": "32ef3c56eacc6d42f80957fb209e01ff090156644d239f815af9c55a8b2f179b"
+    },
+    {
+      "path": "game/scenes/main.tscn",
+      "bytes": 169,
+      "sha256": "22da703c99c8bce22b96bfb1e0a2275b1a8484e7768ecbcbb17db99f1bba8945"
+    },
+    {
+      "path": "game/scripts/asset_catalog.gd",
+      "bytes": 1842,
+      "sha256": "f07edc99f7ed6eeb0fbee63bb157892536b606f3aefd21fb349cd3d1b362f877"
+    },
+    {
+      "path": "game/scripts/asset_catalog.gd.uid",
+      "bytes": 20,
+      "sha256": "69965ee76a7924bba19feab8e8327d626df90a972f47338e255cb8fd68eb1e4f"
+    },
+    {
+      "path": "game/scripts/civic_rules.gd",
+      "bytes": 4105,
+      "sha256": "e633feed1479b1baf7c731478632e9f3e92af6da4073d4c9eb4cf611f7108202"
+    },
+    {
+      "path": "game/scripts/civic_rules.gd.uid",
+      "bytes": 20,
+      "sha256": "ec2c6faa78b085ec1f7914f09c76b12b55dd6197a750ff3c49f27319388c7dbe"
+    },
+    {
+      "path": "game/scripts/main.gd",
+      "bytes": 25688,
+      "sha256": "8091ac1aba3b2accb761b46cc62e258445682bab5877e88e1833f1d3f4727d61"
+    },
+    {
+      "path": "game/scripts/main.gd.uid",
+      "bytes": 20,
+      "sha256": "5a98bef72931bb634b018ef8e4ab3cdf9b8b33ea81ee124af65aea7a6b770c2e"
+    },
+    {
+      "path": "game/tests/rules_test.gd",
+      "bytes": 1720,
+      "sha256": "c0c5ad61594f3f059939084e5f5a050de940cc8e8b9b5364069b85c2343a69dd"
+    },
+    {
+      "path": "game/tests/rules_test.gd.uid",
+      "bytes": 19,
+      "sha256": "bd1e6746f30271be69f741d400ebd2f4a119f94ce82179bee8df4c5b32263227"
+    },
+    {
+      "path": "game/tests/test_civic_rules.gd",
+      "bytes": 2386,
+      "sha256": "8bafe572e86344741fe28d323c0b1064b671a6b0b8626571c080cf718052c5c0"
+    },
+    {
+      "path": "game/tests/test_civic_rules.gd.uid",
+      "bytes": 20,
+      "sha256": "3db19164866550080011a53512636010cc57809be95bea94de3c8b2207b4c394"
+    },
+    {
+      "path": "game/tests/test_journey.gd",
+      "bytes": 1741,
+      "sha256": "ffe4c7fa93e41f8efa9c2a45e997ae5a2db8460d1b4671363417eb8107c28ad8"
+    },
+    {
+      "path": "submission/narrativa.html",
+      "bytes": 14115,
+      "sha256": "e807049319421962eb5c63f4d5daf4154ab8ed8b22472e938c5db0e29d4b932c"
+    },
+    {
+      "path": "submission/pitch_subtitulos.srt",
+      "bytes": 2781,
+      "sha256": "230694b61e5d987b457c65e5e59e7fc4466a829c008eaac9bcfc510abb5a7413"
+    },
+    {
+      "path": "submission/pitch_transcripcion.txt",
+      "bytes": 2163,
+      "sha256": "cda04703dd25845dec1e5c455a37d9f24e041b56e6c68299fa233ec2c85f8867"
+    },
+    {
+      "path": "submission/presentacion.html",
+      "bytes": 7918,
+      "sha256": "a81ac7e6a1afd1ae565790fef5bef3bac9cf0a6f7b73fa9a67912bf4d394d873"
+    },
+    {
+      "path": "submission/voces_narrativa_y_difusion.pdf",
+      "bytes": 54600,
+      "sha256": "bb5423f2ff659066fdb14aa4b74402d075b44aba535e5876b629bf3fcb0faa57"
+    },
+    {
+      "path": "submission/voces_pitch_borrador.mp4",
+      "bytes": 3983614,
+      "sha256": "38451427a1db911170efcd91d182b200604e38de420e3b9fe902771fbdd97087"
+    },
+    {
+      "path": "submission/voces_presentacion.pdf",
+      "bytes": 334442,
+      "sha256": "a7719430563d9ecdb41f445be242840965ecabd058a37ee0ed578674195f7bba"
+    },
+    {
+      "path": "tasks/plan.md",
+      "bytes": 7133,
+      "sha256": "ee32d8b561d8529a960e5991faffad18eec4d3fe2d1f38cdf27bae59f5f7ba88"
+    },
+    {
+      "path": "tasks/todo.md",
+      "bytes": 7230,
+      "sha256": "7ce1df9f7613d5a50066c4c60dd348ebbc34e5f86ac59ad2e4562f847cf4ddb4"
+    },
+    {
+      "path": "tests/browser_smoke.mjs",
+      "bytes": 4982,
+      "sha256": "ac8ff3fb09bb0e9dca18ee07eab5478e614044ba2c94d1e60870c4a6a31a3f11"
+    },
+    {
+      "path": "tests/native_journey.gd",
+      "bytes": 1794,
+      "sha256": "9a0777e34ba924843c6d8af3b7462f5e10df42bc0aac3f8709a00e5be7f00123"
+    },
+    {
+      "path": "tests/test_assets.py",
+      "bytes": 8947,
+      "sha256": "6d3f63aebde29d5795ff777d0577bcfb38786952bb9524148c259890d6ae4915"
+    },
+    {
+      "path": "tests/test_data.py",
+      "bytes": 3412,
+      "sha256": "8adca031eac01b23b0ce8a087c23a857ab1e644c752ecca9a0e84ef640eb3308"
+    },
+    {
+      "path": "tests/web.test.mjs",
+      "bytes": 12960,
+      "sha256": "0cea473ffa51dfdab67aa8ded814be695c481b6b485a214688d72558ade75a32"
+    },
+    {
+      "path": "tools/assets.py",
+      "bytes": 13188,
+      "sha256": "09248d6961d68a2c02b5fb38dca8d09e4355c38f38ddf67bc65b8f69a4408d72"
+    },
+    {
+      "path": "tools/bootstrap.py",
+      "bytes": 3859,
+      "sha256": "b91bb8df032c8d1e3106a465b6db599eafb0398a2c91c62d8ceb89818b838c5a"
+    },
+    {
+      "path": "tools/browser-package.json",
+      "bytes": 114,
+      "sha256": "050f60a80f42382a2a41402a110c0045b2b372df85fee69e1746051b55f0181d"
+    },
+    {
+      "path": "tools/build_data.py",
+      "bytes": 5979,
+      "sha256": "a6f51ae907b75db120829729712adc4ca6004baba32004bb384bb47149afeb8b"
+    },
+    {
+      "path": "tools/create_original_assets.py",
+      "bytes": 11138,
+      "sha256": "0bfb2855deae385eea30822d0ee773b635d65734d0a1b132a7830e9be28d923a"
+    },
+    {
+      "path": "tools/export_game.py",
+      "bytes": 7530,
+      "sha256": "db32b3992da28efa6bd786f52e95f8ac1cc7986b027ee444100a09b8fc9761a7"
+    },
+    {
+      "path": "tools/godot",
+      "bytes": 305,
+      "sha256": "e8f3be1b4b18517c5a832c2c1d8c6314447671be247a079cfeaaf33bf7d00f7a"
+    },
+    {
+      "path": "tools/package_candidate.py",
+      "bytes": 4598,
+      "sha256": "c527f22c4b4399a9d0051538b493bf7d3f59475a024c5f5dcdaa1bd01a7cc1f0"
+    },
+    {
+      "path": "tools/record_pitch.mjs",
+      "bytes": 7773,
+      "sha256": "1e413bbd36f49d327ce91137c1ad5efe2fe3820c75913b584f811e58e6c7018c"
+    },
+    {
+      "path": "tools/render_submission.mjs",
+      "bytes": 12845,
+      "sha256": "e44062e1c285a1861b8d6ef820c948b37f7c5a90d04635c5ff941744c4f99874"
+    },
+    {
+      "path": "tools/verify.py",
+      "bytes": 3823,
+      "sha256": "aa32b967858ef6868873c63567a4605b28fabfa8fcf308fb7f342b4746e0f914"
+    },
+    {
+      "path": "web/README.md",
+      "bytes": 5234,
+      "sha256": "385c880a0b80735d835b4d60aca06953cbe2777c90e1d860da59b6d3a0fbb836"
+    },
+    {
+      "path": "web/app.mjs",
+      "bytes": 28136,
+      "sha256": "66453a5a7dd7549d9a22cae520b38c9e27f267eb11089253f04bfdc30cb9aeac"
+    },
+    {
+      "path": "web/index.html",
+      "bytes": 15629,
+      "sha256": "dec0d462c13f002f8cadf89c2fcae68fd8d7a4c10ff81c137099dddf9e98363d"
+    },
+    {
+      "path": "web/logic.mjs",
+      "bytes": 12679,
+      "sha256": "0dcb1d6a7ae59f34bf210779abe7b96376eaf18b8d60948e9e3ff89a5dc952b0"
+    },
+    {
+      "path": "web/styles.css",
+      "bytes": 11492,
+      "sha256": "fd74ba362970d309829a9a96adc59b1e3d70f9ee91051b77b4c3ee9f546614d9"
+    }
+  ]
+}

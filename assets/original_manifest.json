@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-24T18:06:28+00:00",
+  "authoring": "Original procedural SVG geometry and synthesized WAV notation authored for the Voces de la Plaza team; no reference pixels, traces or samples used.",
+  "generator": "tools/create_original_assets.py",
+  "generator_sha256": "0bfb2855deae385eea30822d0ee773b635d65734d0a1b132a7830e9be28d923a",
+  "font_dependency": "Atkinson Hyperlegible, Braille Institute of America, OFL-1.1; see reference_manifest.json and game/assets/fonts/OFL.txt",
+  "files": [
+    {
+      "path": "game/assets/fonts/AtkinsonHyperlegible-Bold.ttf",
+      "sha256": "5a3b0c8cc8ca545155150b4512a1fa248298df121c50d6557e651e61fbdab92f",
+      "bytes": 55256
+    },
+    {
+      "path": "game/assets/fonts/AtkinsonHyperlegible-Regular.ttf",
+      "sha256": "7fb917c89019896d0b52ee84b7cbb3304c18cb90b19a62f5e32712bd23e97669",
+      "bytes": 54348
+    },
+    {
+      "path": "game/assets/fonts/OFL.txt",
+      "sha256": "f32d22b3908fcad2c86a74000614ec22e6a7f66ea7e867e616026a27aebdc143",
+      "bytes": 4352
+    },
+    {
+      "path": "game/assets/original/building_archive.svg",
+      "sha256": "dcdfd6532dded598d6b8d8a0b5b4442bb88f2eb87dd0130c62bb65817a32423e",
+      "bytes": 1448
+    },
+    {
+      "path": "game/assets/original/building_hall.svg",
+      "sha256": "55973548aac16be3bb74087b9b17dfdea01c05bccfc4ad5dce4292f388046dd8",
+      "bytes": 1620
+    },
+    {
+      "path": "game/assets/original/building_printshop.svg",
+      "sha256": "b3f76baabe792ae4fa13c4a36653a4eafad0c2c484728a20448b9dece1ecc4c2",
+      "bytes": 1731
+    },
+    {
+      "path": "game/assets/original/character_ines.svg",
+      "sha256": "6525b12d75e3b58227711e91f54893c2f9f35a522921d2aae8ecaa8bb67613d8",
+      "bytes": 8411
+    },
+    {
+      "path": "game/assets/original/character_luz.svg",
+      "sha256": "aa8ee09a42a1307731b4d2988069eb9b1f7a7fcd017b08946366ae812e12a378",
+      "bytes": 8588
+    },
+    {
+      "path": "game/assets/original/character_mateo.svg",
+      "sha256": "be77b39304806e7a24e7db9176e877a77ef39b5b945ff31d71726fdd7db54d9d",
+      "bytes": 7916
+    },
+    {
+      "path": "game/assets/original/character_player.svg",
+      "sha256": "34373dde19e76c3785d978e71dc8f63a011f743747e3b590e579f9241be032d5",
+      "bytes": 7916
+    },
+    {
+      "path": "game/assets/original/icon_garden.svg",
+      "sha256": "1429ab3510c3478e23d44813e388f2b718ef8bf429e49c32cfa44cb4ebec116a",
+      "bytes": 572
+    },
+    {
+      "path": "game/assets/original/icon_reading.svg",
+      "sha256": "279afecde3e9e4f51c6383383924a9068e49f7f3d3b8cd02c2b953ae9a07d201",
+      "bytes": 629
+    },
+    {
+      "path": "game/assets/original/icon_shade.svg",
+      "sha256": "305406bfc58183d9864a91cff81169e1858e7088c3b42802617441e8f8b2777a",
+      "bytes": 516
+    },
+    {
+      "path": "game/assets/original/prop_ballotbox.svg",
+      "sha256": "be25746ddc51e55a2a5efc6f7d5062731bece3216c6e287a3a1a27515b901018",
+      "bytes": 513
+    },
+    {
+      "path": "game/assets/original/prop_bench.svg",
+      "sha256": "d9a4ea794b1db8e249b69c7d3b10089758f0133a34250915df65073e435dbb83",
+      "bytes": 516
+    },
+    {
+      "path": "game/assets/original/prop_noticeboard.svg",
+      "sha256": "e221b5fe4a9c1450ee18537d3aa17e81a5c44f2ae51f782f0bcab2fbce723da6",
+      "bytes": 797
+    },
+    {
+      "path": "game/assets/original/prop_printer.svg",
+      "sha256": "904fe2cd238a8bf48aa9856770412a8113a9ab33a5a0b803674875a77a8f1850",
+      "bytes": 639
+    },
+    {
+      "path": "game/assets/original/prop_tree.svg",
+      "sha256": "00511063a2f6a97d5040ba65cab9d51e3f39d0a35ae6d3db5206c5cea79e1a48",
+      "bytes": 634
+    },
+    {
+      "path": "game/assets/original/sound_chapter.wav",
+      "sha256": "e53012b5b57e6125aa355d6a4bedbc906037fe1704c8215dab532738f53e226a",
+      "bytes": 34442
+    },
+    {
+      "path": "game/assets/original/sound_corrective.wav",
+      "sha256": "eb9adcf9a412e7eac4a250715da1e5cc5539119a9da821300a06f7e69b7cb3c7",
+      "bytes": 14156
+    },
+    {
+      "path": "game/assets/original/sound_focus.wav",
+      "sha256": "94b5bef29eae553494336e5b1c7399120bc668424431b276d555c12eb35de9f1",
+      "bytes": 3352
+    },
+    {
+      "path": "game/assets/original/sound_journal.wav",
+      "sha256": "f59ca9542a3cdd9908755ccbf8e4adecfa591f0497cf6e7f9626ea44e33d4acf",
+      "bytes": 16802
+    },
+    {
+      "path": "game/assets/original/sound_select.wav",
+      "sha256": "b8a7caf7c670736af2c3c281de2808bd94c1c52ae95b01c45d5b55a2e1c45a89",
+      "bytes": 7542
+    },
+    {
+      "path": "game/assets/original/terrain_grass.svg",
+      "sha256": "cb5893241e5c7540dc45ae00d909b241695273cf28c35bb747596de2cb9f368c",
+      "bytes": 512
+    },
+    {
+      "path": "game/assets/original/terrain_path.svg",
+      "sha256": "35a2fcbc3bf0de8b3e4cec4cd9e0c1d5c4e04e9799f3a8355e390cce91c93b1f",
+      "bytes": 345
+    },
+    {
+      "path": "game/assets/original/terrain_paving.svg",
+      "sha256": "1175e35485ffb4b0a0d7fb700ce69feb29ea47c9178dad0803dbd77c43942197",
+      "bytes": 511
+    },
+    {
+      "path": "game/assets/original/terrain_water.svg",
+      "sha256": "397f2cd20a4d8c2b73667efac681ed046dd36e26360ef304206436dbc668c80a",
+      "bytes": 511
+    }
+  ]
+}

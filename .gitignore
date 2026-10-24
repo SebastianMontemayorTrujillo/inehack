@@ -1,0 +1,12 @@
+.tools/
+.venv/
+__pycache__/
+*.pyc
+build/
+references/assets/
+data/raw/
+game/.godot/
+game/addons/gut/
+game/assets/development/
+node_modules/
+.DS_Store

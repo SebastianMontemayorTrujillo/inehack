@@ -1,0 +1,18 @@
+{
+  "source": {
+    "url": "https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip",
+    "portal_url": "https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/",
+    "sha256": "c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2",
+    "retrieved_at_utc": "2026-10-24T18:09:42.048034+00:00",
+    "dictionary_path": "DatosAbiertos_DECEyEC_ConteosCensales2024/01_descripcioncampos_conteoscensales2024.txt"
+  },
+  "csv_files": 32,
+  "rows": 9773730,
+  "bad_sum_rows": 0,
+  "limits": [
+    "Los registros no revelan preferencias partidistas ni motivos individuales.",
+    "La clasificación desconocida no equivale a abstención ni a voto nulo.",
+    "Los registros excluyen casillas especiales y voto desde el extranjero.",
+    "Las comprobaciones aritméticas no acreditan unicidad o exhaustividad de la fuente."
+  ]
+}

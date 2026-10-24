@@ -1,0 +1,636 @@
+{
+  "schema_version": 1,
+  "asset_set": "development",
+  "assets": {
+    "terrain.grass": {
+      "path": "res://assets/development/tiny-town.png",
+      "origin": "reference",
+      "license": "CC0-1.0",
+      "source_pack": "tiny-town",
+      "size": [
+        16,
+        16
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        16
+      ]
+    },
+    "terrain.path": {
+      "path": "res://assets/original/terrain_path.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        16
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "filter": "nearest"
+    },
+    "terrain.paving": {
+      "path": "res://assets/original/terrain_paving.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        16
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "filter": "nearest"
+    },
+    "terrain.water": {
+      "path": "res://assets/original/terrain_water.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        16
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "filter": "nearest"
+    },
+    "building.printshop": {
+      "path": "res://assets/original/building_printshop.svg",
+      "origin": "team-original",
+      "size": [
+        64,
+        64
+      ],
+      "region": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "filter": "nearest"
+    },
+    "building.archive": {
+      "path": "res://assets/original/building_archive.svg",
+      "origin": "team-original",
+      "size": [
+        64,
+        64
+      ],
+      "region": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "filter": "nearest"
+    },
+    "building.hall": {
+      "path": "res://assets/original/building_hall.svg",
+      "origin": "team-original",
+      "size": [
+        64,
+        64
+      ],
+      "region": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "filter": "nearest"
+    },
+    "prop.tree": {
+      "path": "res://assets/original/prop_tree.svg",
+      "origin": "team-original",
+      "size": [
+        32,
+        40
+      ],
+      "region": [
+        0,
+        0,
+        32,
+        40
+      ],
+      "filter": "nearest"
+    },
+    "prop.bench": {
+      "path": "res://assets/original/prop_bench.svg",
+      "origin": "team-original",
+      "size": [
+        32,
+        20
+      ],
+      "region": [
+        0,
+        0,
+        32,
+        20
+      ],
+      "filter": "nearest"
+    },
+    "prop.printer": {
+      "path": "res://assets/original/prop_printer.svg",
+      "origin": "team-original",
+      "size": [
+        32,
+        32
+      ],
+      "region": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "filter": "nearest"
+    },
+    "prop.noticeboard": {
+      "path": "res://assets/original/prop_noticeboard.svg",
+      "origin": "team-original",
+      "size": [
+        32,
+        32
+      ],
+      "region": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "filter": "nearest"
+    },
+    "prop.ballotbox": {
+      "path": "res://assets/original/prop_ballotbox.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        24
+      ],
+      "filter": "nearest"
+    },
+    "icon.shade": {
+      "path": "res://assets/original/icon_shade.svg",
+      "origin": "team-original",
+      "size": [
+        24,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        24,
+        24
+      ],
+      "filter": "nearest"
+    },
+    "icon.reading": {
+      "path": "res://assets/original/icon_reading.svg",
+      "origin": "team-original",
+      "size": [
+        24,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        24,
+        24
+      ],
+      "filter": "nearest"
+    },
+    "icon.garden": {
+      "path": "res://assets/original/icon_garden.svg",
+      "origin": "team-original",
+      "size": [
+        24,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        24,
+        24
+      ],
+      "filter": "nearest"
+    },
+    "character.player": {
+      "path": "res://assets/development/roguelike-characters.png",
+      "origin": "reference",
+      "license": "CC0-1.0",
+      "source_pack": "roguelike-characters",
+      "size": [
+        16,
+        16
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "sheet_size": [
+        918,
+        203
+      ],
+      "frame_size": [
+        16,
+        16
+      ],
+      "margin": 1
+    },
+    "character.luz": {
+      "path": "res://assets/original/character_luz.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        24
+      ],
+      "filter": "nearest",
+      "sheet_size": [
+        48,
+        96
+      ],
+      "frame_size": [
+        16,
+        24
+      ],
+      "fps": 6,
+      "animations": {
+        "down": [
+          [
+            0,
+            0,
+            16,
+            24
+          ],
+          [
+            16,
+            0,
+            16,
+            24
+          ],
+          [
+            32,
+            0,
+            16,
+            24
+          ]
+        ],
+        "left": [
+          [
+            0,
+            24,
+            16,
+            24
+          ],
+          [
+            16,
+            24,
+            16,
+            24
+          ],
+          [
+            32,
+            24,
+            16,
+            24
+          ]
+        ],
+        "right": [
+          [
+            0,
+            48,
+            16,
+            24
+          ],
+          [
+            16,
+            48,
+            16,
+            24
+          ],
+          [
+            32,
+            48,
+            16,
+            24
+          ]
+        ],
+        "up": [
+          [
+            0,
+            72,
+            16,
+            24
+          ],
+          [
+            16,
+            72,
+            16,
+            24
+          ],
+          [
+            32,
+            72,
+            16,
+            24
+          ]
+        ]
+      },
+      "frame_order": [
+        "idle",
+        "walk_1",
+        "walk_2"
+      ]
+    },
+    "character.mateo": {
+      "path": "res://assets/original/character_mateo.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        24
+      ],
+      "filter": "nearest",
+      "sheet_size": [
+        48,
+        96
+      ],
+      "frame_size": [
+        16,
+        24
+      ],
+      "fps": 6,
+      "animations": {
+        "down": [
+          [
+            0,
+            0,
+            16,
+            24
+          ],
+          [
+            16,
+            0,
+            16,
+            24
+          ],
+          [
+            32,
+            0,
+            16,
+            24
+          ]
+        ],
+        "left": [
+          [
+            0,
+            24,
+            16,
+            24
+          ],
+          [
+            16,
+            24,
+            16,
+            24
+          ],
+          [
+            32,
+            24,
+            16,
+            24
+          ]
+        ],
+        "right": [
+          [
+            0,
+            48,
+            16,
+            24
+          ],
+          [
+            16,
+            48,
+            16,
+            24
+          ],
+          [
+            32,
+            48,
+            16,
+            24
+          ]
+        ],
+        "up": [
+          [
+            0,
+            72,
+            16,
+            24
+          ],
+          [
+            16,
+            72,
+            16,
+            24
+          ],
+          [
+            32,
+            72,
+            16,
+            24
+          ]
+        ]
+      },
+      "frame_order": [
+        "idle",
+        "walk_1",
+        "walk_2"
+      ]
+    },
+    "character.ines": {
+      "path": "res://assets/original/character_ines.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        24
+      ],
+      "filter": "nearest",
+      "sheet_size": [
+        48,
+        96
+      ],
+      "frame_size": [
+        16,
+        24
+      ],
+      "fps": 6,
+      "animations": {
+        "down": [
+          [
+            0,
+            0,
+            16,
+            24
+          ],
+          [
+            16,
+            0,
+            16,
+            24
+          ],
+          [
+            32,
+            0,
+            16,
+            24
+          ]
+        ],
+        "left": [
+          [
+            0,
+            24,
+            16,
+            24
+          ],
+          [
+            16,
+            24,
+            16,
+            24
+          ],
+          [
+            32,
+            24,
+            16,
+            24
+          ]
+        ],
+        "right": [
+          [
+            0,
+            48,
+            16,
+            24
+          ],
+          [
+            16,
+            48,
+            16,
+            24
+          ],
+          [
+            32,
+            48,
+            16,
+            24
+          ]
+        ],
+        "up": [
+          [
+            0,
+            72,
+            16,
+            24
+          ],
+          [
+            16,
+            72,
+            16,
+            24
+          ],
+          [
+            32,
+            72,
+            16,
+            24
+          ]
+        ]
+      },
+      "frame_order": [
+        "idle",
+        "walk_1",
+        "walk_2"
+      ]
+    },
+    "sound.focus": {
+      "path": "res://assets/original/sound_focus.wav",
+      "origin": "team-original",
+      "channels": 1,
+      "sample_rate": 22050,
+      "duration_seconds": 0.075
+    },
+    "sound.select": {
+      "path": "res://assets/development/interface-sounds.ogg",
+      "origin": "reference",
+      "license": "CC0-1.0",
+      "source_pack": "interface-sounds"
+    },
+    "sound.journal": {
+      "path": "res://assets/original/sound_journal.wav",
+      "origin": "team-original",
+      "channels": 1,
+      "sample_rate": 22050,
+      "duration_seconds": 0.38
+    },
+    "sound.corrective": {
+      "path": "res://assets/original/sound_corrective.wav",
+      "origin": "team-original",
+      "channels": 1,
+      "sample_rate": 22050,
+      "duration_seconds": 0.32
+    },
+    "sound.chapter": {
+      "path": "res://assets/original/sound_chapter.wav",
+      "origin": "team-original",
+      "channels": 1,
+      "sample_rate": 22050,
+      "duration_seconds": 0.78
+    },
+    "font.regular": {
+      "path": "res://assets/fonts/AtkinsonHyperlegible-Regular.ttf",
+      "origin": "dependency",
+      "license": "OFL-1.1",
+      "license_path": "res://assets/fonts/OFL.txt"
+    },
+    "font.bold": {
+      "path": "res://assets/fonts/AtkinsonHyperlegible-Bold.ttf",
+      "origin": "dependency",
+      "license": "OFL-1.1",
+      "license_path": "res://assets/fonts/OFL.txt"
+    }
+  }
+}

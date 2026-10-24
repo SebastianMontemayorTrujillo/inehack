@@ -1,0 +1,75 @@
+1
+00:00:01,756 --> 00:00:08,256
+Voces de la Plaza. Un prototipo para traducir datos CCPC en historias accesibles sobre participación democrática.
+
+2
+00:00:08,354 --> 00:00:14,354
+Villa Brisa es ficticia. Luz, Mateo e Inés nos ayudan a construir una exposición con fuentes y límites.
+
+3
+00:00:16,021 --> 00:00:22,021
+La primera misión distingue registros con marca, sin marca y sin clasificación. La evidencia oficial determina la explicación.
+
+4
+00:00:22,326 --> 00:00:28,326
+La misma historia se puede recorrer en HTML semántico, con controles de teclado, texto ampliable y tablas.
+
+5
+00:00:28,393 --> 00:00:35,393
+CCPC federal 2024: 59.7% entre registros clasificados. El 6.4% sin clasificación usa otra base: la lista nominal analizada.
+
+6
+00:00:35,446 --> 00:00:39,946
+La tasa de participación es SV dividido entre SV más NV. La clasificación desconocida se conserva aparte.
+
+7
+00:00:39,996 --> 00:00:44,496
+NS no significa abstención ni voto nulo. Mostrar lo desconocido también forma parte de una historia veraz.
+
+8
+00:00:44,549 --> 00:00:49,049
+Un ejemplo sintético nuevo permite revisar la idea sin memorizar las cifras oficiales.
+
+9
+00:00:49,176 --> 00:00:55,676
+Aguascalientes tiene una tasa mayor. Baja California tiene más registros con marca. Comparar requiere explicar ambas bases.
+
+10
+00:00:55,728 --> 00:01:00,228
+La visualización muestra conteos exactos y también una tabla que se puede leer sin depender del color.
+
+11
+00:01:00,277 --> 00:01:04,777
+Un número mayor de registros no implica un porcentaje mayor. Cada tasa tiene su propio denominador.
+
+12
+00:01:04,829 --> 00:01:09,329
+Las dos entidades juntas tienen una tasa de 50.12%. Primero sumamos los conteos y después dividimos.
+
+13
+00:01:09,377 --> 00:01:13,877
+Los agregados no revelan motivos individuales ni permiten juzgar el valor cívico de una comunidad.
+
+14
+00:01:13,927 --> 00:01:18,427
+Las pistas, explicaciones y reintentos permiten avanzar. La ayuda se registra por separado de la finalización.
+
+15
+00:01:18,509 --> 00:01:24,509
+La consulta final es ficticia. Sus preferencias nunca se deducen del CCPC. Las reglas son visibles antes de decidir.
+
+16
+00:01:24,568 --> 00:01:30,068
+Elegir un proyecto, dejar sin marcar o no participar permite completar la historia con el mismo reconocimiento.
+
+17
+00:01:30,157 --> 00:01:36,157
+Participar también invita a preguntar qué se hizo con los recursos y qué necesidades siguen pendientes.
+
+18
+00:01:36,158 --> 00:01:42,658
+El prototipo incluye fuentes, respaldo Linux y arte original. La evaluación con personas usuarias y los efectos de aprendizaje están pendientes.
+
+19
+00:01:42,659 --> 00:01:48,159
+Demostración automatizada del prototipo. Fuente: INE, CCPC 2024. Revisión del equipo y publicación autorizada pendientes.

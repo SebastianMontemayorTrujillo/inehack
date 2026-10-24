@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "title": "Voces de la Plaza",
+  "exhibit": "Las voces que construyen la plaza",
+  "message": "Comprender los datos nos ayuda a conversar con información. Participar nos permite aportar a las decisiones colectivas y dar seguimiento a lo que ocurre después.",
+  "chapters": [
+    {"id": "printing", "title": "La prensa de las voces", "npc": "Luz", "question": "¿Qué nos cuentan las voces?", "intro": "La plaza necesita un boletín que todas las personas puedan entender. Ayúdame a explicar los registros de participación sin borrar lo que todavía desconocemos.", "reflection": "Una conversación democrática también necesita información comprensible y fuentes que podamos revisar."},
+    {"id": "comparison", "title": "El mapa que no lo dice todo", "npc": "Mateo", "question": "¿Se ve igual en todos los lugares?", "intro": "Este cartel confunde más registros con un porcentaje mayor. Comparemos dos entidades del mismo año y construyamos un mensaje que sí esté respaldado.", "reflection": "Los datos ayudan a reconocer diferencias. Escuchar a las personas sigue siendo necesario para comprender sus experiencias."},
+    {"id": "consultation", "title": "Una plaza, varias ideas", "npc": "Inés", "question": "¿Qué hacemos con lo que sabemos?", "intro": "Ya tenemos una exposición con fuentes. Ahora exploremos una decisión colectiva ficticia: hay necesidades distintas y presupuesto para comenzar un solo proyecto.", "reflection": "Participar aporta a las decisiones colectivas. Después podemos dialogar, revisar el presupuesto y preguntar qué necesidades siguen pendientes."}
+  ],
+  "consultation": {
+    "label": "Consulta ficticia. No reproduce todos los procedimientos de una elección constitucional.",
+    "projects": [
+      {"id": "A", "name": "Sombra y bancas", "benefit": "Un lugar para descansar y conversar.", "tradeoff": "Requiere mantenimiento y riego."},
+      {"id": "B", "name": "Rincón de lectura", "benefit": "Un espacio para compartir historias y aprender.", "tradeoff": "Requiere cuidado de libros y facilitación."},
+      {"id": "C", "name": "Jardín comunitario", "benefit": "Un espacio verde para cuidar entre varias personas.", "tradeoff": "Requiere agua y trabajo continuo."}
+    ],
+    "scenarios": [
+      {"id": "baseline", "votes": [8, 5, 3]},
+      {"id": "more_same_winner", "votes": [11, 8, 6]},
+      {"id": "more_other_winner", "votes": [8, 10, 7]}
+    ],
+    "roster": {"eligible_npcs": 30, "underlying_preferences": [12, 10, 8], "player_is_additional": true}
+  }
+}

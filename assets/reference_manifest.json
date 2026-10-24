@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "downloads": [
+    {
+      "id": "tiny-town",
+      "url": "https://kenney.nl/media/pages/assets/tiny-town/a415fbeb49-1735736916/kenney_tiny-town.zip",
+      "resolved_url": "https://kenney.nl/media/pages/assets/tiny-town/a415fbeb49-1735736916/kenney_tiny-town.zip",
+      "source_page": "https://kenney.nl/assets/tiny-town",
+      "license": "CC0-1.0",
+      "author": "Kenney",
+      "retrieved_at_utc": "2026-10-24T18:02:22+00:00",
+      "path": "references/assets/tiny-town.zip",
+      "sha256": "9768692dccff1d706408a5aedd6ca4f6cd1409506cbc84cb2f862919764be977",
+      "bytes": 182243,
+      "usage": "reference-only"
+    },
+    {
+      "id": "roguelike-characters",
+      "url": "https://kenney.nl/media/pages/assets/roguelike-characters/53ffff4133-1729196490/kenney_roguelike-characters.zip",
+      "resolved_url": "https://kenney.nl/media/pages/assets/roguelike-characters/53ffff4133-1729196490/kenney_roguelike-characters.zip",
+      "source_page": "https://kenney.nl/assets/roguelike-characters",
+      "license": "CC0-1.0",
+      "author": "Kenney",
+      "retrieved_at_utc": "2026-10-24T18:02:29+00:00",
+      "path": "references/assets/roguelike-characters.zip",
+      "sha256": "05c4c0af7326584cfffbbb196571eb9e102981d2033e90e225c5ba8da8771284",
+      "bytes": 63243,
+      "usage": "reference-only"
+    },
+    {
+      "id": "ui-pack",
+      "url": "https://kenney.nl/media/pages/assets/ui-pack/f651646eab-1718203990/kenney_ui-pack.zip",
+      "resolved_url": "https://kenney.nl/media/pages/assets/ui-pack/f651646eab-1718203990/kenney_ui-pack.zip",
+      "source_page": "https://kenney.nl/assets/ui-pack",
+      "license": "CC0-1.0",
+      "author": "Kenney",
+      "retrieved_at_utc": "2026-10-24T18:02:46+00:00",
+      "path": "references/assets/ui-pack.zip",
+      "sha256": "a8a14a234911eb648c062622915c93e79e94e97cb7f9f375a70f6617f1174318",
+      "bytes": 1229750,
+      "usage": "reference-only"
+    },
+    {
+      "id": "interface-sounds",
+      "url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+      "resolved_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "license": "CC0-1.0",
+      "author": "Kenney",
+      "retrieved_at_utc": "2026-10-24T18:02:52+00:00",
+      "path": "references/assets/interface-sounds.zip",
+      "sha256": "f2193d072726d6758a5f7871b2dcc54dcce0d5c35c6f0a62f92549b327c81232",
+      "bytes": 834536,
+      "usage": "reference-only"
+    },
+    {
+      "id": "AtkinsonHyperlegible-Regular.ttf",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/atkinsonhyperlegible/AtkinsonHyperlegible-Regular.ttf",
+      "resolved_url": "https://raw.githubusercontent.com/google/fonts/main/ofl/atkinsonhyperlegible/AtkinsonHyperlegible-Regular.ttf",
+      "source_page": "https://github.com/google/fonts/tree/main/ofl/atkinsonhyperlegible",
+      "license": "OFL-1.1",
+      "author": "Braille Institute of America",
+      "retrieved_at_utc": "2026-10-24T18:02:52+00:00",
+      "path": "game/assets/fonts/AtkinsonHyperlegible-Regular.ttf",
+      "sha256": "7fb917c89019896d0b52ee84b7cbb3304c18cb90b19a62f5e32712bd23e97669",
+      "bytes": 54348,
+      "usage": "runtime-font-dependency"
+    },
+    {
+      "id": "AtkinsonHyperlegible-Bold.ttf",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/atkinsonhyperlegible/AtkinsonHyperlegible-Bold.ttf",
+      "resolved_url": "https://raw.githubusercontent.com/google/fonts/main/ofl/atkinsonhyperlegible/AtkinsonHyperlegible-Bold.ttf",
+      "source_page": "https://github.com/google/fonts/tree/main/ofl/atkinsonhyperlegible",
+      "license": "OFL-1.1",
+      "author": "Braille Institute of America",
+      "retrieved_at_utc": "2026-10-24T18:02:53+00:00",
+      "path": "game/assets/fonts/AtkinsonHyperlegible-Bold.ttf",
+      "sha256": "5a3b0c8cc8ca545155150b4512a1fa248298df121c50d6557e651e61fbdab92f",
+      "bytes": 55256,
+      "usage": "runtime-font-dependency"
+    },
+    {
+      "id": "OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/atkinsonhyperlegible/OFL.txt",
+      "resolved_url": "https://raw.githubusercontent.com/google/fonts/main/ofl/atkinsonhyperlegible/OFL.txt",
+      "source_page": "https://github.com/google/fonts/tree/main/ofl/atkinsonhyperlegible",
+      "license": "OFL-1.1",
+      "author": "Braille Institute of America",
+      "retrieved_at_utc": "2026-10-24T18:02:53+00:00",
+      "path": "game/assets/fonts/OFL.txt",
+      "sha256": "f32d22b3908fcad2c86a74000614ec22e6a7f66ea7e867e616026a27aebdc143",
+      "bytes": 4352,
+      "usage": "runtime-font-dependency"
+    }
+  ],
+  "licenses": [
+    {
+      "pack": "tiny-town",
+      "archive_member": "License.txt",
+      "path": "assets/licenses/tiny-town-0.txt",
+      "sha256": "c483c167cc3bdfe17c15f957ff847d409f64d81b410b28783636cf3b2b7814c5"
+    },
+    {
+      "pack": "roguelike-characters",
+      "archive_member": "License.txt",
+      "path": "assets/licenses/roguelike-characters-0.txt",
+      "sha256": "6a0679aac00618d14ffcd1d6745cc1b96cc0b9b8e2c78c0738b08812b120f677"
+    },
+    {
+      "pack": "ui-pack",
+      "archive_member": "License.txt",
+      "path": "assets/licenses/ui-pack-0.txt",
+      "sha256": "69f7eaa5e05913b4d09cf5848f75390b5c3c9a409ef8555777803d9ca0c171fb"
+    },
+    {
+      "pack": "interface-sounds",
+      "archive_member": "License.txt",
+      "path": "assets/licenses/interface-sounds-0.txt",
+      "sha256": "f7966c773bbed0eca6a9c75081c44a178b38eae112724dbb5fdfbd4192d118a9"
+    }
+  ],
+  "selections": [
+    {
+      "pack": "tiny-town",
+      "role": "terrain.grass",
+      "archive_member": "Tiles/tile_0000.png",
+      "path": "game/assets/development/tiny-town.png",
+      "sha256": "d4c692ef80ee97b3395b885ae07020d42a106683ff3650df240f8e972bd5a041",
+      "bytes": 99,
+      "usage": "reference-only"
+    },
+    {
+      "pack": "roguelike-characters",
+      "role": "character.player",
+      "archive_member": "Spritesheet/roguelikeChar_transparent.png",
+      "path": "game/assets/development/roguelike-characters.png",
+      "sha256": "771d51ca84b2c5b412027ba80c6a6b8a98bb5a983b2c58ac4f0ccf08ae4d10f2",
+      "bytes": 11137,
+      "usage": "reference-only"
+    },
+    {
+      "pack": "ui-pack",
+      "role": null,
+      "archive_member": "PNG/Blue/Default/button_rectangle_flat.png",
+      "path": "game/assets/development/ui-pack.png",
+      "sha256": "83084c953e57d7506f90600df77f36a8c6156abea0b8ea0e4b3885a596cee2c8",
+      "bytes": 315,
+      "usage": "reference-only"
+    },
+    {
+      "pack": "interface-sounds",
+      "role": "sound.select",
+      "archive_member": "Audio/click_001.ogg",
+      "path": "game/assets/development/interface-sounds.ogg",
+      "sha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9",
+      "bytes": 4876,
+      "usage": "reference-only"
+    }
+  ]
+}

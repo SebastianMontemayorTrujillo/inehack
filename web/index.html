@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#294c40">
+  <meta name="description" content="Una historia interactiva de datos y decisiones colectivas. Recorre Villa Brisa, explora el CCPC 2024 y prepara una exposición para la plaza.">
+  <title>Voces de la Plaza · Cuaderno de campo</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23294c40'/%3E%3Cpath d='M15 17 32 48 49 17' fill='none' stroke='%23fffdf7' stroke-width='5'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#chapter-title">Saltar al capítulo</a>
+  <header class="masthead">
+    <a class="brand" href="./index.html" aria-label="Voces de la Plaza, inicio"><span class="brand-mark" aria-hidden="true">V<span>p</span></span><span>Voces de la Plaza<small>Villa Brisa · Cuaderno de campo</small></span></a>
+    <a class="game-link" id="game-link" href="./game/index.html" aria-describedby="game-note">Abrir aventura Godot <span aria-hidden="true">↗</span></a>
+  </header>
+  <div class="page-wrap">
+    <section class="introduction" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Las voces que construyen la plaza</p>
+        <h1 id="page-title">Una plaza.<br>Muchas formas de <em>participar.</em></h1>
+        <p class="intro-copy">En Villa Brisa estamos preparando una exposición. Ayuda a leer los datos, conversar con evidencia y pensar qué ocurre después de una decisión colectiva.</p>
+        <p class="route-note">Historia completa en texto y gráficas · A tu ritmo · Sin cuenta</p>
+      </div>
+      <div class="plaza-illustration" aria-hidden="true">
+        <svg viewBox="0 0 320 230" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M24 205H299M42 216H277M60 226H250" stroke="currentColor" stroke-width="2"/>
+          <path d="M58 199V112H129V199M49 113L93 79L137 113M76 199V157H108V199M70 128H84V143H70ZM101 128H115V143H101Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M148 198V139H226V198M140 140L186 107L234 140M163 156H178V172H163ZM196 156H211V172H196Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M255 198V114M255 151L235 133M255 135L271 117" stroke="currentColor" stroke-width="3"/>
+          <path d="M226 111C207 91 225 68 240 70C236 44 266 38 276 61C299 49 312 82 296 94C306 118 278 134 265 118C249 135 225 132 226 111Z" fill="#d9dfca" stroke="currentColor" stroke-width="2"/>
+          <path d="M136 199V179M126 178H148M125 185H148M129 195V179M145 195V179" stroke="currentColor" stroke-width="2"/>
+          <circle cx="173" cy="57" r="17" stroke="#a65032" stroke-width="2"/>
+          <path d="M173 29V23M173 91V85M145 57H139M207 57H201M154 38L150 34M196 80L192 76M193 38L197 34M154 76L150 80" stroke="#a65032" stroke-width="2"/>
+          <path d="M36 68C48 58 59 58 69 68M77 45C86 38 95 38 104 45" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span>Apuntes desde Villa Brisa</span>
+      </div>
+    </section>
+    <p id="game-note" class="small-note">La aventura visual requiere el paquete Godot exportado. Si todavía no está disponible, puedes completar aquí la misma historia.</p>
+    <details class="settings">
+      <summary>Lectura y accesibilidad</summary>
+      <div class="settings-controls">
+        <label for="text-size">Tamaño del texto <select id="text-size"><option value="normal">Estándar</option><option value="large">Grande</option></select></label>
+        <label class="check"><input type="checkbox" id="reduced-motion"> Reducir movimiento</label>
+        <button type="button" id="reset-progress" class="quiet">Borrar avance y ajustes</button>
+      </div>
+      <p>Usa Tab para recorrer los controles y Enter o Espacio para activarlos. También puedes ampliar el texto con tu navegador. No hay arrastres ni límite de tiempo.</p>
+      <p>Solo guardamos capítulos terminados, ajustes y pistas usadas en este dispositivo. Tu decisión ficticia, sus resultados y tu reflexión no se guardan ni se envían.</p>
+      <p id="storage-status" role="status"></p>
+    </details>
+    <noscript><p class="error">Activa JavaScript para cargar el archivo CCPC incluido y explorar los ejercicios. Esta página no requiere cuentas ni servicios externos.</p></noscript>
+    <div class="notebook">
+      <aside class="itinerary">
+        <p class="eyebrow">Tu recorrido</p>
+        <nav aria-label="Capítulos del cuaderno"><ol>
+          <li><button type="button" data-chapter="1" aria-current="step"><span class="step-number">01</span><span>La prensa de las voces<small>Leer una proporción</small><span class="chapter-stamp" id="stamp-1">Por explorar</span></span></button></li>
+          <li><button type="button" data-chapter="2" disabled><span class="step-number">02</span><span>El mapa que no lo dice todo<small>Comparar con cuidado</small><span class="chapter-stamp" id="stamp-2">Después del capítulo 1</span></span></button></li>
+          <li><button type="button" data-chapter="3" disabled><span class="step-number">03</span><span>Una plaza, varias ideas<small>Decidir y dar seguimiento</small><span class="chapter-stamp" id="stamp-3">Después del capítulo 2</span></span></button></li>
+        </ol></nav>
+        <p class="margin-note">«Comprender los datos nos ayuda a conversar con información.»</p>
+        <p class="small-note" id="progress-summary" role="status">0 de 3 capítulos terminados</p>
+      </aside>
+      <main id="main-content">
+        <div class="chapter-heading"><p class="eyebrow" id="chapter-number">Capítulo 01 / Archivo</p><h2 id="chapter-title" tabindex="-1">La prensa de las voces</h2></div>
+        <div id="data-status" role="status" aria-live="polite"><p>Cargando el archivo verificado CCPC 2024…</p></div>
+        <button type="button" id="retry-data" hidden>Reintentar carga de datos</button>
+        <section id="chapter-1" class="chapter" aria-labelledby="chapter-title" hidden>
+          <p class="human-question">¿Qué nos cuentan las voces?</p>
+          <p>En el archivo, una impresora espera su primer boletín. Antes de publicar una cifra, hay que saber qué cuenta y a quién incluye.</p>
+          <blockquote>«Hay registros sin clasificación. ¿Los ponemos con quienes no tienen marca de voto?»<cite>Una pregunta en el archivo</cite></blockquote>
+          <button type="button" id="reveal-national" aria-expanded="false" aria-controls="national-evidence">Abrir el archivo y revisar los registros <span aria-hidden="true">↓</span></button>
+          <div id="national-evidence" hidden>
+            <div class="evidence-label">Evidencia real · CCPC · Elección federal 2024</div>
+            <h3>Un registro, tres clasificaciones</h3>
+            <label for="national-metric">Ver la gráfica como <select id="national-metric"><option value="counts">Conteos de registros</option><option value="shares">Proporciones de la lista nominal (LN)</option></select></label>
+            <figure><div id="national-chart" class="bar-chart"></div><figcaption id="national-caption"></figcaption></figure>
+            <div id="national-table" class="table-wrap"></div>
+            <p class="finding" id="national-finding"></p>
+            <p>LN = lista nominal. SV = registros con marca de voto. NV = registros sin marca de voto. NS = participación sin especificar. No son preferencias por partidos.</p>
+          </div>
+          <div class="source-slot" data-records="national"></div>
+          <div id="quest-1"></div>
+          <div class="chapter-completion"><p id="completion-1" role="status"></p><button type="button" id="complete-1" disabled>Publicar el primer boletín</button><button type="button" class="quiet next-chapter" data-next="2" hidden>Continuar al mapa →</button></div>
+        </section>
+        <section id="chapter-2" class="chapter" aria-labelledby="chapter-title" hidden>
+          <p class="human-question">¿Se ve igual en todos los lugares?</p>
+          <p>En el tablero de la plaza alguien escribió: «Más personas siempre significa más participación». El mapa necesita una lectura más cuidadosa.</p>
+          <blockquote>«¿Un conteo mayor y una tasa mayor cuentan la misma historia?»<cite>Una pregunta frente al tablero</cite></blockquote>
+          <div class="evidence-label">Evidencia real · CCPC · Elección federal 2024</div>
+          <h3>Dos lugares, dos tamaños de base</h3>
+          <label for="compare-metric">Comparar <select id="compare-metric"><option value="counts">Conteos SV: registros con marca</option><option value="rates">Tasas: SV ÷ (SV + NV)</option></select></label>
+          <figure><div id="compare-chart" class="bar-chart"></div><figcaption id="compare-caption"></figcaption></figure>
+          <p id="compare-announcement" class="finding" role="status"></p>
+          <div id="compare-table" class="table-wrap"></div>
+          <p id="combined-finding"></p>
+          <div class="source-slot" data-records="state_01,state_02"></div>
+          <div id="quest-2"></div>
+          <div class="chapter-completion"><p id="completion-2" role="status"></p><button type="button" id="complete-2" disabled>Publicar la comparación con su límite</button><button type="button" class="quiet next-chapter" data-next="3" hidden>Continuar a la plaza →</button></div>
+        </section>
+        <section id="chapter-3" class="chapter" aria-labelledby="chapter-title" hidden>
+          <p class="human-question">¿Qué hacemos con lo que sabemos?</p>
+          <p>La exposición ya está en la plaza. Los datos ayudan a conversar; ahora Villa Brisa tiene una decisión propia. Varias necesidades pueden ser legítimas al mismo tiempo.</p>
+          <details id="exhibit"><summary>Volver a leer nuestra exposición con fuentes</summary><div id="exhibit-content"></div><div class="source-slot" data-records="national,state_01,state_02"></div></details>
+          <div class="synthetic-notice"><strong>Consulta ficticia · Datos sintéticos</strong><p>No reproduce todos los procedimientos de una elección constitucional. Los datos CCPC no se usan para asignar preferencias o motivos a estas personas.</p></div>
+          <h3>El mismo presupuesto inicial, tres proyectos</h3>
+          <div class="projects">
+            <article><span class="project-letter">A</span><h4>Sombra y bancas</h4><p>Un lugar para descansar y encontrarse.</p><p class="tradeoff">Pendiente: cuidar los árboles y mantener las bancas.</p></article>
+            <article><span class="project-letter">B</span><h4>Rincón de lectura</h4><p>Libros y un espacio para compartir historias.</p><p class="tradeoff">Pendiente: renovar materiales y acordar horarios.</p></article>
+            <article><span class="project-letter">C</span><h4>Jardín comunitario</h4><p>Un espacio para sembrar y aprender en común.</p><p class="tradeoff">Pendiente: organizar el riego y el mantenimiento.</p></article>
+          </div>
+          <h3>Las reglas, antes de decidir</h3>
+          <p>Hay 30 habitantes ficticios con preferencias fijas: A: 12, B: 10 y C: 8. Tú eres la persona 31. En el escenario inicial participan 16 habitantes: A: 8, B: 5 y C: 3. El grupo participante está fijado de antemano.</p>
+          <p>El proyecto con más marcas gana esta consulta ficticia. Una marca suma 1 al proyecto y 1 al total de participantes. Una boleta sin marca suma solo 1 participante. No participar no suma. Si hubiera empate, haría falta una segunda decisión entre los proyectos empatados; no hay ganador automático.</p>
+          <label for="scenario">Escenario para explorar <select id="scenario"><option value="base">Inicial: A 8 / B 5 / C 3 · 16 participantes</option><option value="more-a">Más participación: A 11 / B 8 / C 6 · 25 participantes</option><option value="more-b">Más participación: A 8 / B 10 / C 7 · 25 participantes</option></select></label>
+          <form id="ballot" autocomplete="off">
+            <fieldset><legend>¿Cómo quieres responder a la consulta ficticia?</legend>
+              <label class="choice"><input type="radio" name="decision" value="A" required> A · Sombra y bancas</label>
+              <label class="choice"><input type="radio" name="decision" value="B"> B · Rincón de lectura</label>
+              <label class="choice"><input type="radio" name="decision" value="C"> C · Jardín comunitario</label>
+              <label class="choice"><input type="radio" name="decision" value="unmarked"> Participar con una boleta sin marca</label>
+              <label class="choice"><input type="radio" name="decision" value="decline"> No participar en esta consulta</label>
+            </fieldset>
+            <p class="small-note">Cualquiera de estas decisiones permite llegar al mismo cierre. No guardamos tu elección ni el resultado.</p>
+            <button type="submit">Ver el resultado ficticio</button>
+          </form>
+          <section id="consultation-result" tabindex="-1" aria-labelledby="result-title" hidden><h3 id="result-title">Resultado del escenario ficticio</h3><div id="result-content"></div></section>
+          <section id="reflection" hidden aria-labelledby="reflection-title">
+            <h3 id="reflection-title">La conversación continúa</h3>
+            <p>Un voto aporta a una decisión; no garantiza cambiar al ganador. Con el mismo total de participantes pueden ganar proyectos distintos. Las necesidades que no ganan siguen mereciendo atención.</p>
+            <form id="reflection-form" autocomplete="off"><fieldset><legend>¿Qué pregunta llevarías a la próxima reunión?</legend>
+              <label class="choice"><input type="radio" name="followup" value="budget" required> ¿Qué se hizo con el presupuesto?</label>
+              <label class="choice"><input type="radio" name="followup" value="needs"> ¿Cómo atenderemos las necesidades pendientes?</label>
+              <label class="choice"><input type="radio" name="followup" value="review"> ¿Cuándo revisaremos los avances en una reunión abierta?</label>
+            </fieldset><button type="submit">Cerrar mi cuaderno</button></form>
+          </section>
+          <section id="ending" class="ending" tabindex="-1" aria-labelledby="ending-title" hidden>
+            <p class="eyebrow">Cuaderno completo · Villa Brisa</p><h3 id="ending-title">La plaza sigue en construcción.</h3>
+            <p>Comprender los datos nos ayuda a conversar con información. Participar nos permite aportar a las decisiones colectivas y dar seguimiento a lo que ocurre después.</p>
+            <p>Te llevas tres herramientas: revisar el denominador, distinguir conteos de tasas y preguntar por lo que falta. Puedes volver a la exposición o probar otro escenario.</p>
+            <p class="small-note">Este recorrido es una experiencia educativa. No mide cambios en la participación electoral real ni permite conocer los motivos de cada persona.</p>
+            <button type="button" class="quiet" id="repeat-consultation">Explorar otra decisión ficticia</button>
+          </section>
+        </section>
+      </main>
+    </div>
+    <footer><p>Voces de la Plaza <span aria-hidden="true">/</span> Una historia para conversar con evidencia.</p><p>CCPC 2024: observaciones históricas. Villa Brisa: ficción educativa.</p><p><a id="credits-link" href="./licenses/THIRD_PARTY_NOTICES.txt">Créditos y licencias</a></p></footer>
+  </div>
+</body>
+</html>

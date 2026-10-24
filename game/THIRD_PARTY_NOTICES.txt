@@ -1,0 +1,17 @@
+Voces de la Plaza third-party notices
+
+Godot Engine 4.7.2: MIT license, retained in GODOT_LICENSE.txt.
+Godot engine third-party components retain their own upstream notices.
+Full engine copyright information: https://godotengine.org/license/
+
+Atkinson Hyperlegible Regular and Bold: SIL Open Font License 1.1.
+Copyright and full license: assets/fonts/OFL.txt.
+These fonts are third-party dependencies, not team-authored illustrations.
+
+The original submission asset catalog uses project-authored SVG illustrations
+and synthesized WAV sounds. Downloaded Kenney reference artwork/audio is not
+included in an original-catalog export. Development references and their CC0
+notices are documented in the repository assets/reference_manifest.json.
+
+GUT 9.7.1 is used for development tests and excluded from release exports.
+This notice does not change ownership or declare a new license for original work.
