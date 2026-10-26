@@ -1,8 +1,61 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "title": "Voces de la Plaza",
   "exhibit": "Las voces que construyen la plaza",
   "message": "Comprender los datos nos ayuda a conversar con información. Participar nos permite aportar a las decisiones colectivas y dar seguimiento a lo que ocurre después.",
+  "opening": "Villa Brisa quiere mejorar su plaza. Hay tres propuestas y recursos para empezar una. Antes de la reunión, ayuda a preparar información clara, comparar sin confundir y escuchar necesidades distintas.",
+  "audience": "Una aventura para clases de ética y educación cívica: jóvenes que se acercan a su primer voto y personas que empiezan a conocer estos temas.",
+  "fiction_label": "Ejemplo inventado para practicar. Estas cifras no son datos del INE.",
+  "bridge": "Los datos del INE nos hablan de la participación en 2024. Esta consulta es inventada para practicar cómo escuchar y tomar decisiones. No nos dice qué proyecto necesita Villa Brisa.",
+  "comparison_artifact": {
+    "before": "Más registros = mayor proporción.",
+    "count": "Más registros: {place}.",
+    "rate": "Mayor proporción: {place}.",
+    "equal_count": "Hay la misma cantidad de registros.",
+    "equal_rate": "La proporción es la misma.",
+    "unavailable": "Falta información para comparar proporciones."
+  },
+  "poster_workshop": {
+    "title": "Crea tu cartel para la reunión",
+    "intro": "Elige dos estados y qué quieres contar. Prueba cantidad y proporción: pueden contar historias distintas. No hay una elección correcta; revisa la evidencia antes de llevarla a la reunión.",
+    "first_label": "Primer estado",
+    "second_label": "Segundo estado",
+    "metric_label": "¿Qué quieres mostrar?",
+    "question_label": "¿Qué quieres conversar?",
+    "count_label": "Cantidad de registros con participación",
+    "rate_label": "Proporción de cada 100 con información",
+    "limit": "Estos datos no explican motivos personales ni qué proyecto necesita Villa Brisa. No permiten decir quién es mejor ciudadano.",
+    "memory_note": "Tu cartel se conserva solo durante esta sesión. No cambia los resultados de la consulta.",
+    "questions": [
+      {"id":"missing","text":"¿Qué información nos falta antes de decidir?"},
+      {"id":"voices","text":"¿Cómo escuchamos a quienes todavía no han hablado?"},
+      {"id":"followup","text":"¿Cómo revisamos después si se cumplió lo acordado?"}
+    ]
+  },
+  "houses": [
+    {"id":"printshop","chapter":"printing","title":"Imprenta de Luz","preview":"Aquí preparamos un boletín que diga lo que sabemos y lo que falta por conocer.","objective":"Ayuda a Luz a publicar un boletín claro.","artifact":"Boletín con fuente"},
+    {"id":"archive","chapter":"comparison","title":"Archivo de Mateo","preview":"Aquí comparamos dos lugares sin confundir cantidades y porcentajes. Luz puede ayudarte a empezar.","objective":"Ayuda a Mateo a corregir el cartel.","artifact":"Cartel de comparación"},
+    {"id":"hall","chapter":"consultation","title":"Casa de reunión de Inés","preview":"Puedes conocer las propuestas. Para comenzar la consulta, preparemos primero el boletín y el cartel.","objective":"Escucha las propuestas y elige cómo dar seguimiento.","artifact":"Acuerdos para dar seguimiento"}
+  ],
+  "activities": [
+    {"id":"participation-reading","chapter":"printing","title":"Leer el boletín","prompt":"En los registros con información, ¿hay más con participación o sin participación?","rule":"national-participation","view":"national","transfer":false,"choices":[{"id":"sv","text":"Con participación"},{"id":"nv","text":"Sin participación"},{"id":"equal","text":"Hay la misma cantidad"}],"hint":"Compara las dos barras con información conocida. La barra más larga tiene más registros.","explanation":"La gráfica muestra lo que está registrado. Los casos sin información se explican aparte; no adivinamos qué pasó."},
+    {"id":"unknown","chapter":"printing","title":"Dejar espacio a lo desconocido","prompt":"Aquí falta información. ¿Podemos decir que esa persona no participó?","rule":"unknown","view":"national","transfer":false,"choices":[{"id":"separate","text":"No, no lo sabemos"},{"id":"nv","text":"Sí, seguro que no participó"}],"hint":"Si un registro no tiene información, todavía no sabemos si hubo participación.","explanation":"Falta información. Por eso no podemos afirmar que no participó. El boletín muestra estos casos por separado."},
+    {"id":"unknown-transfer","chapter":"printing","title":"Pruébalo en otro caso","prompt":"¿Dónde ponemos los registros que no tienen información?","rule":"unknown-transfer","view":"printing-fixture","transfer":true,"choices":[{"id":"unknown","text":"En «No sabemos»"},{"id":"nv","text":"En «No participaron»"},{"id":"sv","text":"En «Participaron»"}],"hint":"Revisa las tres etiquetas. Un espacio sin información no demuestra participación ni falta de participación.","explanation":"Los registros sin información se quedan en «No sabemos». Contarlos como una respuesta conocida cambiaría la historia."},
+    {"id":"more-count","chapter":"comparison","title":"Contar la participación","prompt":"¿Dónde hay más registros de participación?","rule":"count","view":"count","transfer":false,"choices":[{"id":"state_01","text":"Aguascalientes"},{"id":"state_02","text":"Baja California"},{"id":"equal","text":"Hay la misma cantidad"}],"hint":"Mira las cantidades. Compara el número de registros, sin calcular porcentajes.","explanation":"Un lugar puede tener más registros de participación y un porcentaje menor. El tamaño del grupo también importa."},
+    {"id":"higher-rate","chapter":"comparison","title":"Comparar de cada cien","prompt":"De cada 100 registros con información, ¿dónde participaron más?","rule":"rate","view":"rate","transfer":false,"choices":[{"id":"state_01","text":"Aguascalientes"},{"id":"state_02","text":"Baja California"},{"id":"equal","text":"La proporción es la misma"}],"hint":"Mira las barras de cada 100. Así comparamos grupos de tamaños distintos.","explanation":"Comparar de cada 100 ayuda a leer la proporción. Estos datos no explican los motivos de cada persona ni quién es mejor ciudadano."},
+    {"id":"comparison-transfer","chapter":"comparison","title":"Probar otra comparación","prompt":"¿Tener más participantes siempre significa tener un porcentaje mayor?","rule":"comparison-transfer","view":"comparison-fixture","transfer":true,"choices":[{"id":"no","text":"No, también importa el tamaño del grupo"},{"id":"yes","text":"Sí, cantidad y porcentaje siempre crecen juntos"}],"hint":"Compara las cantidades y después los porcentajes de estos dos grupos inventados.","explanation":"No siempre. Una cantidad mayor puede representar una parte menor de un grupo más grande. Los datos tampoco explican los motivos personales."}
+  ],
+  "assessment_fixtures": {
+    "printing":{"sv":60,"nv":30,"ns":10,"ln":100},
+    "comparison":[{"sv":20,"nv":20,"ns":0,"ln":40},{"sv":60,"nv":140,"ns":0,"ln":200}]
+  },
+  "optional_math": {
+    "title":"Ver cómo se calculó",
+    "known":"La participación usa los registros con información conocida: con participación + sin participación. Los desconocidos se muestran aparte.",
+    "formula":"Participación = 100 × SV ÷ (SV + NV). Sin información = 100 × NS ÷ LN.",
+    "combined":"Para juntar lugares, primero sumamos sus cantidades y después calculamos el porcentaje. No promediamos porcentajes de grupos de distinto tamaño.",
+    "limit":"Un dato sin clasificar no significa abstención ni voto nulo. Estos datos no revelan por quién votó cada persona ni por qué."
+  },
   "chapters": [
     {"id": "printing", "title": "La prensa de las voces", "npc": "Luz", "question": "¿Qué nos cuentan las voces?", "intro": "La plaza necesita un boletín que todas las personas puedan entender. Ayúdame a explicar los registros de participación sin borrar lo que todavía desconocemos.", "reflection": "Una conversación democrática también necesita información comprensible y fuentes que podamos revisar."},
     {"id": "comparison", "title": "El mapa que no lo dice todo", "npc": "Mateo", "question": "¿Se ve igual en todos los lugares?", "intro": "Este cartel confunde más registros con un porcentaje mayor. Comparemos dos entidades del mismo año y construyamos un mensaje que sí esté respaldado.", "reflection": "Los datos ayudan a reconocer diferencias. Escuchar a las personas sigue siendo necesario para comprender sus experiencias."},

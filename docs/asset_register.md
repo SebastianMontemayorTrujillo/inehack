@@ -11,11 +11,16 @@ Illustrations supply `size` (logical pixels), `region: [x,y,width,height]`, and 
 | Roles | Original files under `game/assets/original/` | Logical dimensions / audio |
 | --- | --- | --- |
 | `terrain.grass`, `.path`, `.paving`, `.water` | `terrain_grass.svg`, `terrain_path.svg`, `terrain_paving.svg`, `terrain_water.svg` | Each 16×16; repeating tile |
+| `terrain.floor`, `terrain.wall` | `terrain_floor.svg`, `terrain_wall.svg` | Each 16×16; opaque interior tiles |
 | `building.printshop`, `.archive`, `.hall` | `building_printshop.svg`, `building_archive.svg`, `building_hall.svg` | Each 64×64; distinct roof symbols |
 | `prop.tree` | `prop_tree.svg` | 32×40 |
 | `prop.bench` | `prop_bench.svg` | 32×20 |
 | `prop.printer`, `.noticeboard` | `prop_printer.svg`, `prop_noticeboard.svg` | Each 32×32 |
 | `prop.ballotbox` | `prop_ballotbox.svg` | 16×24 |
+| `prop.desk` | `prop_desk.svg` | 32×24 |
+| `prop.bookshelf` | `prop_bookshelf.svg` | 24×32 |
+| `prop.chair` | `prop_chair.svg` | 24×24 |
+| `prop.exit` | `prop_exit.svg` | 24×32 |
 | `icon.shade`, `.reading`, `.garden` | `icon_shade.svg`, `icon_reading.svg`, `icon_garden.svg` | Each 24×24 |
 | `character.player`, `.luz`, `.mateo`, `.ines` | `character_player.svg`, `character_luz.svg`, `character_mateo.svg`, `character_ines.svg` | Each logical 16×24; 12 frames |
 | `sound.focus` | `sound_focus.wav` | 0.075 s, 660 Hz note |
@@ -28,6 +33,12 @@ Illustrations supply `size` (logical pixels), `region: [x,y,width,height]`, and 
 All WAVs are mono 16-bit PCM, 22,050 Hz, generated with quiet sine tones plus a small second harmonic and raised-cosine envelopes. Controls/settings must retain Main's mute behavior. Sound must never be the sole source of feedback. UI panels and focus outlines are Main's Godot StyleBoxes; no external panel graphic is needed.
 
 `assets/original_manifest.json` records the authoring method, generator SHA-256, generation timestamp, and every runtime asset's SHA-256 and byte count, including fonts and `OFL.txt`. Regeneration is deterministic for SVG/WAV bytes; the measured manifest timestamp changes. Changing an original deliberately requires regeneration or `record-original`, never a development fallback.
+
+RV07/RV08 add the six interior roles above on 25 October 2026. Both catalogs now contain 32 roles: 25 original illustrations, 5 original sounds and 2 OFL font roles in the production set. Every new role uses its full `[0,0,width,height]` region, nearest filtering and a `team-original` SVG path in both catalogs. Floor boards repeat in both axes; the plaster/teal wall face repeats horizontally. Furniture and the downward-arrow doorway have transparent surroundings. The exit art faces the lower room edge; Main supplies its labelled control, interaction area and safe spawn. No collision, navigation, label or quest state is encoded in the drawings.
+
+Regeneration also refreshes original/dependency entries in an existing development catalog while preserving its explicit reference selections. It does not download, reselect references or rewrite their manifest. The validator requires all six interior IDs, rejects a missing role or missing/changed original, and never substitutes a development file in the original set. First-time reference acquisition remains the separate `fetch` command.
+
+Interior provenance/rights: the six SVGs are newly authored integer-rectangle geometry in the canonical generator, using the project's existing palette. They contain no downloaded artwork, traced reference shapes, embedded fonts, logos or samples. This revision introduces no third-party dependency or new licence grant. `team-original` records their authoring origin; the references' CC0 designation is not assigned to these originals. Atkinson/OFL and the retained reference notices remain unchanged. The existing team review of submission authorship/rights statements remains separate from this asset provenance record.
 
 ## Acquired references and dependency
 
@@ -82,7 +93,7 @@ The wrapper is `tools/godot`; `XDG_DATA_HOME` is `.tools/share`. Projects stage 
 
 Main's `Web` and `Linux` export presets must include JSON and text files (`*.json,*.txt`) for dynamic catalog/content loading and the OFL notice; the Linux preset determines external PCK versus embedding. The exporter does not invent or override those project settings.
 
-## Verification recorded by the asset contributor
+## Initial verification recorded by the asset contributor (24 October 2026)
 
 - `python3 -m unittest discover -s tests -v`: 20 tests passed at this handoff (15 asset tests and 5 data tests). Asset cases cover missing-original failure, original/reference hash tampering, partial download manifests, unsafe paths/symlinks, frame bounds, sound PCM properties, actual reference sprite selection, and production leakage prevention.
 - Both `python3 tools/assets.py verify` and `verify --asset-set development`: passed against the actual acquired files.
@@ -91,3 +102,15 @@ Main's `Web` and `Linux` export presets must include JSON and text files (`*.jso
 - An enlarged SVG contact sheet was rendered into `/tmp/inehack-assets-contact.png` and visually inspected. Final game-scale rendering, movement/animation playback, sound listening/mute, platform exports, and the full game walkthrough remain Main's runtime acceptance work.
 
 Implementation files: `tools/assets.py`, `tools/create_original_assets.py`, `tools/export_game.py`, `tests/test_assets.py`, both manifests under `assets/`, supplied CC0 texts under `assets/licenses/`, original/development catalogs and assets under `game/assets/`, this register, and `docs/asset_replacement_briefs.md`. Ignored download/selection bytes are intentionally present locally. No commits were created.
+
+## RV07/RV08 asset verification (25 October 2026)
+
+- `python3 tools/create_original_assets.py`: generated 30 original SVG/WAV roles and 2 font roles, including the six interior IDs. All 27 pre-existing manifest entries retain identical bytes/hashes; both catalogs retain their pre-existing role entries and development reference selections.
+- `python3 -m unittest discover -s tests -p test_assets.py -v`: **20 asset tests passed** after the final chair revision. Added coverage checks all six logical dimensions/regions and integer-grid geometry, opaque terrain/transparent props, missing-role rejection in either catalog, failure when an original is missing despite a development substitute, deterministic hashes, development synchronization and preservation of reference entries. The existing temporary staging test also checks that all six originals are included; it does not invoke an engine export.
+- `python3 tools/assets.py verify` and `python3 tools/assets.py verify --asset-set development`: both passed. Independent comparison checks all 33 manifest file hashes and byte counts, the current generator hash, exact manifest coverage and unchanged reference provenance. The manifest is generated from the canonical source; no hand-maintained interior checksum list is introduced.
+- Isolated Godot `v4.7.2.stable.official.ed1daf0bf` import/load in `/tmp/inehack-interior-qa-rvd9ywdl/project`: `./tools/godot --headless --editor --path /tmp/inehack-interior-qa-rvd9ywdl/project --import`, then `./tools/godot --headless --path /tmp/inehack-interior-qa-rvd9ywdl/project --script res://check_assets.gd`. The actual copied `CivicAssetCatalog` loaded **25 AtlasTextures, 5 AudioStreamWAV objects and 2 FontFile objects**; both catalogs resolved all six interiors at the expected dimensions. All new rasterized pixels have alpha 0 or 1; terrain is opaque and prop margins are transparent. The revised chair opening also remains transparent. Final output: `INTERIOR_CATALOG_OK original 6 roles`, `INTERIOR_CATALOG_OK development 6 roles`, `ASSET_CATALOG_SMOKE_OK 25 textures, 5 sounds, 2 fonts`.
+- Observed tooling issue: the initial default multithreaded isolated import crashed during font import with thread-notification/allocator errors (exit 134). The full import passed after setting `editor/import/use_multiple_threads=false` **only in the temporary QA project**. The final changed-chair import and runtime smoke passed there too. This records the successful workaround, not a proven engine root cause or a change to Main's project settings. Temporary final logs: `import-final.log` and `smoke-final.log` beside that QA project.
+- Visually inspected `/tmp/inehack-interior-qa-rvd9ywdl/interior-contact.png`: native size, nearest 4× enlargement, grayscale, repeated tiles and furniture over the floor. One revision replaced the chair's cream-filled back opening with transparency so the room floor shows through. Furniture, books and the exit arrow remain distinct in grayscale.
+- Main/user reports all six roles rendered successfully in Web rooms. Independently inspected the supplied `/tmp/inehack-house1-v2.png` (1280×800): the visible floor, wall, desk, bookshelf and exit render without missing graphics or clipping. The world-space exit label overlaps the doorway's upper edge; this is a label-placement issue for Main, not an asset or role change. The separate “Salir a la plaza” control is visible. The chair and other rooms are not shown in this screenshot; their asset-level checks are recorded above. No additional asset defect was observed.
+
+Changed files in this asset contribution: `tools/create_original_assets.py`, `tools/assets.py`, `tests/test_assets.py`, `game/assets/catalogs/original.json`, `game/assets/catalogs/development.json`, the six new SVGs named in the runtime table, `assets/original_manifest.json`, `docs/asset_register.md` and `docs/asset_replacement_briefs.md`. Godot-generated `.svg.import` sidecars from Main's integration are preserved. No game/story/web/global documentation files were edited, and no engine export or commit was run by this contributor. Asset authorship/manifest work is complete; these checks do not replace Main's room interaction acceptance or establish a revised rubric score.

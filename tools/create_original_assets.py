@@ -28,10 +28,19 @@ def svg(width, height, body):
 
 
 def terrain(kind):
-    colors = {"grass": ("#9dbb78", "#83a663"), "path": ("#e3c690", "#c9aa77"), "paving": ("#bdc4b1", "#9da995"), "water": ("#68b4be", "#4497a9")}
+    colors = {"grass": ("#9dbb78", "#83a663"), "path": ("#e3c690", "#c9aa77"), "paving": ("#bdc4b1", "#9da995"), "water": ("#68b4be", "#4497a9"), "floor": ("#d5bd90", "#b49b76"), "wall": (PAPER, "#e4d6b4")}
     base, detail = colors[kind]
     body = rect(0, 0, 16, 16, base)
-    if kind == "paving":
+    if kind == "floor":
+        # Quiet staggered boards; all edge joints continue on the next tile.
+        for y, seam in ((0, 4), (8, 12)):
+            body += rect(0, y + 7, 16, 1, detail) + rect(seam, y, 1, 7, detail)
+        body += rect(8, 3, 4, 1, "#c9b184") + rect(3, 11, 3, 1, "#c9b184")
+    elif kind == "wall":
+        # Plaster above a continuous teal dado and dark baseboard.
+        body += rect(0, 1, 16, 1, detail) + rect(0, 9, 16, 1, "#8f998d")
+        body += rect(0, 10, 16, 4, TEAL) + rect(0, 14, 16, 2, INK)
+    elif kind == "paving":
         for y in (0, 8):
             body += rect(0, y, 16, 1, detail)
             for x in ((0, 8) if y == 0 else (4, 12)):
@@ -75,7 +84,7 @@ def building(kind):
 
 
 def prop(kind):
-    size = {"tree": (32, 40), "bench": (32, 20), "printer": (32, 32), "noticeboard": (32, 32), "ballotbox": (16, 24)}[kind]
+    size = {"tree": (32, 40), "bench": (32, 20), "printer": (32, 32), "noticeboard": (32, 32), "ballotbox": (16, 24), "desk": (32, 24), "bookshelf": (24, 32), "chair": (24, 24), "exit": (24, 32)}[kind]
     if kind == "tree":
         body = rect(14, 21, 5, 18, "#806343") + rect(18, 27, 5, 3, "#806343")
         body += rect(6, 7, 22, 21, INK) + rect(3, 12, 27, 11, GREEN)
@@ -97,6 +106,33 @@ def prop(kind):
         for x, y, w, h in ((5, 6, 9, 12), (17, 9, 9, 12)):
             body += rect(x, y, w, h, PAPER) + rect(x + 2, y + 3, w - 4, 1, TEAL) + rect(x + 2, y + 6, w - 4, 1, TEAL)
         body += rect(8, 6, 2, 2, CORAL) + rect(20, 9, 2, 2, CORAL)
+    elif kind == "desk":
+        body = rect(4, 13, 3, 10, INK) + rect(25, 13, 3, 10, INK)
+        body += rect(2, 11, 28, 6, INK) + rect(4, 12, 24, 3, "#a47650")
+        body += rect(21, 13, 5, 1, GOLD)
+        body += rect(1, 3, 30, 10, INK) + rect(3, 4, 26, 7, "#bd915c")
+        body += rect(4, 4, 24, 1, GOLD) + rect(18, 6, 8, 4, PAPER)
+    elif kind == "bookshelf":
+        body = rect(2, 1, 20, 29, INK) + rect(4, 3, 16, 25, "#806343")
+        body += rect(5, 4, 14, 23, "#5b5144")
+        for y in (13, 25):
+            body += rect(4, y, 16, 2, "#bd915c")
+        for x, y, w, h, color in ((5, 5, 3, 8, TEAL), (9, 4, 3, 9, CORAL), (13, 7, 2, 6, GOLD), (16, 5, 3, 8, GREEN), (5, 17, 4, 8, CORAL), (10, 16, 3, 9, TEAL), (15, 18, 4, 7, GOLD)):
+            body += rect(x, y, w, h, color) + rect(x, y + 2, w, 1, PAPER)
+        body += rect(3, 30, 3, 2, INK) + rect(18, 30, 3, 2, INK)
+    elif kind == "chair":
+        body = rect(5, 2, 14, 9, INK) + rect(7, 3, 10, 7, "#bd915c")
+        body += rect(8, 4, 8, 1, GOLD)
+        body += rect(5, 11, 2, 3, INK) + rect(17, 11, 2, 3, INK)
+        body += rect(4, 13, 16, 6, INK) + rect(6, 14, 12, 3, CORAL)
+        body += rect(5, 19, 3, 4, INK) + rect(16, 19, 3, 4, INK)
+    elif kind == "exit":
+        # An open doorway with a downward exit arrow; the UI supplies the label.
+        body = rect(2, 1, 20, 29, INK) + rect(4, 3, 16, 25, "#bd915c")
+        body += rect(6, 5, 12, 23, TEAL) + rect(7, 6, 10, 21, "#265d65")
+        body += rect(10, 10, 4, 10, PAPER) + rect(7, 17, 10, 2, PAPER)
+        body += rect(8, 19, 8, 2, PAPER) + rect(10, 21, 4, 2, PAPER)
+        body += rect(1, 28, 22, 3, INK) + rect(3, 28, 18, 1, GOLD)
     else:
         body = rect(1, 7, 14, 16, INK) + rect(3, 10, 10, 11, GOLD)
         body += rect(0, 6, 16, 4, TEAL) + rect(4, 7, 8, 1, INK)
@@ -192,11 +228,11 @@ def generate(root=ROOT):
         (directory / filename).write_text(data, encoding="utf-8")
         entries[role] = {"path": "res://assets/original/" + filename, "origin": "team-original", "size": list(size), "region": [0, 0, *size], "filter": "nearest"}
 
-    for kind in ("grass", "path", "paving", "water"):
+    for kind in ("grass", "path", "paving", "water", "floor", "wall"):
         illustration("terrain." + kind, terrain(kind), (16, 16))
     for kind in ("printshop", "archive", "hall"):
         illustration("building." + kind, building(kind), (64, 64))
-    for kind in ("tree", "bench", "printer", "noticeboard", "ballotbox"):
+    for kind in ("tree", "bench", "printer", "noticeboard", "ballotbox", "desk", "bookshelf", "chair", "exit"):
         data, size = prop(kind)
         illustration("prop." + kind, data, size)
     for kind in ("shade", "reading", "garden"):
@@ -214,6 +250,14 @@ def generate(root=ROOT):
     catalog_path = root / "game/assets/catalogs/original.json"
     catalog_path.parent.mkdir(parents=True, exist_ok=True)
     catalog_path.write_text(json.dumps({"schema_version": 1, "asset_set": "original", "assets": entries}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    # Keep acquired reference selections, but refresh shared originals offline.
+    development_path = catalog_path.with_name("development.json")
+    if development_path.is_file():
+        development = json.loads(development_path.read_text(encoding="utf-8"))
+        for role, item in entries.items():
+            if development["assets"].get(role, {}).get("origin") != "reference":
+                development["assets"][role] = item
+        development_path.write_text(json.dumps(development, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return entries
 
 

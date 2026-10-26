@@ -1,7 +1,9 @@
 # SPEC: evidence-quests
 
-Version 1 · 24 October 2026 · Owner: main, authored content/game rules.
-Approved scope implemented; printing/comparison code and automated flows verified in passing Node/GUT suites and the full HTML Playwright journey. Godot GUT 9/9 passed (40 assertions, zero orphans). Remaining manual/accessibility/content checks are in [verification](docs/verification.md).
+**Classroom amendment · 25 October 2026:** Both routes use six canonical, plain-language decisions, including two conceptual transfer checks. Exact CCPC mathematics and original formula fixtures remain optional. Reading, unknown classification and count/proportion comparisons produce two sourced persistent artifacts; division is not required to finish. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
+
+Version 2 · 25 October 2026 · Owner: main, authored content/game rules.
+Implementation and current verification evidence are recorded in [verification](docs/verification.md). Run the applicable suites and exported journeys after changes; previous results do not certify a changed artifact. Formal user evaluation remains distinct from automated checks.
 Depends on `ccpc-data` and `play-session`; supplies shared quest content/rules to `accessible-story` and the completed exhibit to `community-choice`.
 
 ## Objective
@@ -19,7 +21,7 @@ node --test tests/*.test.mjs
 ./tools/godot --editor --path game
 ```
 
-Actual suites are implemented: Python 22, Node 17 and Godot GUT 9/9 passed as reported by main. Node checks shared/web rules; Playwright completes the HTML chapters. These passes do not certify every manual or assistive-technology path.
+Implementation and current verification evidence are recorded in [verification](docs/verification.md). Run the applicable suites and exported journeys after changes; previous results do not certify a changed artifact. Formal user evaluation remains distinct from automated checks.
 
 ## Shared narrative/rule contract
 
@@ -31,11 +33,12 @@ Quest state style: `not_started → intro → inspect → answer → feedback �
 
 | ID | Player action | Required result |
 | --- | --- | --- |
-| EVID-01 | La prensa de las voces: place SV, NV, NS cards using keyboard selection or equivalent controls. | Separate classified participation SV/(SV+NV) from unknown NS/LN. NS is never abstention, null ballots, or NV. National source and exact counts are visible. |
-| EVID-02 | El mapa que no lo dice todo: compare Aguascalientes and Baja California in 2024. | Baja California has more SV records; Aguascalientes has the higher classified rate. Combine counts before calculating the reproduced 50.1180%, rather than 52.8532%. |
-| EVID-03 | Assemble “El dato muestra”, “No permite saber”, and “Faltan datos” panels. | Correctly distinguish an observation, unsupported motives/causality, and what further evidence is needed. No civic-worth ranking. |
+| EVID-01 | La prensa de las voces: read the national comparison, preserve unknown classification and classify a new example. | Separate classified participation SV/(SV+NV) from unknown NS/LN. NS is never abstention, null ballots, or NV. National source and exact counts are visible. |
+| EVID-02 | El mapa que no lo dice todo: compare Aguascalientes and Baja California in 2024. | Baja California has more SV records; Aguascalientes has the higher classified rate. The optional mathematics view explains the reproduced 50.1180% after summing counts, rather than averaging rates to 52.8532%. |
+| EVID-03 | Read the finding, missing information and limits with the two evidence artifacts. | Correctly distinguish an observation, unsupported motives/causality, and what further evidence is needed. No civic-worth ranking. |
 | EVID-04 | Attempt a new transfer case after each quest. | New clearly labelled synthetic values test the reasoning; hint/assistance status remains distinct from independent success. No memorized-state-only check. |
 | EVID-05 | Reopen the final exhibit in either presentation. | Same findings, counts, denominators, year, geography, limitations, source links, and reflection. Visual encodings have text and exact-value table equivalents. |
+| EVID-06 | After correcting the archive, compose an optional poster for the meeting. | Choose two bundled states, count or proportion, and a neutral discussion question. Changing the selection changes the exact-data finding, labelled visual and bases; unknown classification and source remain explicit. Preview and revise before carrying it to Inés. No new arithmetic or graded question is required. The selection stays in memory only and never affects consultation outcomes or rewards. |
 
 A synthetic formula fixture `SV=60, NV=30, NS=10, LN=100` must produce 66.67% classified participation and 10% unknown share. No chart combines the classified percentages with NS/LN into one 100% composition. Zero classified denominator shows “Sin datos clasificables”. Synthetic transfer fixtures never carry an INE provenance badge.
 

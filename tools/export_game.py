@@ -117,9 +117,14 @@ def export(root=ROOT, target="web", asset_set="original"):
         content = root / "game/content"
         if content.exists():
             shutil.copytree(content, root / "build/web/content", dirs_exist_ok=True)
+        for name in ["classroom.html", "classroom-handout.html", "classroom-handout.pdf"]:
+            resource = root / "submission" / name
+            if not resource.is_file():
+                raise ValueError(f"Missing classroom resource {name}; run node tools/render_submission.mjs --handout-only")
+            shutil.copy2(resource, root / "build/web" / name)
     license_dir = root / ("build/web/licenses" if target == "web" else "build/linux/licenses")
     license_dir.mkdir(parents=True, exist_ok=True)
-    for name in ["GODOT_LICENSE.txt", "THIRD_PARTY_NOTICES.txt", "assets/fonts/OFL.txt"]:
+    for name in ["GODOT_LICENSE.txt", "GODOT_COPYRIGHT.txt", "THIRD_PARTY_NOTICES.txt", "assets/fonts/OFL.txt"]:
         source = root / "game" / name
         if source.is_file():
             shutil.copy2(source, license_dir / source.name)

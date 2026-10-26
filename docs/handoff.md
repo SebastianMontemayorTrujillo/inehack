@@ -1,58 +1,40 @@
-# Handoff · current documentation and runtime evidence
+# Classroom handoff · Equipo Latas
 
-24 October 2026. Documentation owner reconciles main's runtime reports and local records; no code/data/asset-document edits, executable scripts or git commits are part of this contribution. The current evidence record is [verification.md](verification.md).
+25 October 2026. The user approved implementation across all six modules and confirmed registration for Reto 3 under **Latas**. This revision implements the requested simpler questions, coherent civic story and entry into all three houses. Local work proceeds under that approval; no commit, signature, publication or submission was performed.
 
-## Accepted decisions
+## Delivered behavior
 
-The user approved the plan and instructed implementation, including specifications and implementation across the six stable module IDs. Continue within that scope without renewed phase approval. Confirmed Linux fallback, simplepixels direction, 45–65 focused person-hours, original 10–15 minute adventure with one town, three speaking characters, two CCPC quests, synthetic consultation and semantic HTML equivalent. Main owns code/data/integration; web/assets are separate parallel owners.
+One persistent Godot session owns the plaza and one active interior. Physical doors and location buttons share entry/exit logic; all houses open immediately while evidence prerequisites govern activities. The six shared conceptual decisions include two new transfer examples and explicit support. Optional calculations preserve the original mathematical rules.
 
-## Files prepared
+Luz's bulletin exposes known and unknown information. Mateo's poster visibly changes from “Más registros = mayor proporción” to the actual, separately derived count and rate findings. Inés connects those exhibits to a synthetic consultation with five equally valid actions and a follow-up. The independent semantic HTML route uses the same content and includes teacher/paper resources.
 
-`AGENTS.md`; six root `SPEC-*.md` files; `tasks/plan.md`; `tasks/todo.md`; `docs/product_brief.md`; `docs/architecture.md`; `docs/source_register.md`; `docs/glossary_es_MX.md`; `docs/facilitator.md`; `docs/submission_checklist.md`; `docs/pitch_script_es.md`; `docs/storyline_and_dissemination_es.md`; `docs/deck_outline_es.md`; `docs/verification.md`; this file; updated `README.md` and `CAPABILITY_MAP.md`.
+The optional archive workshop adds learner authorship: select two actual states, count or proportion and a neutral question; preview, revise and publish the resulting sourced poster. It appears in the archive, exhibit and meeting, where Inés acknowledges it. Cancelled drafts preserve the publication; reset clears it, and no poster selection enters saved progress. The original six questions remain sufficient to finish.
 
-Original blueprint/learning-outline Markdown and DOCX, research ZIP and rubric PDF remain research inputs. Preserve them. The map's old proposal gates are superseded by the user's approval; these new specs document that authorized scope, not additional unapproved work.
+Strict schema checks, exact integer comparisons, unavailable-data continuation, safe legacy/partial saves and neutral tie feedback address review findings. The HTML feedback announcer addresses an actual Orca announcement gap. Shared content, assets and ownership remain documented in [architecture](architecture.md).
 
-## Checks performed by this contribution
+## Evidence
 
-- Read original map, blueprint, learning outline, repository file inventory and initial `git status --short`.
-- Used an inline read-only `python3` invocation with `zipfile`/`xml.etree.ElementTree` to inspect both DOCX relationship parts and match hyperlink labels. Recovered 14 + 12 = 26 external hyperlink relationships, recorded exact targets/IDs in `source_register.md`.
-- Read annex member names, READMEs and recorded JSON using `ZipFile.read`; did not execute the annex reproduction script or acquire raw data.
-- Applied documentation patches only. Final documentation integrity checks are recorded below after execution.
+[Verification](verification.md) records **94 passing tests, 1,128 GUT assertions and zero orphans**, with exported Linux/browser-canvas and HTML journey receipts. Exact-reference checks cover every distinct state pair in both measures. Main inspected interiors, before/after and learner-authored posters, enlarged selectors, duplicate-state recovery, sources, discussion questions and ending captures. [Assistive review](accessibility_review.md) distinguishes observed Orca/zoom behavior from formal evaluation.
 
-Subsequent runtime evidence supersedes the research-only baseline: Godot 4.7.2/templates installed and verified against official SHA-512 sums; GUT 9.7.1 installed. CCPC raw SHA-256 matched and 32 CSV/9,773,730 rows yielded 33 national/state aggregates. Main's final report confirms **22 Python, 17 Node and 9/9 Godot GUT tests passing, 40 GUT assertions, zero orphans**; the current Godot log records nine passing tests and 40 assertions. Both previously failing journey tests are repaired.
+The [rubric review](rubric_review.md) preserves the improvement sequence **79 → 88 → 97 → 100/100**. The final independent model assessment awards **35/35 thematic fit, 30/30 clarity, 20/20 originality and 15/15 institutional reuse**, after implementation and verification of learner-authored posters. These are internal estimates against the supplied four-weight rubric, not committee scores or a guarantee of winning.
 
-Original-set web/Linux exports succeeded. Playwright report confirms full HTML journey/all five ballot actions/persistence, 320/768/1440 px overflow checks and Godot web boot with no captured page/console errors; Linux headless boot passed. These are observed automated results reported by main and read in records, not suites rerun by this documentation contributor. Formal screen-reader evaluation and user pilot have not run; full manual exported interactions, contrast/zoom/audio/input checks and user-session duration remain open.
+## Artifacts and identity
 
-## Local candidate handoff
+- submission/Latas_Reto_3.zip: local candidate for the registered team.
+- submission/release_manifest.json: source, context, export, material and evidence hashes; team and readiness metadata.
+- submission/classroom.html and classroom-handout.html/PDF: teacher guide and two-sided activity sheet, also copied into build/web.
+- submission/voces_narrativa_y_difusion.pdf: four-page Letter narrative.
+- submission/voces_presentacion.pdf: ten-slide 16:9 presentation for Latas.
+- submission/voces_pitch_borrador.mp4, pitch_subtitulos.srt and pitch_transcripcion.txt: silent captioned actual demonstration; build/evidence/pitch-encoding.json records measured duration, encoding and input/output hashes.
+- submission/forms: untouched official blank letters plus download provenance; not signed.
+- build/evidence/clean-candidate.json and .log: external companion receipts for the finished ZIP, excluded from the ZIP to avoid a recursive hash dependency.
 
-The candidate ZIP and hash manifest are produced. Clean extraction passed integrity and manifest checks, isolated Linux headless startup, the complete HTML journey with all five choices, responsive/persistence checks and Godot web startup. The final reconciliation preserves the verified runtime files. The downloaded CC0 reference packs remain local development inputs; original audiovisual assets and licensed fonts ship in the candidate. Continue with team review and the open external-readiness checklist.
+The package helper rejects changed tested sources/exports or a video whose inputs no longer match. The clean checker validates safe ZIP paths, CRC and every manifest file, then tests extracted Linux startup/compiled-PCK paths and served HTML/Godot output using the checkout's verification tools.
 
-1. Preserve parallel work and the tested working-tree baseline. Save mutable tool/test logs with the final candidate; no revision ID is invented.
-2. Produced and packaged local drafts: narrative PDF **4 pages, Letter, 11 pt**; presentation PDF **10 pages, 16:9**. Asset QA visually inspected all **14 pages with no clipping**. MP4 actual screen recording is **108.07 s (1:48.07), 1920×1080, 30 fps, H.264 High, yuv420p**. It is silent with captions; SRT and separate transcript are included. No narration was recorded; human voice-over is optional subject to review. No draft generation/recording is outstanding.
-3. Keep `game/content/ccpc.json` and `story.json` canonical. The asset register records original role validation/staging/import and Atkinson Hyperlegible/OFL notices; no asset-owner document was edited here.
-4. All **48 tests pass: Python 22, Node 17, Godot GUT 9/9**, with 40 GUT assertions and zero orphans. Browser full HTML/five-choice/persistence/privacy/three-width and Godot boot checks remain passing. Completed implementation and draft production are distinct from the team's final review.
-5. Outstanding reviews: **team review, signed letters, read-only hosting/access, formal screen-reader evaluation and user pilot**. Do not invent participant findings, universal accessibility or voice recordings. Formal screen-reader evaluation and pilot have not run.
-6. `tools/package_candidate.py` assembles `submission/voces_de_la_plaza_Reto_3_candidato.zip` and its release manifest, guarded by the tested-source fingerprints in `build/evidence/verification.json`. Compiled-PCK QA now passes all five consultation paths, separately from the 48 unit tests. This harness uses the editor with `--main-pack`; direct external-script execution by the release executable is not supported and was stopped. Signing, sending and publishing retain their separate authorization requirements.
+The current recording measures **136.37 seconds, 1920×1080, 30 fps, H.264/yuv420p**: 27 captioned scenes demonstrate the three houses, six decisions, poster authorship, meeting and classroom materials. All **32 encoded frames** passed visual review; the 27 subtitle cues match the transcript and receipt without overlap or end truncation. The narrative/deck/sheet contain **4/10/2 pages**, all 16 visually reviewed. The verification receipt was written at **20:10:46 UTC**, covering 70 source files and 32 exported files. The actual Orca run started at **20:04:30 UTC** and passed seven feedback cases, two chapter announcements and twelve workshop cases in 261.71 seconds; this is scoped operator/speech evidence, not formal accessibility acceptance.
 
-## Implemented entry points, not rerun by this documentation update
+## Remaining team actions and limits
 
-```sh
-python3 tools/bootstrap.py
-python3 tools/build_data.py
-./tools/godot --editor --path game
-python3 -m unittest discover -s tests
-node --test tests/*.test.mjs
-python3 tools/export_game.py --target web --asset-set original
-python3 tools/export_game.py --target linux --asset-set original
-python3 tools/export_game.py --target web --asset-set development
-python3 tools/export_game.py --target linux --asset-set development
-python3 -m http.server 8765 --bind 127.0.0.1
-```
+Signed declarations, actual member eligibility/rights review, authorized read-only hosting/access, deadline-timezone confirmation and sending remain separate. The team name is resolved; roster and signatures are not fabricated. The research deadline is 31 October 2026 at 23:59 without an explicit timezone; do not infer the workstation's timezone.
 
-Exports are `build/web/` (HTML plus `game/`) and `build/linux/voces-de-la-plaza.x86_64` plus PCK. Serve repository root and browse `http://127.0.0.1:8765/build/web/` for the default `node tests/browser_smoke.mjs` layout. Directly serving `build/web` is a separate manual preview. Record actual results rather than inferring passes from a command list.
-
-## Final documentation verification
-
-Initial documentation-only delivery passed checks for 18 files, 41 relative links and all 26 recovered DOCX targets/IDs, with no whitespace errors. At that earlier point no implementation tasks were checked; the current task list now incorporates main's subsequent confirmed results. Pitch/deck/narrative structural checks were also run without generating deliverables. The final reconciliation is checked for local links, status consistency and whitespace; runtime results are attributed in `verification.md`.
-
-Patch-scope review shows documentation edits only; no before/after original-file hash comparison is claimed. Original research inputs and concurrent implementation/asset-owner files were left untouched. No git commit was made. Checked tasks reflect recorded automated acceptance; remaining manual and final submission criteria stay open.
+A teacher/student pilot and representative screen-reader-user evaluation have not run. The 10–15 minute adventure and 20-minute class are planning targets. Audio listening, other browsers/touch, arbitrary Linux systems and physical classroom printing are untested. These are evidence limits, not invented official entry requirements. [Institutional reuse](institutional_reuse.md) gives a proposed setup/adaptation/review sequence without asserting a partnership or adoption.

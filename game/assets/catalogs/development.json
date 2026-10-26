@@ -631,6 +631,96 @@
       "origin": "dependency",
       "license": "OFL-1.1",
       "license_path": "res://assets/fonts/OFL.txt"
+    },
+    "terrain.floor": {
+      "path": "res://assets/original/terrain_floor.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        16
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "filter": "nearest"
+    },
+    "terrain.wall": {
+      "path": "res://assets/original/terrain_wall.svg",
+      "origin": "team-original",
+      "size": [
+        16,
+        16
+      ],
+      "region": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "filter": "nearest"
+    },
+    "prop.desk": {
+      "path": "res://assets/original/prop_desk.svg",
+      "origin": "team-original",
+      "size": [
+        32,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        32,
+        24
+      ],
+      "filter": "nearest"
+    },
+    "prop.bookshelf": {
+      "path": "res://assets/original/prop_bookshelf.svg",
+      "origin": "team-original",
+      "size": [
+        24,
+        32
+      ],
+      "region": [
+        0,
+        0,
+        24,
+        32
+      ],
+      "filter": "nearest"
+    },
+    "prop.chair": {
+      "path": "res://assets/original/prop_chair.svg",
+      "origin": "team-original",
+      "size": [
+        24,
+        24
+      ],
+      "region": [
+        0,
+        0,
+        24,
+        24
+      ],
+      "filter": "nearest"
+    },
+    "prop.exit": {
+      "path": "res://assets/original/prop_exit.svg",
+      "origin": "team-original",
+      "size": [
+        24,
+        32
+      ],
+      "region": [
+        0,
+        0,
+        24,
+        32
+      ],
+      "filter": "nearest"
     }
   }
 }

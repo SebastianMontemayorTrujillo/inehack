@@ -1,7 +1,9 @@
 # SPEC: community-choice
 
-Version 1 · 24 October 2026 · Owner: main, consultation rules/content.
-Approved scope implemented; Node scenario/action and tie tests, Godot GUT rules/journeys and HTML all-five-actions ending/persistence checks passed. GUT total: 9/9, 40 assertions, zero orphans. Manual neutrality/access/privacy review remains separate; see [verification](docs/verification.md).
+**Classroom amendment · 25 October 2026:** The consultation takes place in Inés’s enterable meeting house. Its preview is always accessible; the two evidence artifacts unlock decision practice. All five actions share the ending. Projects, roster and scenarios come from canonical content; choice and option-linked results remain memory-only. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
+
+Version 2 · 25 October 2026 · Owner: main, consultation rules/content.
+Implementation and current verification evidence are recorded in [verification](docs/verification.md). Run the applicable suites and exported journeys after changes; previous results do not certify a changed artifact. Formal user evaluation remains distinct from automated checks.
 Depends on `play-session` and `evidence-quests`; provides content and rules for `accessible-story`.
 
 ## Objective and scope
@@ -18,7 +20,7 @@ node --test tests/*.test.mjs
 ./tools/godot --editor --path game
 ```
 
-Commands and rule evaluators are implemented. Recorded results: Python 22, Node 17, Godot GUT 9/9 passing with their stated scope. Use deterministic arithmetic, stable IDs, explicit tie states and Spanish explanations. Final illustrations/audio resolve through original asset role IDs.
+Implementation and current verification evidence are recorded in [verification](docs/verification.md). Run the applicable suites and exported journeys after changes; previous results do not certify a changed artifact. Formal user evaluation remains distinct from automated checks.
 
 ## Provider contract
 

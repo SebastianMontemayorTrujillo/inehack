@@ -11,7 +11,13 @@ import urllib.request
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-REQUIRED_ROLES = set("terrain.grass terrain.path terrain.paving terrain.water building.printshop building.archive building.hall prop.tree prop.bench prop.printer prop.noticeboard prop.ballotbox icon.shade icon.reading icon.garden character.player character.luz character.mateo character.ines sound.focus sound.select sound.journal sound.corrective sound.chapter font.regular font.bold".split())
+REQUIRED_ROLES = set((
+    "terrain.grass terrain.path terrain.paving terrain.water terrain.floor terrain.wall "
+    "building.printshop building.archive building.hall prop.tree prop.bench prop.printer "
+    "prop.noticeboard prop.ballotbox prop.desk prop.bookshelf prop.chair prop.exit "
+    "icon.shade icon.reading icon.garden character.player character.luz character.mateo "
+    "character.ines sound.focus sound.select sound.journal sound.corrective sound.chapter font.regular font.bold"
+).split())
 PACKS = {
     "tiny-town": "https://kenney.nl/media/pages/assets/tiny-town/a415fbeb49-1735736916/kenney_tiny-town.zip",
     "roguelike-characters": "https://kenney.nl/media/pages/assets/roguelike-characters/53ffff4133-1729196490/kenney_roguelike-characters.zip",

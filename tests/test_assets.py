@@ -6,9 +6,20 @@ import struct
 import tempfile
 import unittest
 import wave
+import xml.etree.ElementTree as ET
 import zipfile
 
 from tools import assets, create_original_assets, export_game
+
+
+INTERIOR_SIZES = {
+    "terrain.floor": [16, 16],
+    "terrain.wall": [16, 16],
+    "prop.desk": [32, 24],
+    "prop.bookshelf": [24, 32],
+    "prop.chair": [24, 24],
+    "prop.exit": [24, 32],
+}
 
 
 class AssetTests(unittest.TestCase):
@@ -28,6 +39,103 @@ class AssetTests(unittest.TestCase):
         self.assertEqual(set(catalog["assets"]), assets.REQUIRED_ROLES)
         for role, item in catalog["assets"].items():
             self.assertEqual(item["origin"], "dependency" if role.startswith("font.") else "team-original")
+
+    def test_interior_roles_have_pixel_geometry_and_matching_dimensions(self):
+        catalog = assets.verify_catalog(self.root, "original")["assets"]
+        self.assertLessEqual(INTERIOR_SIZES.keys(), catalog.keys())
+        for role, size in INTERIOR_SIZES.items():
+            with self.subTest(role=role):
+                item = catalog[role]
+                self.assertEqual(item["size"], size)
+                self.assertEqual(item["region"], [0, 0, *size])
+                self.assertEqual(item["filter"], "nearest")
+                source = self.root / "game" / item["path"].removeprefix("res://")
+                drawing = ET.parse(source).getroot()
+                self.assertEqual([int(drawing.attrib[key]) for key in ("width", "height")], size)
+                self.assertEqual(drawing.attrib["viewBox"], f"0 0 {size[0]} {size[1]}")
+                self.assertEqual(drawing.attrib["shape-rendering"], "crispEdges")
+                # Opaque terrain tiles, isolated props, no embedded text or images.
+                covered = set()
+                for shape in drawing:
+                    self.assertEqual(shape.tag, "{http://www.w3.org/2000/svg}rect")
+                    x, y, w, h = (int(shape.attrib[key]) for key in ("x", "y", "width", "height"))
+                    self.assertGreaterEqual(min(x, y), 0)
+                    self.assertGreater(min(w, h), 0)
+                    self.assertLessEqual(x + w, size[0])
+                    self.assertLessEqual(y + h, size[1])
+                    covered.update((px, py) for px in range(x, x + w) for py in range(y, y + h))
+                self.assertGreater(len(covered), 0)
+                if role.startswith("terrain."):
+                    self.assertEqual(len(covered), size[0] * size[1])
+                else:
+                    self.assertNotIn((0, 0), covered)
+                    self.assertLess(len(covered), size[0] * size[1])
+
+    def test_missing_interior_role_is_rejected_in_either_catalog(self):
+        original = json.loads((self.root / "game/assets/catalogs/original.json").read_text())
+        self.assertLessEqual(INTERIOR_SIZES.keys(), original["assets"].keys())
+        for asset_set in ("original", "development"):
+            path = self.root / f"game/assets/catalogs/{asset_set}.json"
+            for role in INTERIOR_SIZES:
+                with self.subTest(asset_set=asset_set, role=role):
+                    changed = copy.deepcopy(original)
+                    changed["asset_set"] = asset_set
+                    del changed["assets"][role]
+                    assets.write_json(path, changed)
+                    with self.assertRaisesRegex(ValueError, "roles"):
+                        assets.verify_catalog(self.root, asset_set)
+
+    def test_missing_interior_original_never_falls_back_to_reference(self):
+        catalog = json.loads((self.root / "game/assets/catalogs/original.json").read_text())
+        self.assertLessEqual(INTERIOR_SIZES.keys(), catalog["assets"].keys())
+        development = copy.deepcopy(catalog)
+        development["asset_set"] = "development"
+        for role in INTERIOR_SIZES:
+            with self.subTest(role=role):
+                source = self.root / "game" / catalog["assets"][role]["path"].removeprefix("res://")
+                data = source.read_bytes()
+                reference = self.root / "game/assets/development" / source.name
+                reference.parent.mkdir(parents=True, exist_ok=True)
+                reference.write_bytes(data)
+                development["assets"][role] = {"path": "res://assets/development/" + source.name, "origin": "reference"}
+                assets.write_json(self.root / "game/assets/catalogs/development.json", development)
+                source.unlink()
+                try:
+                    with self.assertRaisesRegex(ValueError, "missing asset"):
+                        assets.verify_catalog(self.root, "original")
+                finally:
+                    source.write_bytes(data)
+
+    def test_regeneration_syncs_original_development_roles_and_preserves_references(self):
+        path = self.root / "game/assets/catalogs/development.json"
+        catalog = json.loads((self.root / "game/assets/catalogs/original.json").read_text())
+        catalog["asset_set"] = "development"
+        reference = {"path": "res://assets/development/tiny-town.png", "origin": "reference", "size": [16, 16], "region": [0, 0, 16, 16]}
+        catalog["assets"]["terrain.grass"] = reference
+        for role in INTERIOR_SIZES:
+            catalog["assets"].pop(role, None)
+        # A later art revision must also update existing original metadata.
+        catalog["assets"]["prop.desk"] = {"path": "res://assets/original/old.svg", "origin": "team-original", "size": [1, 1]}
+        assets.write_json(path, catalog)
+        entries = create_original_assets.generate(self.root)
+        regenerated = json.loads(path.read_text())
+        self.assertLessEqual(INTERIOR_SIZES.keys(), regenerated["assets"].keys())
+        self.assertEqual(regenerated["asset_set"], "development")
+        self.assertEqual(regenerated["assets"]["terrain.grass"], reference)
+        for role in INTERIOR_SIZES:
+            self.assertEqual(regenerated["assets"][role], entries[role])
+
+    def test_interior_manifest_matches_deterministic_generated_bytes(self):
+        manifest = json.loads((self.root / "assets/original_manifest.json").read_text())
+        files = {entry["path"]: entry for entry in manifest["files"]}
+        create_original_assets.generate(self.root)
+        self.assertEqual(manifest["generator_sha256"], assets.sha256(Path(create_original_assets.__file__)))
+        for role in INTERIOR_SIZES:
+            with self.subTest(role=role):
+                relative = "game/assets/original/" + role.replace(".", "_") + ".svg"
+                self.assertIn(relative, files)
+                self.assertEqual(files[relative]["bytes"], (self.root / relative).stat().st_size)
+                self.assertEqual(files[relative]["sha256"], assets.sha256(self.root / relative))
 
     def test_missing_original_never_uses_development(self):
         (self.root / "game/assets/original/terrain_grass.svg").unlink()
@@ -103,6 +211,8 @@ class AssetTests(unittest.TestCase):
         files = {p.relative_to(stage).as_posix() for p in stage.rglob("*") if p.is_file()}
         self.assertIn("assets/active_catalog.json", files)
         self.assertIn("assets/original/terrain_grass.svg", files)
+        for role in INTERIOR_SIZES:
+            self.assertIn("assets/original/" + role.replace(".", "_") + ".svg", files)
         self.assertIn("assets/fonts/OFL.txt", files)
         for forbidden in ("development", "unregistered", "gut", "test.gd", "references", ".godot/", "catalogs/development"):
             self.assertFalse(any(forbidden in name for name in files), forbidden)
@@ -151,6 +261,10 @@ class AssetTests(unittest.TestCase):
         catalog = json.loads((self.root / "game/assets/catalogs/development.json").read_text())
         self.assertEqual(catalog["assets"]["character.player"]["region"], [0, 0, 16, 16])
         self.assertEqual(catalog["assets"]["character.player"]["origin"], "reference")
+        original = json.loads((self.root / "game/assets/catalogs/original.json").read_text())
+        for role in INTERIOR_SIZES:
+            self.assertIn(role, catalog["assets"])
+            self.assertEqual(catalog["assets"][role], original["assets"][role])
         for entry in manifest["selections"]:
             self.assertEqual(entry["archive_member"], selections[entry["pack"]])
 

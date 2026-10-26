@@ -4,12 +4,13 @@ extends Node2D
 # progress under user://. Official references are in docs/source_register.md.
 const Rules = preload("res://scripts/civic_rules.gd")
 const Catalog = preload("res://scripts/asset_catalog.gd")
+const RoomScene = preload("res://scenes/room.tscn")
+const PosterView = preload("res://scripts/poster_view.gd")
 const CREAM := Color("f6f0da")
 const INK := Color("173b39")
 const GOLD := Color("e4ba5c")
 const TEAL := Color("467c70")
 const SAVE := "user://voces_progress_v1.json"
-const STOPS := [Vector2(80, 135), Vector2(240, 135), Vector2(400, 135)]
 
 var catalog := Catalog.new()
 var bundle: Dictionary = {}
@@ -31,12 +32,22 @@ var storage_message := ""
 var anim_time := 0.0
 var facing := "down"
 var save_path := SAVE
-var exhibit_marks: Array[Label] = []
+var room: Node2D
+var location_id := "plaza"
+var house_index := -1
+var transitioning := false
+var action_button := Button.new()
+var exit_button := Button.new()
+var awaiting_answer := false
+var poster_selection := {"first": "state_01", "second": "state_02", "metric": "count", "question": "missing"}
+var meeting_poster: Dictionary = {}
 
 func _ready() -> void:
 	story = _read_json("res://content/story.json")
 	bundle = _read_json("res://content/ccpc.json")
-	valid = Rules.validate_bundle(bundle) and story.get("chapters") is Array and story.chapters.size() == 3 and story.get("consultation") is Dictionary
+	valid = Rules.validate_bundle(bundle) and Rules.validate_story(story)
+	if valid:
+		story = Rules.ordered_story(story)
 	if FileAccess.file_exists(save_path):
 		var saved := _read_json(save_path)
 		if saved.get("schema_version") == 1:
@@ -77,7 +88,7 @@ func _theme() -> void:
 		box.bg_color = Color("e7dbb9") if state == "normal" else Color("d4bd80")
 		if state == "disabled":
 			box.bg_color = Color("d0cbbb")
-		box.border_color = Color("b77b29") if state == "focus" else Color("6d8774")
+		box.border_color = Color("9b4d2d") if state == "focus" else Color("6d8774")
 		box.set_border_width_all(3 if state == "focus" else 1)
 		box.set_corner_radius_all(8)
 		box.content_margin_left = 16
@@ -98,60 +109,8 @@ func _configure_input() -> void:
 			event.physical_keycode = key
 			InputMap.action_add_event(action, event)
 
+
 func _build_world() -> void:
-	var tiles := TileSet.new()
-	tiles.tile_size = Vector2i(16, 16)
-	var roles := ["terrain.grass", "terrain.path", "terrain.paving", "terrain.water"]
-	for i in roles.size():
-		var source := TileSetAtlasSource.new()
-		source.texture = catalog.texture(roles[i])
-		source.texture_region_size = Vector2i(16, 16)
-		source.create_tile(Vector2i.ZERO)
-		tiles.add_source(source, i)
-	var ground := TileMapLayer.new()
-	ground.tile_set = tiles
-	ground.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	world.add_child(ground)
-	for x in 30:
-		for y in 13:
-			var tile := 2 if y in range(7, 11) else 0
-			if x in range(13, 17) or y == 11:
-				tile = 1
-			if x >= 26 and y < 5:
-				tile = 3
-			ground.set_cell(Vector2i(x, y), tile, Vector2i.ZERO)
-	var buildings := ["building.printshop", "building.archive", "building.hall"]
-	var people := ["character.luz", "character.mateo", "character.ines"]
-	var props := ["prop.printer", "prop.noticeboard", "prop.ballotbox"]
-	for i in 3:
-		_sprite(buildings[i], Vector2(STOPS[i].x, 62))
-		_sprite(people[i], STOPS[i] - Vector2(20, 12))
-		_sprite(props[i], STOPS[i] + Vector2(18, -3))
-		var label := Label.new()
-		label.text = ["LUZ · IMPRENTA", "MATEO · ARCHIVO", "INÉS · ASAMBLEA"][i]
-		label.add_theme_font_size_override("font_size", 7)
-		label.add_theme_color_override("font_color", Color("173b39"))
-		label.position = Vector2(STOPS[i].x - 40, 98)
-		world.add_child(label)
-		var obstacle := StaticBody2D.new()
-		var collider := CollisionShape2D.new()
-		var shape := RectangleShape2D.new()
-		shape.size = Vector2(52, 34)
-		collider.shape = shape
-		obstacle.add_child(collider)
-		obstacle.position = Vector2(STOPS[i].x, 65)
-		world.add_child(obstacle)
-	for p in [Vector2(20, 35), Vector2(145, 46), Vector2(316, 42), Vector2(470, 180)]:
-		_sprite("prop.tree", p)
-	_sprite("prop.bench", Vector2(170, 178))
-	_sprite("prop.bench", Vector2(330, 178))
-	for i in 3:
-		var exhibit := Label.new()
-		exhibit.position = Vector2(STOPS[i].x - 45, 176)
-		exhibit.add_theme_font_size_override("font_size", 8)
-		exhibit.add_theme_color_override("font_color", INK)
-		world.add_child(exhibit)
-		exhibit_marks.append(exhibit)
 	player.position = Vector2(240, 176)
 	player_art.texture = catalog.texture("character.player")
 	player_art.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -163,13 +122,76 @@ func _build_world() -> void:
 	collision.shape = shape
 	player.add_child(collision)
 	world.add_child(player)
+	if valid:
+		_show_location(-1, Vector2(240, 176))
 
-func _sprite(role: String, point: Vector2) -> void:
-	var sprite := Sprite2D.new()
-	sprite.texture = catalog.texture(role)
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.position = point
-	world.add_child(sprite)
+func _show_location(index: int, spawn: Vector2) -> void:
+	if room != null:
+		world.remove_child(room)
+		room.queue_free()
+	room = RoomScene.instantiate()
+	room.catalog = catalog
+	room.story = story
+	room.house_index = index
+	world.add_child(room)
+	world.move_child(room, 0)
+	house_index = index
+	location_id = "plaza" if index < 0 else story.houses[index].id
+	player.position = spawn
+	player.velocity = Vector2.ZERO
+	facing = "down"
+	room.update_artifacts(progress.completed, bundle, meeting_poster)
+
+func _enter_house(index: int) -> void:
+	if not valid or transitioning or index < 0 or index >= 3:
+		return
+	transitioning = true
+	_close_panel()
+	_show_location(index, Vector2(240, 155))
+	_update_status()
+	call_deferred("_end_transition")
+
+func _end_transition() -> void:
+	transitioning = false
+
+func _exit_house() -> void:
+	if transitioning or house_index < 0:
+		return
+	var index := house_index
+	transitioning = true
+	_close_panel()
+	_show_location(-1, Vector2(80 + index * 160, 120))
+	_update_status()
+	call_deferred("_end_transition")
+
+func _interact() -> void:
+	if transitioning or overlay.visible or not valid:
+		return
+	var target: Dictionary = room.nearest_target(player)
+	if target.is_empty():
+		return
+	match target.kind:
+		"door": _enter_house(target.index)
+		"exit": _exit_house()
+		"host": _start_chapter(target.index)
+		"artifact":
+			if target.index == 1 and not meeting_poster.is_empty(): _published_poster()
+			else: _start_chapter(target.index)
+
+func _accessible_action() -> void:
+	if house_index >= 0:
+		_start_chapter(house_index)
+	else:
+		_interact()
+
+func _close_panel() -> void:
+	awaiting_answer = false
+	overlay.hide()
+	for child in body.get_children():
+		body.remove_child(child)
+		child.queue_free()
+	if action_button.is_inside_tree() and not action_button.disabled:
+		action_button.grab_focus()
 
 func _build_interface() -> void:
 	var root := Control.new()
@@ -183,7 +205,7 @@ func _build_interface() -> void:
 	heading.add_theme_color_override("font_color", CREAM)
 	root.add_child(heading)
 	var sub := Label.new()
-	sub.text = "Las voces que construyen la plaza · CCPC 2024 · Una aventura para conversar con información"
+	sub.text = "Informarnos · Comparar con justicia · Escuchar y decidir · Dar seguimiento"
 	sub.position = Vector2(40, 65)
 	sub.add_theme_color_override("font_color", Color("d4dfca"))
 	root.add_child(sub)
@@ -191,12 +213,12 @@ func _build_interface() -> void:
 	status.add_theme_color_override("font_color", GOLD)
 	root.add_child(status)
 	var nav := HBoxContainer.new()
-	nav.position = Vector2(40, 700)
+	nav.position = Vector2(40, 690)
 	nav.add_theme_constant_override("separation", 10)
 	root.add_child(nav)
 	for i in 3:
 		var button := Button.new()
-		button.text = ["1 · Imprenta", "2 · Archivo", "3 · Asamblea"][i]
+		button.text = ["1 · Imprenta", "2 · Archivo", "3 · Reunión"][i]
 		button.pressed.connect(_travel.bind(i))
 		nav.add_child(button)
 	for item in [["Diario · J", _journal], ["Ajustes", _settings]]:
@@ -205,11 +227,18 @@ func _build_interface() -> void:
 		button.pressed.connect(item[1])
 		nav.add_child(button)
 	var help := Label.new()
-	help.text = "WASD / flechas: caminar   E / Enter: conversar   J: diario   Esc: volver · También puedes viajar con los botones."
-	help.position = Vector2(40, 758)
+	help.text = "Flechas / WASD: caminar · E: interactuar\nTab: botones · J: diario · Esc: volver"
+	help.position = Vector2(650, 741)
 	help.add_theme_font_size_override("font_size", 17)
 	help.add_theme_color_override("font_color", CREAM)
 	root.add_child(help)
+	action_button.position = Vector2(40, 744)
+	action_button.pressed.connect(_accessible_action)
+	root.add_child(action_button)
+	exit_button.position = Vector2(390, 744)
+	exit_button.text = "Salir a la plaza"
+	exit_button.pressed.connect(_exit_house)
+	root.add_child(exit_button)
 	var shade := StyleBoxFlat.new()
 	shade.bg_color = CREAM
 	shade.set_corner_radius_all(12)
@@ -221,6 +250,7 @@ func _build_interface() -> void:
 	overlay.size = Vector2(960, 555)
 	root.add_child(overlay)
 	var scroll := ScrollContainer.new()
+	scroll.follow_focus = true
 	scroll.custom_minimum_size = Vector2(904, 497)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	overlay.add_child(scroll)
@@ -230,12 +260,16 @@ func _build_interface() -> void:
 	_update_status()
 
 func _physics_process(delta: float) -> void:
-	if not overlay.visible:
+	if valid and not overlay.visible and not transitioning:
 		var movement := Input.get_vector("left", "right", "up", "down")
 		player.velocity = movement * 65
 		player.move_and_slide()
-		player.position.x = clampf(player.position.x, 8, 472)
-		player.position.y = clampf(player.position.y, 12, 198)
+		var limits: Rect2 = room.bounds
+		player.position.x = clampf(player.position.x, limits.position.x, limits.end.x)
+		player.position.y = clampf(player.position.y, limits.position.y, limits.end.y)
+		var target: Dictionary = room.nearest_target(player)
+		action_button.disabled = house_index < 0 and target.is_empty()
+		action_button.text = "Entrar · E" if house_index < 0 else "Hablar con " + story.chapters[house_index].npc
 		anim_time += delta
 		if movement != Vector2.ZERO:
 			facing = ("right" if movement.x > 0 else "left") if abs(movement.x) > abs(movement.y) else ("down" if movement.y > 0 else "up")
@@ -243,19 +277,21 @@ func _physics_process(delta: float) -> void:
 		player_art.texture = catalog.character_frame("character.player", facing, frame)
 		player_art.position.y = 0 if progress.settings.reduced_motion or movement == Vector2.ZERO else sin(anim_time * 14) * 0.6
 
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_pressed() and not event.is_echo() and event is InputEventKey:
 		if event.keycode == KEY_ESCAPE:
-			overlay.hide()
+			if overlay.visible:
+				_close_panel()
+			elif house_index >= 0:
+				_exit_house()
 		elif event.keycode == KEY_J:
 			_journal()
 		elif event.keycode in [KEY_E, KEY_ENTER] and not overlay.visible:
-			for i in STOPS.size():
-				if player.position.distance_to(STOPS[i]) < 48:
-					_start_chapter(i)
-					break
+			_interact()
 
 func _panel(title: String) -> void:
+	awaiting_answer = false
 	for child in body.get_children():
 		body.remove_child(child)
 		child.queue_free()
@@ -263,22 +299,26 @@ func _panel(title: String) -> void:
 	var label := _text(title)
 	label.add_theme_font_size_override("font_size", 30)
 	var close := Button.new()
-	close.text = "Volver a la plaza · Esc"
-	close.pressed.connect(func(): overlay.hide())
+	close.text = "Volver al lugar · Esc"
+	close.pressed.connect(_close_panel)
 	body.add_child(close)
-	call_deferred("_focus_if_available", weakref(close))
+	call_deferred("_focus_if_available", weakref(close), weakref(label))
 
-func _focus_if_available(reference: WeakRef) -> void:
+func _focus_if_available(reference: WeakRef, reveal: WeakRef = null) -> void:
+	await get_tree().process_frame
 	var control: Control = reference.get_ref()
 	if control != null and control.is_inside_tree() and not control.is_queued_for_deletion():
 		control.grab_focus()
+		var visible_control: Control = reveal.get_ref() if reveal != null else control
+		if visible_control != null and visible_control.is_inside_tree() and not visible_control.is_queued_for_deletion():
+			body.get_parent().ensure_control_visible(visible_control)
 
-func _text(value: String) -> Label:
+func _text(value: String, container: VBoxContainer = null) -> Label:
 	var label := Label.new()
 	label.text = value
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	body.add_child(label)
+	(container if container != null else body).add_child(label)
 	return label
 
 func _button(title: String, action: Callable) -> Button:
@@ -301,12 +341,13 @@ func _exit_tree() -> void:
 
 func _welcome() -> void:
 	_panel("Bienvenida a Villa Brisa")
-	_text("Hoy se inaugura la exposición «Las voces que construyen la plaza». Ayuda a Luz y Mateo a convertir datos oficiales en historias que cualquiera pueda comprender. Después, acompaña a Inés a una decisión colectiva ficticia.")
+	_text(story.opening)
+	_text(story.audience)
 	_text(story.get("message", "Comprender los datos nos ayuda a participar con información."))
 	_text("Duración orientativa: 10–15 minutos. No hay cronómetro. Puedes explorar, pedir pistas, ampliar el texto o usar los botones para viajar.")
 	if not storage_message.is_empty():
 		_text(storage_message)
-	_button("Entrar a la plaza", func(): overlay.hide())
+	_button("Entrar a la plaza", _close_panel)
 	_button("Elegir ajustes de lectura", _settings)
 
 func _record(id: String) -> Dictionary:
@@ -315,9 +356,9 @@ func _record(id: String) -> Dictionary:
 			return record
 	return {}
 
+
 func _travel(index: int) -> void:
-	player.position = STOPS[index] + Vector2(0, 25)
-	_start_chapter(index)
+	_enter_house(index)
 
 func _start_chapter(index: int) -> void:
 	if not valid:
@@ -325,15 +366,59 @@ func _start_chapter(index: int) -> void:
 	chapter = index
 	step = 0
 	var id: String = Rules.CHAPTERS[index]
-	if index > 0 and Rules.CHAPTERS[index - 1] not in progress.completed:
-		_panel("Primero, construyamos la evidencia")
-		_text("Visita primero la imprenta y después el archivo. La asamblea comienza con una exposición que todas las personas puedan revisar.")
-		return
 	_panel(story.chapters[index].title)
-	_text(story.chapters[index].npc + ": «" + story.chapters[index].intro + "»")
+	_text(story.chapters[index].npc + ": «" + story.houses[index].preview + "»")
+	var missing := Rules.first_missing(progress.completed, index)
+	if missing >= 0:
+		_text("Para continuar esta actividad, prepara primero " + ("el boletín con Luz." if missing == 0 else "el cartel con Mateo."))
+		if index == 2:
+			_button("Conocer las propuestas", _project_preview)
+		_button("Ir a la imprenta" if missing == 0 else "Ir al archivo", _travel.bind(missing))
+		return
 	if id in progress.completed:
-		_text("Este capítulo ya tiene su sello. Puedes volver a explorarlo sin borrar el diario.")
-	_button("Investigar: " + story.chapters[index].question, _question)
+		_text("Ya preparaste este material. Puedes revisarlo sin perder tus avances.")
+	_text(story.chapters[index].intro)
+	if index == 1:
+		_text("Titular por revisar: «" + story.comparison_artifact.before + "» Mira los datos antes de publicarlo.")
+	_button("Comenzar la actividad", _question)
+	if index == 1: _poster_controls()
+	if index == 2: PosterView.acknowledge(self)
+
+func _poster_controls() -> void:
+	if "comparison" not in progress.completed: return
+	_button("Crear mi propio cartel", _poster_workshop)
+	if not meeting_poster.is_empty(): _button("Ver mi cartel publicado", _published_poster)
+
+func _poster_workshop() -> void:
+	if valid and "comparison" in progress.completed: PosterView.editor(self)
+
+func _poster_preview() -> void:
+	if valid and "comparison" in progress.completed: PosterView.preview(self)
+
+func _published_poster() -> void:
+	if valid and not meeting_poster.is_empty(): PosterView.preview(self, true)
+
+func _project_preview() -> void:
+	_panel("Tres necesidades para la plaza")
+	for project in story.consultation.projects:
+		_text(project.name + " · " + project.benefit + " " + project.tradeoff)
+	_text("Todas las necesidades cuentan. La consulta se abre después del boletín y el cartel.")
+
+func _simple_card(record: Dictionary, counts: bool = false, container: VBoxContainer = null) -> void:
+	_text(record.geography_name.capitalize() + " · CCPC 2024", container)
+	var known: int = int(record.sv) + int(record.nv)
+	var pct: Variant = Rules.rate(record.sv, known)
+	if counts:
+		var common_max: int = maxi(int(_record("state_01").sv), int(_record("state_02").sv))
+		_bar(_number(record.sv) + " con participación", 100.0 * record.sv / maxf(1, common_max), container)
+	elif pct == null:
+		_text("Falta información para comparar la participación.", container)
+	else:
+		_bar("Con participación: cerca de %d de cada 100 · %s" % [roundi(pct), _percentage(pct)], pct, container)
+		if record.id == "national":
+			_bar("Sin participación: cerca de %d de cada 100" % roundi(100.0 - pct), 100.0 - pct, container)
+			_text("Conteos exactos: %s con participación; %s sin participación." % [_number(record.sv), _number(record.nv)], container)
+	_text("Con información conocida: " + _number(known) + ".\nPor separado, no sabemos: " + _number(record.ns) + ".", container)
 
 func _data_card(record: Dictionary) -> void:
 	var classified := int(record.sv) + int(record.nv)
@@ -347,8 +432,8 @@ func _data_card(record: Dictionary) -> void:
 	_text("Denominador: SV + NV = %s. Sin clasificación: %s de LN, con un denominador distinto." % [_number(classified), _percentage(unknown)])
 	_text("Fuente: INE, CCPC 2024. Las cifras describen registros agregados; no indican por quién votó cada persona ni sus motivos.")
 
-func _bar(title: String, percent: float) -> void:
-	_text(title)
+func _bar(title: String, percent: float, container: VBoxContainer = null) -> void:
+	_text(title, container)
 	var bar := ProgressBar.new()
 	bar.min_value = 0
 	bar.max_value = 100
@@ -358,7 +443,7 @@ func _bar(title: String, percent: float) -> void:
 	var fill := StyleBoxFlat.new()
 	fill.bg_color = TEAL
 	bar.add_theme_stylebox_override("fill", fill)
-	body.add_child(bar)
+	(container if container != null else body).add_child(bar)
 
 func _number(value: Variant) -> String:
 	var digits := str(int(value))
@@ -372,59 +457,113 @@ func _number(value: Variant) -> String:
 func _percentage(value: Variant) -> String:
 	return "Sin datos clasificables" if value == null else "%.2f%%" % float(value)
 
+
+func _chapter_activities() -> Array:
+	return story.activities.filter(func(activity: Dictionary) -> bool: return activity.chapter == Rules.CHAPTERS[chapter])
+
 func _question() -> void:
+	if Rules.first_missing(progress.completed, chapter) >= 0:
+		_start_chapter(chapter)
+		return
 	if chapter == 2:
 		_consultation()
 		return
-	_panel(story.chapters[chapter].question)
-	if chapter == 0:
-		if step == 0:
-			_data_card(_record("national"))
-			_text("Para calcular la participación entre los registros que sí podemos clasificar, ¿qué denominador debe usar el boletín?")
-			_options(["SV + NV: registros clasificados", "LN: incluir también los desconocidos", "SV: sólo quienes tienen marca"], 0, "NS significa clasificación desconocida. No podemos tratar esos registros como abstención.")
-		else:
-			_text("Caso nuevo, didáctico y ficticio: SV = 60, NV = 30, NS = 10, LN = 100. ¿Cuál es la participación entre registros clasificados?")
-			_options(["60%: dividir entre 100", "66.67%: dividir 60 entre 90", "90%: sumar los clasificados"], 1, "Conserva la misma regla: SV ÷ (SV + NV). Los 10 desconocidos se explican aparte.")
+	var activities := _chapter_activities()
+	if activities.is_empty():
+		_panel("Actividad no disponible")
+		_text("Falta una parte de la historia. Revisa que el paquete esté completo.")
+		return
+	if step >= activities.size():
+		_complete()
+		return
+	var activity: Dictionary = activities[step]
+	_panel("%d de %d · %s" % [step + 1, activities.size(), activity.title])
+	if activity.transfer:
+		_text(story.fiction_label)
+	if activity.view == "national":
+		_simple_card(_record("national"))
+	elif activity.view in ["count", "rate"]:
+		_text("Cartel por revisar: «" + story.comparison_artifact.before + "»")
+		_text("Fuente: INE / CCPC 2024. Barras con la misma escala." if activity.view == "count" else "Fuente: INE / CCPC 2024. Comparamos de cada 100 con información conocida.")
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 24)
+		body.add_child(row)
+		for id in ["state_01", "state_02"]:
+			var column := VBoxContainer.new()
+			column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			column.add_theme_constant_override("separation", 8)
+			row.add_child(column)
+			_simple_card(_record(id), activity.view == "count", column)
+		if activity.view == "rate":
+			var a := _record("state_01")
+			var b := _record("state_02")
+			var comparison := Rules.compare_records(a, b, "rate")
+			if comparison in [0, 1] and roundi(a.participation_pct) == roundi(b.participation_pct):
+				_text("Las cifras redondeadas se parecen. Con los conteos exactos, %s tiene una proporción ligeramente mayor." % [a, b][comparison].geography_name)
+	elif activity.view == "printing-fixture":
+		var example: Dictionary = story.assessment_fixtures.printing
+		_text("Con participación: %d · Sin participación: %d · No sabemos: %d" % [example.sv, example.nv, example.ns])
 	else:
-		if step < 3:
-			_data_card(_record("state_01"))
-			_data_card(_record("state_02"))
-		if step == 0:
-			_text("¿Qué entidad tiene más registros con marca de participación?")
-			_options([_record("state_01").geography_name, _record("state_02").geography_name, "Tienen el mismo conteo", "No hay datos para comparar"], Rules.compare_records(_record("state_01"), _record("state_02"), "count"), "Compara los conteos SV antes de mirar las tasas.")
-		elif step == 1:
-			_text("¿Cuál tiene una tasa de participación mayor entre sus registros clasificados?")
-			_options([_record("state_01").geography_name, _record("state_02").geography_name, "Tienen la misma tasa", "Sin datos clasificables para comparar"], Rules.compare_records(_record("state_01"), _record("state_02"), "rate"), "Un conteo mayor puede convivir con una tasa menor: los denominadores tienen tamaños distintos.")
-		elif step == 2:
-			var combined: Variant = Rules.combined_rate(_record("state_01"), _record("state_02"))
-			var first_rate: Variant = Rules.rate(_record("state_01").sv, int(_record("state_01").sv) + int(_record("state_01").nv))
-			var second_rate: Variant = Rules.rate(_record("state_02").sv, int(_record("state_02").sv) + int(_record("state_02").nv))
-			var average: Variant = (first_rate + second_rate) / 2.0 if first_rate != null and second_rate != null else null
-			_text("Para reunir las dos entidades, suma los conteos y después divide. ¿Qué tasa corresponde al conjunto?")
-			_options([_percentage(average) + ": promedio simple de tasas", _percentage(combined) + ": suma de SV ÷ suma de (SV + NV)"], 1, "Las entidades tienen diferentes denominadores. Promediar sus tasas con el mismo peso cambia la pregunta.")
-		elif step == 3:
-			_text("Elige el mensaje que puede publicarse en el cartel.")
-			_options(["Una tasa menor demuestra menos interés de cada habitante", "Los registros muestran tasas distintas; no explican por sí solos los motivos", "Los conteos revelan qué opción política prefirió la gente"], 1, "Una observación agregada no revela motivaciones individuales ni preferencias partidistas.")
-		else:
-			_text("Caso nuevo y ficticio: un lugar tiene SV=20 y NV=20; otro SV=60 y NV=140. Al reunirlos, ¿qué tasa se obtiene?")
-			_options(["40%: promedio de 50% y 30%", "33.33%: 80 ÷ 240"], 1, "Suma las marcas: 80. Suma los clasificados: 240.")
-	_button("Consultar fuente y método", _journal)
+		for i in 2:
+			var example: Dictionary = story.assessment_fixtures.comparison[i]
+			_text("Grupo %s: %d participantes de %d · %s" % ["A" if i == 0 else "B", example.sv, int(example.sv) + int(example.nv), _percentage(Rules.rate(example.sv, int(example.sv) + int(example.nv)))])
+	_text(activity.prompt)
+	var answer := Rules.activity_answer(activity, bundle, story)
+	if answer == "unavailable":
+		_text("Falta información para resolver esta comparación. Revisa la fuente o pide apoyo.")
+		_button("Continuar: aquí falta información", _continue_unavailable)
+	else:
+		awaiting_answer = true
+		for choice in activity.choices:
+			var title: String = choice.text
+			if choice.id in ["state_01", "state_02"]:
+				title = _record(choice.id).geography_name
+			_button(title, _answer.bind(choice.id == answer, activity.explanation))
+	if answer != "unavailable":
+		_button("Pedir una pista", func():
+			_mark_assisted()
+			_text("Pista: " + activity.hint)
+			_button("Completar con acompañamiento", func():
+				_answer(true, activity.explanation + " Completaste este paso con acompañamiento.")))
+	_button("Ver datos y fuente", _question_sources)
+	_button("Ver cómo se calculó (opcional)", _optional_math)
 
-func _options(options: Array, correct: int, explanation: String) -> void:
-	for i in options.size():
-		_button(options[i], _answer.bind(i == correct, explanation))
-	_button("Pedir una pista", func():
-		if Rules.CHAPTERS[chapter] not in progress.hints:
-			progress.hints.append(Rules.CHAPTERS[chapter])
-		_save()
-		_text("Pista: " + explanation))
+func _mark_assisted() -> void:
+	if Rules.CHAPTERS[chapter] not in progress.hints:
+		progress.hints.append(Rules.CHAPTERS[chapter])
+	_save()
+
+func _continue_unavailable() -> void:
+	_mark_assisted()
+	awaiting_answer = true
+	_answer(true, "Aquí falta información. Revisaste este límite con apoyo; no se registró una interpretación independiente ni un porcentaje inventado.")
+
+func _question_sources() -> void:
+	_journal()
+	_button("Volver a la pregunta", _question)
+
+func _optional_math() -> void:
+	_panel(story.optional_math.title)
+	_text(story.optional_math.known)
+	_text(story.optional_math.formula)
+	_text(story.optional_math.combined)
+	_text("Aguascalientes + Baja California: " + _percentage(Rules.combined_rate(_record("state_01"), _record("state_02"))) + ". Se suman las cantidades antes de dividir.")
+	var fixtures: Dictionary = story.assessment_fixtures
+	var p: Dictionary = fixtures.printing
+	_text(story.fiction_label)
+	_text("Ejemplo 1: %d ÷ (%d + %d) × 100 = %s." % [p.sv, p.sv, p.nv, _percentage(Rules.rate(p.sv, int(p.sv) + int(p.nv)))])
+	_text("Ejemplo 2, grupos reunidos: " + _percentage(Rules.combined_rate(fixtures.comparison[0], fixtures.comparison[1])) + ".")
+	_text(story.optional_math.limit)
+	_button("Volver a la actividad", _question)
 
 func _answer(correct: bool, explanation: String) -> void:
+	if not awaiting_answer:
+		return
 	_panel("Una evidencia para la plaza" if correct else "Revisemos la interpretación")
 	_text(explanation)
 	if correct:
 		step += 1
-		if (chapter == 0 and step >= 2) or (chapter == 1 and step >= 5):
+		if step >= _chapter_activities().size():
 			_complete()
 		else:
 			_button("Continuar la investigación", _question)
@@ -439,7 +578,9 @@ func _complete() -> void:
 	_save()
 	_update_status()
 	_sound("sound.chapter")
-	_text("Sello del diario: " + story.chapters[chapter].title)
+	_text("Material listo: " + story.houses[chapter].artifact)
+	if id in progress.hints:
+		_text("Recorrido con apoyo. Puedes practicar otra vez cuando quieras.")
 	_text(story.chapters[chapter].reflection)
 	if chapter == 0:
 		var record := _record("national")
@@ -447,17 +588,25 @@ func _complete() -> void:
 	elif chapter == 1:
 		var a := _record("state_01")
 		var b := _record("state_02")
+		_text("Titular corregido:\n" + Rules.comparison_caption(a, b, story.comparison_artifact))
 		_text("Cartel corregido: %s tiene %s SV y una tasa de %s; %s tiene %s SV y una tasa de %s. Las cifras no explican los motivos individuales." % [a.geography_name, _number(a.sv), _percentage(a.participation_pct), b.geography_name, _number(b.sv), _percentage(b.participation_pct)])
 	else:
 		_text("La exposición está completa. Tu recorrido ayudó a traducir datos oficiales en una historia comprensible. La conversación democrática continúa.")
 		_text(story.message)
 	_button("Ver mi exposición y las fuentes", _journal)
-	_button("Volver a la plaza", func(): overlay.hide())
+	_button("Volver al lugar", _close_panel)
+	if chapter == 1: _poster_controls()
 
 func _consultation() -> void:
+	if Rules.first_missing(progress.completed, 2) >= 0:
+		_start_chapter(2)
+		return
 	_panel("Una plaza, varias ideas")
 	_text(story.consultation.label)
-	_text("Escenario ficticio: 30 residentes con preferencias fijas A12/B10/C8. Participan 16: A8/B5/C3. Tú eres una persona adicional. Hay presupuesto para comenzar un proyecto; los otros siguen siendo necesidades legítimas.")
+	_text(story.bridge)
+	PosterView.acknowledge(self)
+	_text(_scenario_summary(0))
+	_text("Tú puedes sumar una voz. Hay recursos para empezar un proyecto; las otras necesidades siguen presentes.")
 	for project in story.consultation.projects:
 		_text(project.id + " · " + project.name + ": " + project.benefit + " " + project.tradeoff)
 	_text("Regla del ejemplo: gana el proyecto con más marcas. Un empate abre una segunda decisión ficticia. Una boleta sin marca suma participación, sin apoyar un proyecto. Puedes decidir no participar y completar la historia con los mismos reconocimientos.")
@@ -467,29 +616,66 @@ func _consultation() -> void:
 	_button("Decidir no participar", _results.bind("decline"))
 
 func _results(choice: String) -> void:
-	var result := Rules.consultation(0, choice)
+	if Rules.first_missing(progress.completed, 2) >= 0:
+		_start_chapter(2)
+		return
+	var result := Rules.consultation(0, choice, story.consultation)
 	_panel("Resultado del escenario ficticio")
-	_text("A: %d · B: %d · C: %d\nParticipantes: %d de 31. Boletas sin marca: %d." % [result.votes[0], result.votes[1], result.votes[2], result.participants, result.unmarked])
+	_text("A: %d · B: %d · C: %d\nParticipantes: %d de %d. Boletas sin marca: %d." % [result.votes[0], result.votes[1], result.votes[2], result.participants, result.eligible, result.unmarked])
 	if result.winners.size() > 1:
 		_text("Hay un empate. Se abre una segunda decisión ficticia sin favorecer automáticamente un proyecto.")
 	else:
-		_text("Comienza: " + story.consultation.projects[result.winners[0]].name + ". Las demás necesidades siguen presentes.")
+		_text("Comienza: " + _project_name(["A", "B", "C"][result.winners[0]]) + ". Las demás necesidades siguen presentes.")
 	_text("Tu decisión no se guarda. El reconocimiento de aprendizaje no depende de votar ni de elegir la opción ganadora.")
-	_text("Para comparar: con más participantes, A11/B8/C6 mantiene a A al frente; A8/B10/C7 da la ventaja a B con el mismo total de 25. La cantidad de participantes no determina por sí sola qué proyecto gana.")
-	_text("Ganó un proyecto. Todavía falta revisar cómo se realiza y qué necesidades quedan pendientes. ¿Qué pregunta quieres llevar a la conversación?")
+	_button("Explorar otros resultados inventados", _scenario_examples)
+	_text("Después de esta consulta, falta dar seguimiento a lo que se acuerde y a las necesidades pendientes. ¿Qué pregunta quieres llevar a la conversación?")
+	for question in ["¿Qué se hizo con el presupuesto?", "¿Cómo se atenderán las necesidades pendientes?", "¿Cuándo revisaremos el avance del proyecto?"]:
+		_button(question, _finish)
+
+func _scenario_examples() -> void:
+	_panel("Más voces, distintas decisiones")
+	_text(story.fiction_label)
+	_text(_scenario_summary(1))
+	_text(_scenario_summary(2))
+	_text("El resultado también depende de las opciones que expresan las personas y de qué necesitan.")
+	_text("Una voz cuenta aunque su proyecto no gane. Las necesidades de quienes piensan diferente siguen presentes.")
+	_button("Revisar qué sigue", _followup)
+
+func _project_name(id: String) -> String:
+	for project in story.consultation.projects:
+		if project.id == id:
+			return project.name
+	return id
+
+func _scenario_summary(index: int) -> String:
+	var result := Rules.consultation(index, "decline", story.consultation)
+	return "Ejemplo inventado: %d residentes participan. %s: %d; %s: %d; %s: %d." % [result.participants, _project_name("A"), result.votes[0], _project_name("B"), result.votes[1], _project_name("C"), result.votes[2]]
+
+func _followup() -> void:
+	_panel("Después de decidir")
 	for question in ["¿Qué se hizo con el presupuesto?", "¿Cómo se atenderán las necesidades pendientes?", "¿Cuándo revisaremos el avance del proyecto?"]:
 		_button(question, _finish)
 
 func _finish() -> void:
+	if Rules.first_missing(progress.completed, 2) >= 0:
+		_start_chapter(2)
+		return
+	chapter = 2
 	_panel("La plaza sigue conversando")
 	_complete()
 
 func _journal() -> void:
+	if not valid:
+		_panel("Contenido no disponible")
+		_text("No pudimos validar la historia o los datos. Abre una copia completa del prototipo para consultar las fuentes.")
+		return
 	_panel("Diario · Las voces que construyen la plaza")
 	_sound("sound.journal")
-	_text("Capítulos completos: %d de 3. Las pistas se registran por separado de la finalización; terminar no acredita por sí solo dominio independiente." % progress.completed.size())
+	_text("Materiales listos: %d de 3. Puedes volver a leer las fuentes y practicar con apoyo." % progress.completed.size())
+	_poster_controls()
+	PosterView.acknowledge(self)
 	for item in story.get("chapters", []):
-		_text(("✓ " if item.id in progress.completed else "○ ") + item.title + "\n" + item.reflection)
+		_text(("Listo: " if item.id in progress.completed else "Pendiente: ") + item.title + "\n" + item.reflection)
 	if valid:
 		for id in ["national", "state_01", "state_02"]:
 			_data_card(_record(id))
@@ -518,13 +704,18 @@ func _settings() -> void:
 		toggle.toggled.connect(_toggle.bind(setting[0]))
 		body.add_child(toggle)
 	_text("Todas las acciones tienen botones y se pueden completar con teclado. Tab recorre los controles; Enter o Espacio activa el seleccionado.")
+	if not valid:
+		return
 	_button("Reiniciar mi recorrido", func():
 		_panel("¿Reiniciar el recorrido?")
 		_text("Se borrarán los sellos y las pistas de este dispositivo. Puedes conservar tus ajustes.")
 		_button("Sí, reiniciar", func():
 			progress.completed = []
 			progress.hints = []
+			meeting_poster = {}
+			poster_selection = {"first": "state_01", "second": "state_02", "metric": "count", "question": "missing"}
 			_save()
+			_show_location(-1, Vector2(240, 176))
 			_update_status()
 			_welcome()))
 
@@ -542,16 +733,20 @@ func _save() -> void:
 	file.store_string(JSON.stringify(progress))
 	file.close()
 
+
 func _update_status() -> void:
-	status.text = "EXPOSICIÓN · %d / 3 capítulos · Explora la plaza y conversa con sus habitantes" % progress.completed.size()
-	if exhibit_marks.size() != 3:
-		return
-	exhibit_marks[0].text = "PUBLICA UN BOLETÍN\nConversar con Luz"
-	exhibit_marks[1].text = "REVISA EL CARTEL\nConversar con Mateo"
-	exhibit_marks[2].text = "COMPARTE UNA PREGUNTA\nConversar con Inés"
-	if valid and "printing" in progress.completed:
-		exhibit_marks[0].text = "BOLETÍN CON FUENTE\nCCPC 2024 · " + _percentage(_record("national").participation_pct)
-	if valid and "comparison" in progress.completed:
-		exhibit_marks[1].text = "CARTEL CORREGIDO\nTasa conjunta: " + _percentage(Rules.combined_rate(_record("state_01"), _record("state_02")))
-	if "consultation" in progress.completed:
-		exhibit_marks[2].text = "LA CONVERSACIÓN SIGUE\n¿Qué necesidades faltan?"
+	var place: String = "Plaza" if house_index < 0 else story.houses[house_index].title
+	var next := "Habla con Luz"
+	var missing := Rules.first_missing(progress.completed, 3)
+	if missing == 1:
+		next = "Revisa el cartel con Mateo"
+	if missing == 2:
+		next = "Visita a Inés"
+	if missing == -1:
+		next = "La conversación continúa · Consulta tu diario"
+	status.text = "%s · %d/3 materiales · %s" % [place, progress.completed.size(), next]
+	exit_button.visible = house_index >= 0
+	action_button.text = "Acércate a una puerta" if house_index < 0 else "Hablar con " + story.chapters[house_index].npc
+	action_button.disabled = house_index < 0
+	if room != null:
+		room.update_artifacts(progress.completed, bundle, meeting_poster)

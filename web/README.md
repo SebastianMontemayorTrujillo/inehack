@@ -1,91 +1,114 @@
-# Voces de la Plaza · Ruta HTML
+# Voces de la Plaza · Ruta HTML de aula (RV09)
 
-Experiencia completa sin framework ni fuentes remotas. Servir el repositorio por
-HTTP y abrir `/web/`; no abrir `index.html` mediante `file://` porque el contenido
-compartido se carga con `fetch`.
+Historia completa con HTML semántico, independiente de Godot. Servir el
+repositorio por HTTP y abrir `/web/`. El paquete final usa `/build/web/` o la
+ruta donde se publique su contenido. `file://` no permite cargar los JSON con
+`fetch`. No hay fuentes remotas, cuentas ni telemetría.
 
-## Integración
+Main exporta: copia **todos** los archivos de `web/` (incluido `views.mjs`) y
+`game/content/{ccpc,story}.json` a `build/web/content/`; Godot queda en
+`build/web/game/index.html`. En desarrollo los JSON se leen directamente desde
+`game/content/`; el paquete no intenta rutas de desarrollo.
 
-El empaquetador de main copia el contenido de `web/` a `build/web/`, los JSON a
-`build/web/content/` y la exportación de Godot a `build/web/game/index.html`.
-El enlace Godot es `./game/index.html` en el paquete; `/web/` en desarrollo apunta
-a `../build/web/game/index.html`. Si Godot aún no está exportado, la historia HTML
-sigue siendo independiente y el aviso junto al enlace lo explica.
+## Contrato compartido y evaluador
 
-La carga de CCPC usa `../game/content/ccpc.json` solo cuando la página está en
-`/web/` o `/web/index.html`; en el paquete, raíz u otra ruta usa directamente
-`./content/ccpc.json`, sin solicitar primero una ruta de desarrollo inexistente.
-Exige el contrato `1.0.0`, dataset `ccpc-2024-v1`, fuente
-HTTPS con hash y diccionario, conciliación LN = SV + NV + NS y tasas compatibles
-con los conteos. Acepta el paquete completo de 33 registros y exige los tres que
-usan los capítulos: `national`, `state_01`, `state_02`. Un fallo muestra un error
-y un botón de reintento; no hay datos oficiales de sustitución.
+`story.json` **es obligatorio**, versión `2.0.0`. No hay preguntas antiguas de
+sustitución. `normalizeStory(value)` devuelve el mismo contenido validado o
+`null`; `loadStory()` muestra un error recuperable si falta contenido.
 
-`story.json` es opcional y usa la misma selección de carpeta. Se consume el
-formato canónico de main (`printing`, `comparison`, `consultation` y los proyectos
-anidados en `consultation.projects` con `name`/`benefit`/`tradeoff`). También se
-acepta la forma de integración inicial:
+Los títulos, preguntas, opciones, pistas, explicaciones y vistas de las seis
+actividades vienen del archivo canónico. Esta es la lista cerrada de reglas;
+no se ejecutan expresiones del JSON. El orden del texto/opciones se conserva.
 
-```json
-{
-  "schema_version": "1.0.0",
-  "title": "Voces de la Plaza",
-  "message": "Mensaje cívico de cierre",
-  "chapters": [{ "id": 1, "title": "Título", "question": "Pregunta", "intro": "Introducción", "quote": "Diálogo" }],
-  "projects": [{ "id": "A", "title": "Proyecto", "description": "Necesidad", "tradeoff": "Mantenimiento pendiente" }],
-  "ending": { "title": "Título del cierre", "body": "Reflexión" }
-}
-```
+| Actividad | Capítulo | Regla | Vista | Opciones | Transferencia |
+| --- | --- | --- | --- | --- | --- |
+| participation-reading | printing | national-participation | national | sv, nv, equal | no |
+| unknown | printing | unknown | national | separate, nv | no |
+| unknown-transfer | printing | unknown-transfer | printing-fixture | unknown, nv, sv | sí |
+| more-count | comparison | count | count | state_01, state_02, equal | no |
+| higher-rate | comparison | rate | rate | state_01, state_02, equal | no |
+| comparison-transfer | comparison | comparison-transfer | comparison-fixture | no, yes | sí |
 
-Los capítulos tienen id canónico de texto o numérico 1–3 y los proyectos A–C. Los campos de texto son
-opcionales y se insertan con `textContent`. El HTML contiene una historia completa
-si el archivo opcional falta. El JSON aporta prosa; las reglas no se cambian con
-el texto.
+También se validan las tres casas (`printshop → printing`, `archive → comparison`,
+`hall → consultation`), los tres capítulos, texto no vacío, los cinco campos de
+`optional_math` y los dos conjuntos de `assessment_fixtures`. Los conteos deben
+ser enteros seguros no negativos y cumplir `LN = SV + NV + NS`; una base cero
+es válida y no se reemplaza por otro ejemplo. Se exigen proyectos A/B/C y
+escenarios `baseline`, `more_same_winner`, `more_other_winner`, con tres conteos
+no negativos dentro de las preferencias del roster compartido. El roster suma
+`eligible_npcs` y la persona que juega es adicional.
 
-Main puede añadir al JSON canónico las transferencias sintéticas mediante:
+- `assessActivity(activity, answer, data, story)` acepta el objeto de actividad
+  (o su ID) y devuelve `{correct, available, message}`. Reglas conceptuales:
+  `unknown → separate`, `unknown-transfer → unknown`, `comparison-transfer → no`.
+  Las comparaciones usan conteos y productos cruzados `BigInt`, sin redondear.
+  Datos faltantes/base nacional o de tasa cero: `available:false`. Para pruebas
+  de paridad, `answer:'unavailable'` coincide con ese resultado; la interfaz
+  desactiva respuestas y ofrece continuación explícita **con apoyo**, sin
+  afirmar una respuesta correcta ni comprensión independiente.
+- `aggregateRecords`, `assessAnswer`, `transferExercises` conservan las fórmulas
+  y los ejercicios antiguos `transfer1`/`transfer2`. Se usan solo como ejemplos
+  opcionales y pruebas matemáticas; no bloquean el recorrido.
+- `resolveConsultation(choice, scenario, story)` usa escenarios/roster canónicos.
+  La firma antigua de dos argumentos y `SCENARIOS` se conservan para regresión.
+- `views.mjs` presenta barras, tablas, fuentes y artefactos. Los datos exactos y
+  cálculos son expandibles. Los desconocidos tienen su propia base y nunca se
+  mezclan con el porcentaje clasificado en un gráfico de 100%.
 
-```json
-{
-  "assessment_fixtures": {
-    "printing": { "ln": 100, "sv": 60, "nv": 30, "ns": 10 },
-    "comparison": [
-      { "ln": 40, "sv": 20, "nv": 20, "ns": 0 },
-      { "ln": 200, "sv": 60, "nv": 140, "ns": 0 }
-    ]
-  }
-}
-```
+## Navegación, apoyo y privacidad
 
-Se calculan desde esos conteos la pregunta, las opciones, las pistas, la respuesta
-y la explicación. Si faltan o son inválidos, se usan esos mismos casos sintéticos
-canónicos: 66.67 % y 33.33 %, equivalentes a Godot. Nunca sustituyen observaciones
-CCPC. La fuente tipográfica es la del sistema con alternativas locales; no hay
-fuentes remotas. El favicon SVG está incluido como URL `data:`.
+Las tres casas se pueden visitar desde el principio. Solo las tareas requieren
+el boletín/cartel previo. Entrar enfoca el título de la casa; Escape cierra la
+tarea y restaura su botón, después sale a la plaza y restaura el botón de entrada.
+El cierre vuelve a la plaza y permite reabrir los artefactos.
 
-## Reglas puras en `logic.mjs`
+Las explicaciones se revelan después de responder correctamente o al pedir
+apoyo. Un error ofrece mirar otra vez; no entrega la solución automáticamente.
+Pistas, ejemplos y cálculos abiertos antes de responder se distinguen de una
+respuesta sin apoyo. La ayuda nunca rellena una opción correcta en nombre del
+estudiante. No se guarda ninguna respuesta ni se declara dominio por terminar.
 
-- `aggregateRecords(records)` devuelve `{ln,sv,nv,ns,classified,participation_pct,unknown_pct}`; las tasas sin base son `null`.
-- `validateDataset(data)` devuelve el bundle validado o lanza un error.
-- `contentPaths(filename, pathname?)` elige fuente o paquete. Sin ubicación (Node) conserva las dos rutas para pruebas inyectables.
-- `loadDataset(fetcher?, pathname?)` carga y valida el bundle; no requiere Node en el navegador.
-- `transferExercises(assessmentFixtures?)` calcula los dos ejercicios sintéticos. Respuestas predeterminadas: `66.67` y `33.33`.
-- `assessAnswer(quest, answer, data, assessmentFixtures?)` devuelve `{correct,message}`. IDs de pregunta: `denominator`, `unknown`, `more-count`, `higher-rate`, `combined`, `limit`, `transfer1`, `transfer2`.
-- `SCENARIOS` contiene `base` A8/B5/C3, `more-a` A11/B8/C6 y `more-b` A8/B10/C7.
-- `createRoster()` devuelve las mismas 30 personas sintéticas `{id,preference}`, con preferencias A12/B10/C8.
-- `resolveConsultation(choice, scenario='base')` acepta `A`, `B`, `C`, `unmarked`, `decline` y devuelve `{counts:{A,B,C},unmarked,population:31,participants,winner,tied,needsSecondDecision}`.
-- `resolveTally(counts)` devuelve `{winner,tied,needsSecondDecision}`; un empate exige otra decisión, sin prioridad automática.
-- `sanitizeProgress`, `readProgress(storage)` y `writeProgress(storage, progress)` permiten solo `{version:1,completedChapters,settings:{textSize,reducedMotion},hints}`. La clave es `voces-plaza.web.v1`. Nunca guardan intentos, boletas, resultados o reflexiones. Un almacenamiento bloqueado no impide jugar.
-- `gameHref(pathname)` distingue la ruta fuente de la exportada.
-- `normalizeStory(value)` adapta la prosa canónica a capítulos 1–3 y proyectos; un esquema incompatible devuelve `null` para conservar la historia HTML.
+Se conserva la clave `voces-plaza.web.v1` para migrar dispositivos, con formato
+`version:2`: `completedChapters`, `legacyCompleted`, `settings`, `hints`, `assisted`.
+Los capítulos anteriores 1/2/3 se convierten a IDs canónicos y se honran; no se
+migran respuestas, pistas ni supuestos logros a los nuevos checks. La interfaz
+avisa que el guardado anterior no evaluó las actividades nuevas.
+
+No se guardan boleta, resultado, reflexión ni respuestas de actividades. Los
+resultados de consulta desaparecen al salir/cerrar/recargar. Las cinco acciones
+permiten el mismo final; el guardado solo conserva haber terminado. Almacenamiento
+denegado o corrupto permite jugar en memoria.
+
+## Recursos de clase
+
+`#classroom-resource` enlaza `./classroom.html`, guía docente del paquete.
+El exportador incluye esa página y `classroom-handout.html`/`.pdf`, generados
+con `node tools/render_submission.mjs --handout-only` desde los documentos
+canónicos. La ruta de fuente `/web/` es para desarrollo; estos recursos se
+comprueban en `/build/web/`. No hay una segunda copia editable de las cifras.
 
 ## Verificación
 
 ```sh
-node --test --test-isolation=none tests/web.test.mjs
+node --test tests/*.test.mjs
 node --check web/app.mjs
+node --check web/views.mjs
+# Fuente: servidor en la raíz del repositorio; evidencia fuera del paquete final.
+PREVIEW_URL=http://127.0.0.1:8765 HTML_PATH=/web/ SKIP_GODOT=1 EVIDENCE_DIR=/tmp/voces-rv09 node tests/browser_smoke.mjs
+# Solo después del export de main: HTML ensamblado y arranque real de Godot.
+node tests/browser_smoke.mjs
 ```
 
-Los fixtures de las pruebas son sintéticos, distintos del bundle oficial. La
-verificación de navegador de integración debe cubrir teclado, lector de pantalla,
-320/768/1024/1440 px, ampliación, pérdida de almacenamiento, reintento y los cinco
-tipos de decisión. No se afirma una auditoría formal de accesibilidad.
+El smoke usa los JSON servidos junto a la ruta probada. Recorre las seis
+actividades y cinco decisiones con Tab/flechas/Enter/Espacio, verifica foco,
+apoyo, base nacional cero, migración, privacidad, contenido faltante/reintento,
+almacenamiento denegado, semántica, contraste de texto sobre fondos sólidos y
+reflujo a 320/768/1024/1440 px con tareas/tablas abiertas. Comprueba texto al 200%
+por CSS además del ajuste grande; **no equivale a verificar zoom nativo**.
+Usa axe solo si está instalado localmente o se proporciona `AXE_PATH`.
+
+Sin `SKIP_GODOT`, conserva el protocolo de `godot-browser.png`, Escape y
+`godot-plaza.png`, además de `browser-results.json`. La prueba de fuente impide
+sobrescribir `build/evidence`. No se generó ningún export para esta revisión web.
+Ni las comprobaciones semánticas ni axe sustituyen una evaluación con lector de
+pantalla; esa evaluación y el pilotaje con estudiantes/docentes siguen pendientes.

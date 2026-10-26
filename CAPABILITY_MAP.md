@@ -1,5 +1,9 @@
 # Capability map for Voces de la Plaza
 
+**25 October classroom revision:** the game targets introductory ethics/civic courses in Mexico, especially high-school students approaching their first vote and adults new to civic education. Six shared simple questions, coherent story progression and three enterable houses extend the same six modules. See [design](docs/classroom_redesign.md), [revision tasks](tasks/todo.md#classroom-revision), [current evidence](docs/verification.md), and [rubric review](docs/rubric_review.md). Historical implementation counts below are the version-1 baseline; current acceptance is tied to the revised candidate's fingerprints.
+
+The optional archive workshop implements the supported-headline interaction below: a learner chooses two of the 32 bundled states, count or proportion, and a neutral discussion question; previews and revises the sourced poster; then brings it to Inés. This is an additional way to communicate the same evidence, not another required quiz. Draft and published choices remain in session memory and do not affect the consultation.
+
 Status: approved for execution. The user approved the development plan and then
 instructed “Implement plan”, authorizing specs and implementation across modules.
 Created: 24 October 2026.
@@ -7,8 +11,7 @@ Confirmed by the user: the team is registered for Reto 3.
 Also confirmed: Linux desktop/offline fallback, simplepixels visual direction,
 and 45–65 focused person-hours for the original two-CCPC-quest adventure,
 synthetic consultation, HTML equivalent and submission preparation.
-This contribution implements context/documentation only; main owns code/data
-and verification, while parallel contributors own web/assets.
+Main owns code/data and verification, while parallel contributors own web/assets.
 Direction refined by the user: prioritize innovative, accessible products that
 translate CCPC data into stories, visualizations, and tools for understanding the
 importance of participation in democratic life.
@@ -107,7 +110,7 @@ and selectable interpretations so mathematical fluency is not an entry barrier.
 1. Use the existing blueprint's concept: a 10–15 minute, top-down 2D adventure,
    one compact town, three speaking characters, two data quests, and a short
    fictional consultation with an ending.
-2. Write player-facing content in Mexican Spanish for adult beginners and civic
+2. Write player-facing content in Mexican Spanish for high-school and adult beginners and civic
    education facilitators. Use original town art, characters, and dialogue.
 3. Deliver the game within an interactive storytelling microsite, with a semantic
    HTML equivalent and a tested Linux desktop/offline fallback. Linux is confirmed;
@@ -116,7 +119,7 @@ and selectable interpretations so mathematical fluency is not an entry barrier.
    matched, 32 CSV/9,773,730 rows, 33 aggregates (national + 32 states).
 5. Installed stack: Godot 4.7.2 with matching official-SHA-512-verified templates,
    GUT 9.7.1, typed GDScript, Compatibility rendering and single-threaded web
-   export. Web/Linux exports succeeded. Current automated tests: Python 22,
+   export. Web/Linux exports succeeded. Historical version-1 tests: Python 22,
    Node 17, Godot GUT 9/9 (36 assertions, zero orphans). HTML journey and Godot
    web/Linux headless boot results are scoped in [verification](docs/verification.md).
 6. Protect the complete learning loop and required submission assets before adding

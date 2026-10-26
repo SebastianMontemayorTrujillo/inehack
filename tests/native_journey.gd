@@ -20,11 +20,11 @@ func run_journeys() -> void:
 		game.progress.hints = []
 		check(game.valid, "Compiled data bundle must validate")
 		game._start_chapter(0)
-		for n in 2:
+		for n in 3:
 			game._question()
 			game._answer(true, "Interpretación verificada")
 		game._start_chapter(1)
-		for n in 5:
+		for n in 3:
 			game._question()
 			game._answer(true, "Interpretación verificada")
 		game._start_chapter(2)

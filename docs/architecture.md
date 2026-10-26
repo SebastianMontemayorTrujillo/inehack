@@ -1,5 +1,7 @@
 # Architecture and implementation contracts
 
+**Classroom revision, 25 October 2026:** the persistent session root now owns one active `room.tscn`, a persistent player and interface. `room.gd` configures the plaza or one of three interiors; `Area2D` targets route physical door, host, exhibit and exit interactions. Menu travel uses the same transitions. See [design](classroom_redesign.md), [tasks](../tasks/todo.md#classroom-revision), and the current export identities in [verification](verification.md).
+
 Approved direction · 24 October 2026. Implemented paths and toolchain are reconciled below; [verification.md](verification.md) records actual evidence and limits. The architecture contract does not certify unperformed manual/accessibility checks.
 
 ## Boundaries and ownership
@@ -25,11 +27,15 @@ The data provider follows the blueprint schema `1.0.0`: source, method, records,
 
 ## Runtime decisions
 
-Godot: installed 4.7.2, matching official-SHA-512-verified templates, typed GDScript, native scenes/signals/JSON/Control UI, Compatibility renderer and single-threaded web export. GUT 9.7.1 is installed; its 9/9 tests passed with 40 assertions and zero orphans (seven rules, two repaired journeys). Python standard-library suite: 22 passed; Node built-in suite: 17 passed. Dialogue Manager is not required. Keep dependency/licence notices with releases.
+Godot: installed 4.7.2, matching official-SHA-512-verified templates, typed GDScript, native scenes/signals/JSON/Control UI, Compatibility renderer and single-threaded web export. GUT 9.7.1 tests rules, recovery and real room/Area2D interactions. `tools/verify.py` records current counts, logs and source/output fingerprints. Dialogue Manager is not required. Keep dependency/licence notices with releases.
 
-HTML: static semantic HTML/CSS/JavaScript, independently usable without the canvas, with exact tables/prose. Playwright completed both chapters, five consultation actions and ending, checked persistence and 320/768/1440 px overflow; this is form automation, not formal screen-reader or keyboard-only verification. Those manual checks remain open.
+HTML: static semantic HTML/CSS/JavaScript, independently usable without the canvas. `logic.mjs` validates content and calculates results; `views.mjs` renders exact tables, bars and source details; `app.mjs` owns activity/focus state. Playwright checks the six activities with keyboard events, all five consultation actions, privacy, recovery, assistance, responsive layouts, contrast and locally installed axe. Isolated assistive-technology observations are recorded separately; automated checks do not establish universal accessibility.
+
+The story contract is `2.0.0`: six canonical activities, three houses, two conceptual transfer fixtures, optional mathematics, and canonical consultation projects/roster/scenarios. Both consumers reject missing required content. `CivicRules.first_missing` and HTML prerequisites preserve the evidence order while all houses remain enterable. Exact integer ratio comparisons avoid rounded ties (continued fractions in Godot, `BigInt` cross-products in JavaScript). Zero classified records produce an explicit unavailable state with assisted continuation.
 
 Persistence: explicit versioned allowlist for progress/settings and limited local assessment summaries. Never serialize ballot choice, option-linked results, personal identifiers, or political profiles. Consultation calculations remain in memory; after resume show a neutral completion summary. Handle corrupt/mismatched/no storage without blocking the current journey. Cross-route progress migration is not required.
+
+The optional archive workshop lets the learner compose a public story from any two bundled states, a count/proportion lens and a neutral discussion question. Canonical `poster_workshop` content supplies wording; generic exact record comparisons produce the finding. Godot keeps composition/view code in `poster_workshop.gd` and `poster_view.gd`. Draft and published selections are separate session memory: cancelling an edit preserves the published artifact, navigation preserves it, reset clears it, and it never enters saved progress. Inés acknowledges that artifact and its question without changing the synthetic vote. This optional interaction does not add a required assessment.
 
 Assets: role IDs decouple content/scenes from source files. Development roles may resolve to the specified Kenney CC0 packs; final visible art/sounds resolve to original team assets. Missing original roles are a release failure, not permission to fall back silently. Asset owner defines/records actual IDs, authorship and licences; these docs do not overwrite that register. Typography uses the approved Atkinson/OFL reference with actual files/version verified by its owner.
 
@@ -44,7 +50,7 @@ Assets: role IDs decouple content/scenes from source files. Development roles ma
 | `tests/` | Python and Node checks, labelled fixtures |
 | `build/web/`, `build/linux/` | Implemented web/HTML and native Linux export outputs |
 | `build/evidence/` | Browser JSON/screenshots and export logs |
-| `releases/` | Planned final submission candidate/manifest location, not yet complete |
+| `submission/` | Classroom HTML/PDF, narrative, deck, video, local candidate ZIP and hash manifest |
 | Root `SPEC-*.md`, `tasks/`, `docs/` | Contracts, plan, status and handoff |
 
 Implemented command entry points (recorded outcomes, not automatic passes for future runs):
@@ -65,6 +71,8 @@ Outputs: `build/web/index.html` (HTML/microsite), `build/web/game/index.html` (G
 
 ## Evidence and failure behavior
 
-Invalid data/schema/provenance produces a helpful unavailable state, never invented replacement counts. Invalid content references fail validation before export. Runtime tests must cover focus restoration, repeated actions, interrupted save, enlarged text, mute and reduced motion. Automated content checks do not establish exported game behavior or accessibility.
+Invalid data/schema/provenance produces a helpful unavailable state, never invented replacement counts. Canonical content validation runs in both routes. Runtime checks cover focus restoration, repeated actions, interrupted save, enlarged text, mute and reduced motion. `native_window_smoke.py` drives an isolated Linux release window; `godot_browser_smoke.mjs` drives the exported browser canvas. Their screenshots and assertions supplement GUT and compiled-PCK checks. No human pilot or measured learning gain is implied.
+
+`node tools/render_submission.mjs --handout-only` prepares the classroom resources required by web export. The full renderer updates submission PDFs after runtime screenshots are ready. The exporter includes teacher HTML, the printable sheet, canonical content and all original role assets. `tools/package_candidate.py` refuses any source or runtime output that differs from the latest verification fingerprints. Signing, publishing and sending are separate team actions.
 
 Keep a command/result record with actual tool versions, tested OS/browser, asset set, data version, and artifact identity. Distinguish missing tools, blocked downloads, failing tests and not-run checks. Submission assembly may proceed while external signatures/hosting/deadline checks are pending; the final checklist must expose them.

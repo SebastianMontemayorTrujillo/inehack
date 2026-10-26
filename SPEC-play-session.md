@@ -1,11 +1,13 @@
 # SPEC: play-session
 
-Version 1 · 24 October 2026 · Owner: main, game/integration.
-Approved scope implemented; automated Godot rules/journeys pass in GUT 9/9 (40 assertions, zero orphans). Manual exported interaction/accessibility checks remain partial; see [verification](docs/verification.md). No runtime module dependencies.
+**Classroom amendment · 25 October 2026:** The plaza and all three enterable interiors are implemented. One persistent session owns the reusable room, physical and menu entry, safe exit points and focus restoration. Houses open from the start; activities have separate prerequisites. The audience is high-school beginners and adults new to civic education. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
+
+Version 2 · 25 October 2026 · Owner: main, game/integration.
+Implementation and current verification evidence are recorded in [verification](docs/verification.md). Run the applicable suites and exported journeys after changes; previous results do not certify a changed artifact. Formal user evaluation remains distinct from automated checks.
 
 ## Objective and scope
 
-Provide the Godot adventure shell for adult beginners: one compact Villa Brisa town, three speaking characters, a plaza/archive/noticeboard route, readable dialogue, settings, local progress, and safe reset. Target a complete 10–15 minute experience with both evidence quests and the synthetic consultation supplied by their owners. No combat, farming economy, multiplayer, account, live API, runtime AI, or extra maps.
+Provide the Godot adventure shell for high-school and adult beginners: one compact Villa Brisa town, three speaking characters, a plaza/archive/noticeboard route, readable dialogue, settings, local progress, and safe reset. Target a complete 10–15 minute experience with both evidence quests and the synthetic consultation supplied by their owners. No combat, farming economy, multiplayer, account, live API, runtime AI, or locations beyond the plaza and three houses.
 
 ## Structure, stack, and commands
 

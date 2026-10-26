@@ -1,0 +1,19 @@
+{
+  "checked_at_utc": "2026-10-25T18:43:12.856648+00:00",
+  "forms": [
+    {
+      "file": "carta_cesion_derechos_sin_firmar.pdf",
+      "source": "https://www.ine.mx/wp-content/uploads/2026/09/Carta-de-cesion-de-derechos_Hackaton-1.pdf",
+      "sha256": "0ab4c50ab39d6a8b27651d4e1056079afdc8a3d389f04bc37b02e259f3b9a14c",
+      "bytes": 594539,
+      "status": "downloaded blank; not signed"
+    },
+    {
+      "file": "carta_declaratoria_verdad_sin_firmar.pdf",
+      "source": "https://www.ine.mx/wp-content/uploads/2026/09/Carta-declaratoria-de-decir-la-verdad_Hackaton.pdf",
+      "sha256": "66be02557f5cabb3b2bdbf12da8a4410ecfabdc7ee5af278794b18c7e7d3bfbe",
+      "bytes": 620381,
+      "status": "downloaded blank; not signed"
+    }
+  ]
+}

@@ -106,16 +106,12 @@ export function transferExercises(assessmentFixtures) {
 
 export function assessAnswer(quest, answer, data, assessmentFixtures) {
   const states = ['state_01', 'state_02'].map(id => data.records.find(record => record.id === id));
-  const compare = key => {
-    const [a, b] = states.map(record => ({ id: record.id, value: aggregateRecords([record])[key] }));
-    return a.value === null || b.value === null ? 'unavailable' : a.value === b.value ? 'equal' : a.value > b.value ? a.id : b.id;
-  };
   const transfers = transferExercises(assessmentFixtures);
   const rules = {
     denominator: ['classified', 'La participación se calcula como 100 × SV ÷ (SV + NV). NS queda fuera de ese denominador porque no conocemos su clasificación.'],
     unknown: ['separate', 'NS significa participación sin especificar: su clasificación es desconocida. No podemos sumarlo a NV ni interpretarlo como votos nulos; su proporción es 100 × NS ÷ LN.'],
-    'more-count': [compare('sv'), 'Compara los registros SV, sin dividir. Un conteo mayor no implica una proporción mayor.'],
-    'higher-rate': [compare('participation_pct'), 'Compara 100 × SV ÷ (SV + NV) en cada lugar. La base de cada tasa es su propio total clasificado. Si falta una tasa, no podemos ordenar ambas.'],
+    'more-count': [compareRecord(...states, 'count'), 'Compara los registros SV, sin dividir. Un conteo mayor no implica una proporción mayor.'],
+    'higher-rate': [compareRecord(...states, 'rate'), 'Compara 100 × SV ÷ (SV + NV) en cada lugar. La base de cada tasa es su propio total clasificado. Si falta una tasa, no podemos ordenar ambas.'],
     combined: ['sum-first', 'Primero suma SV de ambos lugares; después divide entre la suma de sus SV + NV. El promedio simple de tasas da el mismo peso a bases de distinto tamaño.'],
     limit: ['no-motives', 'El dato muestra registros y proporciones de 2024. No revela motivos individuales ni permite juzgar el valor cívico de una comunidad.'],
     transfer1: [transfers.transfer1.correctAnswer, transfers.transfer1.explanation],
@@ -125,6 +121,89 @@ export function assessAnswer(quest, answer, data, assessmentFixtures) {
   if (!rule) return { correct: false, message: 'Elige una interpretación de esta pregunta.' };
   const correct = answer === rule[0];
   return { correct, message: `${correct ? 'Bien observado.' : 'Volvamos a mirar.'} ${rule[1]}` };
+}
+
+// Only these named rules run. Authored prompts/choices/feedback stay in story.json.
+const ACTIVITY_CONTRACT = {
+  'participation-reading': ['printing', 'national-participation', 'national', ['sv', 'nv', 'equal'], false],
+  unknown: ['printing', 'unknown', 'national', ['separate', 'nv'], false],
+  'unknown-transfer': ['printing', 'unknown-transfer', 'printing-fixture', ['unknown', 'nv', 'sv'], true],
+  'more-count': ['comparison', 'count', 'count', ['state_01', 'state_02', 'equal'], false],
+  'higher-rate': ['comparison', 'rate', 'rate', ['state_01', 'state_02', 'equal'], false],
+  'comparison-transfer': ['comparison', 'comparison-transfer', 'comparison-fixture', ['no', 'yes'], true],
+};
+const CHAPTER_IDS = ['printing', 'comparison', 'consultation'];
+const nonempty = text => typeof text === 'string' && Boolean(text.trim());
+const validCounts = record => record && ['sv', 'nv', 'ns', 'ln'].every(key =>
+  Number.isSafeInteger(record[key]) && record[key] >= 0) && record.ln === record.sv + record.nv + record.ns;
+const sameIds = (items, ids) => Array.isArray(items) && items.length === ids.length &&
+  new Set(items.map(item => item?.id)).size === ids.length && items.every(item => ids.includes(item?.id));
+
+function validActivity(activity) {
+  const contract = activity && Object.hasOwn(ACTIVITY_CONTRACT, activity.id) && ACTIVITY_CONTRACT[activity.id];
+  return Boolean(contract && activity.chapter === contract[0] && activity.rule === contract[1] &&
+    activity.view === contract[2] && activity.transfer === contract[4] &&
+    ['title', 'prompt', 'hint', 'explanation'].every(key => nonempty(activity[key])) &&
+    sameIds(activity.choices, contract[3]) && activity.choices.every(choice => nonempty(choice.text)));
+}
+
+// One exact comparator for the required quiz, published artifact and optional workshop.
+// Returns a record ID, equal, or unavailable; NS never enters the classified base.
+export function compareRecord(a, b, metric) {
+  if (!['count', 'rate'].includes(metric) || ![a, b].every(validCounts) ||
+      !nonempty(a.id) || !nonempty(b.id) || a.id === b.id) return 'unavailable';
+  const aBase = BigInt(a.sv) + BigInt(a.nv);
+  const bBase = BigInt(b.sv) + BigInt(b.nv);
+  if (metric === 'rate' && (!aBase || !bBase)) return 'unavailable';
+  const left = BigInt(a.sv) * (metric === 'rate' ? bBase : 1n);
+  const right = BigInt(b.sv) * (metric === 'rate' ? aBase : 1n);
+  return left === right ? 'equal' : left > right ? a.id : b.id;
+}
+
+export function assessActivity(activity, answer, data, story) {
+  if (typeof activity === 'string') activity = story?.activities?.find(item => item.id === activity);
+  const unavailable = { correct: answer === 'unavailable', available: false,
+    message: 'No hay información suficiente para esta lectura. Puedes revisar lo que falta y continuar con apoyo; no cuenta como respuesta independiente.' };
+  if (!validActivity(activity)) return { ...unavailable, correct: false };
+  const find = id => data?.records?.find(record => record.id === id);
+  const national = find('national');
+  const records = ['state_01', 'state_02'].map(find);
+  let expected;
+  switch (activity.rule) {
+    case 'national-participation':
+      if (!validCounts(national) || national.sv + national.nv === 0) return unavailable;
+      expected = national.sv === national.nv ? 'equal' : national.sv > national.nv ? 'sv' : 'nv';
+      break;
+    case 'unknown':
+      expected = 'separate';
+      break;
+    case 'unknown-transfer':
+      expected = 'unknown';
+      break;
+    case 'count':
+    case 'rate': {
+      expected = compareRecord(...records, activity.rule);
+      if (expected === 'unavailable') return unavailable;
+      break;
+    }
+    case 'comparison-transfer':
+      expected = 'no';
+      break;
+    default: return unavailable;
+  }
+  const correct = answer === expected;
+  return { correct, available: true, message: correct ? `Bien observado. ${activity.explanation}` :
+    'Todavía no coincide con esta lectura. Puedes mirar otra vez o ver un ejemplo con apoyo.' };
+}
+
+export function comparisonCaption(data, story) {
+  const records = ['state_01', 'state_02'].map(id => data.records.find(record => record.id === id));
+  return ['count', 'rate'].map(metric => {
+    const result = compareRecord(...records, metric);
+    const winner = records.find(record => record?.id === result);
+    if (winner) return story.comparison_artifact[metric].replace('{place}', winner.geography_name);
+    return result === 'equal' ? story.comparison_artifact[`equal_${metric}`] : story.comparison_artifact.unavailable;
+  }).join('\n');
 }
 
 // Fictional authored roster: never inferred from CCPC data or the player's choice.
@@ -142,31 +221,30 @@ export function resolveTally(counts) {
   const tied = Object.keys(counts).filter(option => counts[option] === maximum);
   return { winner: tied.length === 1 ? tied[0] : null, tied: tied.length > 1 ? tied : [], needsSecondDecision: tied.length > 1 };
 }
-export function resolveConsultation(choice, scenario = 'base') {
-  if (!['A', 'B', 'C', 'unmarked', 'decline'].includes(choice) || !Object.hasOwn(SCENARIOS, scenario)) throw new Error('Decisión o escenario no válido.');
-  const counts = { A: 0, B: 0, C: 0 };
-  const remaining = { ...SCENARIOS[scenario] };
-  for (const resident of createRoster()) {
-    if (remaining[resident.preference] > 0) {
-      counts[resident.preference]++;
-      remaining[resident.preference]--;
-    }
-  }
+export function resolveConsultation(choice, scenario = 'base', story) {
+  const shared = story?.consultation?.scenarios.find(item => item.id === scenario);
+  const base = story ? shared && Object.fromEntries(['A', 'B', 'C'].map((id, i) => [id, shared.votes[i]])) : SCENARIOS[scenario];
+  if (!['A', 'B', 'C', 'unmarked', 'decline'].includes(choice) || !base) throw new Error('Decisión o escenario no válido.');
+  const counts = { ...base };
   if (Object.hasOwn(counts, choice)) counts[choice]++;
   const unmarked = choice === 'unmarked' ? 1 : 0;
-  return { counts, unmarked, population: 31,
+  return { counts, unmarked, population: story ? story.consultation.roster.eligible_npcs + 1 : 31,
     participants: Object.values(counts).reduce((sum, n) => sum + n, 0) + unmarked,
     ...resolveTally(counts) };
 }
 
-const QUESTS = ['denominator', 'unknown', 'more-count', 'higher-rate', 'combined', 'limit', 'transfer1', 'transfer2'];
+// Retain the storage key to migrate existing devices, but never migrate old mastery.
 export const PROGRESS_KEY = 'voces-plaza.web.v1';
 export function sanitizeProgress(input) {
-  const value = input && typeof input === 'object' && input.version === 1 ? input : {};
-  return { version: 1,
-    completedChapters: [1, 2, 3].filter(id => Array.isArray(value.completedChapters) && value.completedChapters.includes(id)),
+  const value = input && typeof input === 'object' && [1, 2].includes(input.version) ? input : {};
+  const list = key => Array.isArray(value[key]) ? value[key] : [];
+  const legacy = value.version === 1;
+  const completedChapters = CHAPTER_IDS.filter((id, i) => list('completedChapters').includes(legacy ? i + 1 : id));
+  return { version: 2, completedChapters,
+    legacyCompleted: legacy ? [...completedChapters] : completedChapters.filter(id => list('legacyCompleted').includes(id)),
     settings: { textSize: value.settings?.textSize === 'large' ? 'large' : 'normal', reducedMotion: value.settings?.reducedMotion === true },
-    hints: QUESTS.filter(id => Array.isArray(value.hints) && value.hints.includes(id)) };
+    hints: legacy ? [] : Object.keys(ACTIVITY_CONTRACT).filter(id => list('hints').includes(id)),
+    assisted: legacy ? [] : Object.keys(ACTIVITY_CONTRACT).filter(id => list('assisted').includes(id)) };
 }
 export function readProgress(storage) {
   try { return sanitizeProgress(JSON.parse(storage.getItem(PROGRESS_KEY))); }
@@ -188,19 +266,46 @@ export function creditsHref(pathname) {
 }
 
 export function normalizeStory(value) {
-  if (!value || value.schema_version !== '1.0.0') return null;
-  const text = field => typeof field === 'string' && field.trim() ? field : undefined;
-  const chapterIds = { printing: 1, comparison: 2, consultation: 3 };
-  const chapters = (Array.isArray(value.chapters) ? value.chapters : []).filter(item => item &&
-    ([1, 2, 3].includes(item.id) || Object.hasOwn(chapterIds, item.id))).map(item => ({
-      id: chapterIds[item.id] || item.id,
-      ...Object.fromEntries(['title', 'question', 'intro', 'quote', 'npc', 'reflection'].map(key => [key, text(item[key])])),
-    }));
-  const projects = (Array.isArray(value.consultation?.projects) ? value.consultation.projects :
-    Array.isArray(value.projects) ? value.projects : []).filter(item => item && ['A', 'B', 'C'].includes(item.id)).map(item => ({
-      id: item.id, title: text(item.name) || text(item.title), description: text(item.benefit) || text(item.description), tradeoff: text(item.tradeoff),
-    }));
-  return { title: text(value.title), exhibit: text(value.exhibit), message: text(value.message), chapters, projects,
-    assessmentFixtures: normalizeAssessments(value.assessment_fixtures),
-    ending: { title: text(value.ending?.title), body: text(value.ending?.body) } };
+  if (!value || value.schema_version !== '2.0.0' ||
+      !['title', 'exhibit', 'message', 'opening', 'audience', 'fiction_label', 'bridge'].every(key => nonempty(value[key]))) return null;
+  if (!sameIds(value.activities, Object.keys(ACTIVITY_CONTRACT)) || !value.activities.every(validActivity)) return null;
+  if (!sameIds(value.chapters, CHAPTER_IDS) || !value.chapters.every(chapter =>
+    ['title', 'question', 'intro', 'npc', 'reflection'].every(key => nonempty(chapter[key])))) return null;
+  const houses = { printshop: 'printing', archive: 'comparison', hall: 'consultation' };
+  if (!sameIds(value.houses, Object.keys(houses)) || !value.houses.every(house =>
+    house.chapter === houses[house.id] && ['title', 'preview', 'objective', 'artifact'].every(key => nonempty(house[key])))) return null;
+  if (!['title', 'known', 'formula', 'combined', 'limit'].every(key => nonempty(value.optional_math?.[key]))) return null;
+  if (!['before', 'count', 'rate', 'equal_count', 'equal_rate', 'unavailable'].every(key => nonempty(value.comparison_artifact?.[key]))) return null;
+  if (!['count', 'rate'].every(key => value.comparison_artifact[key].includes('{place}'))) return null;
+  const workshop = value.poster_workshop;
+  if (!['title', 'intro', 'first_label', 'second_label', 'metric_label', 'question_label',
+    'count_label', 'rate_label', 'limit', 'memory_note'].every(key => nonempty(workshop?.[key])) ||
+      !sameIds(workshop.questions, ['missing', 'voices', 'followup']) ||
+      !workshop.questions.every(question => nonempty(question.text))) return null;
+  const fixtures = value.assessment_fixtures;
+  if (!validCounts(fixtures?.printing) || !Array.isArray(fixtures?.comparison) ||
+      fixtures.comparison.length !== 2 || !fixtures.comparison.every(validCounts)) return null;
+  const consultation = value.consultation;
+  if (!nonempty(consultation?.label) || !sameIds(consultation?.projects, ['A', 'B', 'C']) ||
+      !consultation.projects.every(project => ['name', 'benefit', 'tradeoff'].every(key => nonempty(project[key])))) return null;
+  const roster = consultation.roster;
+  if (!roster || !Number.isSafeInteger(roster.eligible_npcs) || roster.eligible_npcs < 0 ||
+      roster.player_is_additional !== true || !Array.isArray(roster.underlying_preferences) ||
+      roster.underlying_preferences.length !== 3 || !roster.underlying_preferences.every(n => Number.isSafeInteger(n) && n >= 0) ||
+      roster.underlying_preferences.reduce((a, b) => a + b, 0) !== roster.eligible_npcs) return null;
+  if (!sameIds(consultation.scenarios, ['baseline', 'more_same_winner', 'more_other_winner']) ||
+      !consultation.scenarios.every(scenario => Array.isArray(scenario.votes) && scenario.votes.length === 3 &&
+        scenario.votes.every((n, i) => Number.isSafeInteger(n) && n >= 0 && n <= roster.underlying_preferences[i]))) return null;
+  return value;
+}
+
+export async function loadStory(fetcher = fetch, pathname = globalThis.location?.pathname) {
+  for (const path of contentPaths('story.json', pathname)) {
+    try {
+      const response = await fetcher(path, { cache: 'no-cache' });
+      const story = response.ok && normalizeStory(await response.json());
+      if (story) return story;
+    } catch { /* Required content stays unavailable: no replacement questions. */ }
+  }
+  throw new Error('No pudimos cargar la historia compartida. Revisa que el paquete incluya story.json versión 2 con sus seis actividades y vuelve a reintentar.');
 }

@@ -1,10 +1,14 @@
 # Voces de la Plaza · product brief
 
+**Classroom revision, 25 October 2026:** primary use is introductory ethics/civic classes for high-school beginners approaching their first vote; adults new to civic education remain a secondary audience. The [classroom redesign](classroom_redesign.md) is implemented with six shared conceptual questions, three enterable houses and a story that connects evidence, fair comparison, plural needs and follow-up. The [verification record](verification.md) identifies the tested candidate; the [rubric review](rubric_review.md) distinguishes internal assessment from the committee's decision.
+
 Decision baseline: 24 October 2026. The user approved the development plan and said “Implement plan”, authorizing specifications and implementation across the six modules. Confirmed: Reto 3 registration, Linux fallback, simplepixels visual direction, 45–65 focused person-hours. Main implements/integrates code and data; web/assets have parallel owners. Current verified scope is recorded in [verification.md](verification.md).
 
 ## Product and audience
 
-A 10–15 minute civic data adventure in Mexican Spanish for adult beginners and civic-education facilitators. In fictional Villa Brisa, three speaking characters invite the player to repair a printing mechanism, correct a misleading noticeboard, and prepare “Las voces que construyen la plaza”. The lasting exhibit explains real CCPC 2024 participation observations through accessible visualizations, exact values, sources and limits. A short synthetic consultation connects evidence to plural needs, participation and accountability.
+A civic data adventure in Mexican Spanish for high-school and adult beginners, with a 10–15 minute design target. In fictional Villa Brisa, Luz needs an honest bulletin, Mateo needs a fair comparison poster, and Inés is preparing a meeting about the plaza. The player visits their three houses, publishes two CCPC exhibits, explores a synthetic consultation and chooses a follow-up question. Six short evidence decisions replace required arithmetic; equations remain optional. A teacher guide supports a planned 20-minute class, and a two-sided source/discussion sheet supports paper use. Duration and learning effects have not been measured with participants.
+
+After the archive, an optional workshop lets the learner select two actual states, count or proportion, and a neutral question to compose a public poster. Previewing and revising changes the story being told without changing the evidence. Inés receives the published poster and uses its question to open discussion; it does not determine the fictional project or its votes.
 
 Core message: “Comprender los datos nos ayuda a conversar con información. Participar nos permite aportar a las decisiones colectivas y dar seguimiento a lo que ocurre después.” Review final civic copy against actual content; this is an authored message, not a measured outcome.
 
@@ -26,8 +30,8 @@ Rubric evidence: thematic fit 35; clarity/solidity 30; originality/creativity 20
 
 ## Delivery status
 
-Godot 4.7.2 and matching templates are installed with official SHA-512 verification; GUT 9.7.1 is installed. CCPC raw SHA-256 matched; 9,773,730 rows from 32 CSV produced 33 national/state aggregates. Main reports Python 22, Node 17 and Godot GUT 9/9 passing (40 assertions, zero orphans). The two repaired journey tests are included in that total.
+Godot 4.7.2 and matching templates are installed with official SHA-512 verification; GUT 9.7.1 is installed. CCPC raw SHA-256 matched; 9,773,730 rows from 32 CSV produced 33 national/state aggregates. Current test counts, exported journeys, assistive observations and exact source/output identities live in [verification](verification.md).
 
-Web/HTML and Linux exports succeeded. Playwright completed HTML across five ballot actions and persistence/privacy, checked no horizontal overflow at 320/768/1440 px, and booted Godot web without captured console/page errors. Linux headless boot passed. All 48 tests pass: Python 22, Node 17, GUT 9. Produced drafts: narrative PDF 4 pages (Letter, 11 pt), deck PDF 10 pages (16:9), all 14 visually reviewed by asset QA with no clipping. Silent captioned screen-recording MP4: 108.07 s, 1920×1080, 30 fps, H.264 High, yuv420p; SRT and separate transcript included, no voice-over recorded. The local candidate is packaged and clean-checked. Team review, signed letters, hosting, formal screen-reader evaluation and user pilot remain open; no learning effects are established.
+The local Latas candidate contains web/HTML and Linux builds, a four-page narrative, ten-slide presentation, two-page classroom sheet and silent captioned 1080p demonstration with transcript. [Handoff](handoff.md) records current measurements and clean-package scope. Signed letters, authorized hosting, external submission, formal screen-reader evaluation and a participant pilot remain distinct pending actions; no learning effect is established.
 
 See [capability map](../CAPABILITY_MAP.md), [architecture](architecture.md), [plan](../tasks/plan.md), and [pending tasks](../tasks/todo.md). Preparation of submission artifacts is approved; signatures, external sending and release remain separate actions.

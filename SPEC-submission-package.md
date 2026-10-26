@@ -1,14 +1,16 @@
 # SPEC: submission-package
 
-Version 1 · 24 October 2026 · Owner: main, package integration; team owns signatures/submission.
-Approved preparation scope implemented through local draft production: web/Linux exports, all 48 tests and scoped browser checks pass. Narrative PDF (4 pages), deck PDF (10 pages) and silent captioned MP4 (108.07 s) are produced; all 14 PDF pages passed visual QA. See [verification](docs/verification.md). Team review, signed forms, hosting, formal screen-reader evaluation and pilot remain open; the local candidate is packaged and clean-checked.
+**Classroom amendment · 25 October 2026:** The classroom candidate adds a teacher guide and two-sided printable sheet. Narrative, deck and captioned recording must correspond to the revised runtime. The package builder verifies source and export fingerprints before writing its manifest. Local candidate production is separate from signatures, hosting and external submission. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
+
+Version 2 · 25 October 2026 · Owner: main, package integration; team owns signatures/submission.
+Approved preparation scope extends through local candidate production for **Equipo Latas**: tested web/Linux exports, a four-page narrative, ten-slide deck, two-page classroom sheet and silent captioned 1080p demonstration. [Verification](docs/verification.md) and [handoff](docs/handoff.md) record the current test counts, measured media duration, visual-review scope and exact artifact identities. Team review, signed forms, hosting, formal screen-reader evaluation and pilot remain open. The clean-check receipt identifies the exact ZIP tested; a later package edit requires a new clean check.
 
 Formal screen-reader evaluation and user pilot are internal quality/evaluation checks, not asserted official submission requirements. Keep their evidence limits separate from mandatory artifacts/forms and do not introduce another approval gate for approved packaging.
 Depends on all other five modules. This spec authorizes local preparation; it does not authorize signing, emailing, or public release.
 
 ## Objective and structure
 
-Assemble one internally consistent Reto 3 candidate: web/HTML and Linux outputs with their tested scope, source/content, methods/licences, produced presentation/PDF/video drafts, required letters and evidence. Implemented packaging helper is `tools/package_candidate.py`; intended output is `submission/voces_de_la_plaza_Reto_3_candidato.zip` plus release manifest. Main records actual generated outputs and remaining team-name/forms/hosting items; packaging is not external submission.
+Assemble one internally consistent Reto 3 candidate: web/HTML and Linux outputs with their tested scope, source/content, methods/licences, produced presentation/PDF/video drafts, required letters and evidence. Implemented packaging helper is `tools/package_candidate.py`; output is `submission/Latas_Reto_3.zip` plus release manifest. The older generic ZIP is historical. Main records actual generated outputs and remaining roster/forms/hosting items; packaging is not external submission.
 
 See [submission checklist](docs/submission_checklist.md) for pending requirements, [facilitator guide](docs/facilitator.md) for reuse, and [source register](docs/source_register.md) for recovered official links. Research-source statements about the call are not a fresh online check of current requirements.
 
@@ -23,7 +25,7 @@ python3 tools/export_game.py --target web --asset-set original
 python3 tools/export_game.py --target linux --asset-set original
 ```
 
-Commands/scripts are implemented; original-set web/Linux exports succeeded. Python 22, Node 17 and Godot GUT 9/9 passed (40 assertions, zero orphans), with HTML journey and boot scope in the verification record. A development export is not final originality acceptance. Serve repository root for the smoke runner's `/build/web/` path; direct output-folder serving is a separate preview variant.
+Implementation and current verification evidence are recorded in [verification](docs/verification.md). Run the applicable suites and exported journeys after changes; previous results do not certify a changed artifact. Formal user evaluation remains distinct from automated checks.
 
 Manifest style: exact artifact paths, measured hashes, source snapshot identity, actual engine/template versions, asset-set identity, licence notices, tested environment, test logs, known limitations, and pending items. If no commit was requested/created, record that the candidate comes from the working tree and identify the source copy; never invent a revision ID. This assignment makes no git commits.
 

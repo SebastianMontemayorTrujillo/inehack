@@ -2,95 +2,108 @@
 
 ## Narrativa y plan de difusión · Reto 3
 
-Estado editorial: **fuente estable; borradores producidos**, 24 de octubre de 2026. Main confirma narrativa PDF de **4 páginas, Letter, 11 pt** y presentación PDF de **10 páginas, 16:9**; asset QA revisó visualmente las **14 páginas sin recortes**. MP4 silencioso con subtítulos, SRT y transcripción aparte: **108.07 s, 1920×1080, 30 fps, H.264 High, yuv420p**. No hay voz grabada. La revisión final del equipo y los trámites de entrega son distintos de la producción ya completada.
+**Equipo Latas · Edición de aula · 25 de octubre de 2026.** Narrativa de cuatro páginas con una propuesta de difusión para bachillerato y personas adultas principiantes. [PDF de narrativa y difusión](../submission/voces_narrativa_y_difusion.pdf), [materiales docentes](../submission/classroom.html) y [registro de verificación](verification.md).
 
-Estado reconciliado con main: **48 pruebas aprobadas: 22 Python, 17 Node y 9/9 Godot GUT**, con 40 aserciones y cero huérfanos en Godot. Exportaciones web/Linux y recorrido HTML automatizado con todas las opciones, persistencia/privacidad y tres anchos aprobados; arranques web/Linux acreditados con el alcance de [verification.md](verification.md). Evaluación formal con lector de pantalla y pilotaje no realizados.
+Los cuatro bloques conservan el formato de `tools/render_submission.mjs`. La [revisión editorial contra la rúbrica local](deck_outline_es.md#revisión-editorial-contra-la-rúbrica-local) distingue calidad del contenido, comprobaciones técnicas y evaluación educativa.
+
+El taller opcional está implementado en Godot y HTML. El [recorrido nativo](../build/evidence/native-window.json) y el [registro de verificación](verification.md) delimitan las comprobaciones técnicas; no constituyen una evaluación de aprendizaje. La presentación incluye una captura real de su vista previa.
 
 <!-- INICIO DEL CONTENIDO PARA PDF: PÁGINA 1 -->
 
-## 1. Una plaza para comprender y conversar
+## 1. Una plaza para aprender a conversar con datos
 
-**Voces de la Plaza** propone una aventura de datos para personas adultas principiantes y facilitadoras de educación cívica. Su pregunta central es: ¿cómo transformar información pública de participación en una historia comprensible que invite a conversar y dar seguimiento a las decisiones colectivas?
+**Voces de la Plaza** propone una aventura de educación cívica para estudiantes de bachillerato de aproximadamente 15–18 años que se acercan a su primer voto, y para personas adultas principiantes. La pregunta es cómo leer información pública, reconocer sus límites y usarla en una conversación sobre decisiones colectivas. No requiere experiencia con videojuegos ni resolver operaciones para avanzar.
 
-La experiencia está diseñada para durar entre 10 y 15 minutos. Ocurre en Villa Brisa, un pueblo ficticio con una plaza, un archivo y un tablero comunitario. Tres personajes —Luz, Mateo e Inés— acompañan dos misiones basadas en CCPC y una consulta breve con cifras inventadas. La duración es un objetivo pendiente de comprobar en una sesión completa.
+En la Villa Brisa ficticia hay recursos para empezar una mejora de la plaza y tres propuestas distintas. Antes de la reunión, la persona jugadora ayuda a preparar **Las voces que construyen la plaza**, una exhibición con un boletín y un cartel. El recorrido conserva un pueblo, tres casas, tres personajes que hablan, dos misiones CCPC y una consulta ficticia con final.
 
-El hilo narrativo es preparar **Las voces que construyen la plaza**, una exhibición que conserva hallazgos, visualizaciones, cifras exactas, fuentes y límites. Los datos no aparecen como decoración: deben determinar el boletín reparado, las comparaciones válidas y la explicación que se ofrece a quien juega. La recompensa narrativa reconoce una interpretación responsable y la reflexión; ninguna opción política o decisión de votar merece más premio.
+**Imprenta de Luz:** preparar un boletín honesto sobre la participación nacional de 2024, sin borrar la información desconocida. **Archivo de Mateo:** corregir un cartel que confunde cantidad con proporción al comparar Aguascalientes y Baja California. **Casa de reunión de Inés:** escuchar necesidades distintas, conocer una regla de decisión inventada y pensar cómo dar seguimiento.
 
-La primera misión pregunta qué nos cuentan los registros y qué permanece desconocido. La segunda distingue cantidades de porcentajes y confronta una inferencia que la evidencia no respalda. La consulta final incorpora necesidades distintas y recursos limitados, sin presentar una simulación completa de una elección constitucional.
+El diseño permite entrar y salir de las tres casas desde el principio. Cada anfitrión anticipa su tarea; la consulta se habilita cuando están listos los dos objetos de evidencia. Al regresar a la plaza se pueden volver a leer los hallazgos, fuentes y límites. Los interiores sirven para trabajar sobre esos objetos, dentro de la misma historia.
 
-El aprendizaje buscado es que una persona pueda explicar un patrón real, reconocer un límite de ese dato y proponer una forma de participar o de revisar lo que ocurre después. No se afirma que jugar aumente la participación electoral, que una comunidad tenga más valor cívico que otra ni que una cifra revele por qué actuó cada persona.
+La aventura tiene una duración objetivo de 10–15 minutos. La guía docente propone una clase de 20 minutos: dos de introducción, trece de actividad y cinco de conversación opcional. Son tiempos por comprobar con participantes. Se ofrecen formatos individual, por parejas o con proyector, y una hoja de trabajo para usar sin computadora.
 
-La implementación reúne una aventura Godot con dirección visual simplepixels, una ruta HTML semántica y un respaldo nativo Linux. Ambas exportaciones se realizaron; el alcance de las pruebas se detalla en la última página. El proyecto conserva un solo pueblo, tres personajes, dos misiones de evidencia y un final completo. El arte y los sonidos finales son originales y se integran mediante identificadores de rol; las referencias de desarrollo y la tipografía OFL se registran por separado.
+El taller de carteles es una ampliación opcional del archivo, con tiempo adicional por prever. Omitirlo conserva las seis actividades, la consulta y el mismo cierre; no es una misión obligatoria nueva.
+
+El resultado educativo buscado es explicar un hallazgo real, reconocer algo que no sabemos y formular una pregunta de seguimiento. El contenido compartido conecta los tres interiores con los materiales de aula. No se atribuyen al juego cambios en intención de voto o participación electoral.
 
 <div style="page-break-after: always;"></div>
 
 <!-- PÁGINA 2 -->
 
-## 2. De los registros a la exhibición
+## 2. Dos misiones con datos que se pueden revisar
 
-**La prensa de las voces.** Luz necesita un boletín que conserve tanto lo que sabemos como lo que no podemos clasificar. Quien juega organiza tres categorías: SV, registros con marca de voto; NV, sin marca de voto; y NS, participación sin especificar. El mecanismo se repara al distinguir la tasa entre registros clasificados de la proporción sin clasificación. Una ficha permite revisar año, lugar, valores, fórmula, fuente y versión.
+**Fuente real:** INE, Conteos Censales de Participación Ciudadana, elección federal de 2024; conjunto local `ccpc-2024-v1`. Los conteos reproducidos del ZIP oficial son el sustento de los hallazgos. No representan preferencias partidistas ni describen al alumnado de 15–18 años.
 
-La tasa se calcula como **100 × SV / (SV + NV)**. La proporción sin clasificación es **100 × NS / LN**. Son denominadores distintos: NS no equivale a abstención ni a voto nulo. Si no hay denominador, se informa que no hay datos clasificables, en lugar de fabricar un 0%. Los porcentajes clasificados y NS/LN no se mezclan en una sola composición del 100%.
+**La prensa de las voces.** En el agregado nacional hay 54,899,228 registros con marca de voto (SV), 37,105,466 sin marca (NV) y 6,325,654 sin clasificación (NS); el total analizado (LN) es 98,330,348. Entre los 92,004,694 con información conocida, cerca de 60 de cada 100 tienen marca: **59.67%**, redondeado. Por separado, NS representa **6.43% del total analizado**, redondeado. No comparten base y no deben sumarse en una sola composición del 100%.
 
-En el agregado nacional de 2024 hay 54,899,228 registros SV, 37,105,466 NV y 6,325,654 NS; LN suma 98,330,348. La tasa entre registros clasificados es 59.7% y la proporción NS/LN, 6.4%, redondeadas a un decimal. Estas cifras describen el universo analizado, no preferencias partidistas ni resultados por candidatura.
+Luz propone tres decisiones: reconocer qué categoría clasificada tiene más registros; explicar que, cuando falta información, no sabemos si la persona participó; y colocar diez registros desconocidos en «No sabemos» dentro de un ejemplo nuevo inventado de 60 con participación, 30 sin participación y 10 desconocidos. Sin clasificación no significa abstención ni voto nulo.
 
-**El mapa que no lo dice todo.** Mateo pide corregir un cartel que confunde “más registros” con “tasa mayor”. La comparación usa Aguascalientes y Baja California en el mismo año:
+**El mapa que no lo dice todo.** Mateo presenta las cantidades exactas y las tasas, redondeadas a dos decimales:
 
-| Entidad, 2024 | SV | SV + NV | Tasa clasificada |
+| Entidad, 2024 | Con marca (SV) | Con información (SV + NV) | Tasa clasificada |
 | --- | ---: | ---: | ---: |
 | Aguascalientes | 626,084 | 1,067,306 | 58.66% |
 | Baja California | 1,396,335 | 2,968,011 | 47.05% |
 
-Baja California tiene más registros SV; Aguascalientes tiene la tasa mayor. Para combinar ambas entidades se suman primero los conteos: 2,022,419 SV entre 4,035,317 registros clasificados, equivalente a 50.12%. Promediar directamente las dos tasas daría 52.85% y respondería otra operación, no la tasa del conjunto.
+Las otras tres decisiones son identificar dónde hay más registros con marca, dónde hay mayor proporción y resolver un caso nuevo **inventado**: A tiene 20 participantes de 40 (50%); B, 60 de 200 (30%). Más participantes no siempre significa mayor porcentaje. BC tiene más registros; AGS, cerca de 59 de cada 100 clasificados frente a 47 en BC.
 
-El tablero terminado incluye “El dato muestra”, “No permite saber” y “Faltan datos”. Un agregado no revela motivos individuales ni permite calificar a las comunidades como mejores o peores ciudadanas. Los registros provienen de marcas en cuadernillos de lista nominal; el alcance documentado excluye casillas especiales y voto desde el extranjero. No deben confundirse con totales de actas bajo otras definiciones.
+Las seis actividades exigen leer e interpretar, con reintentos y apoyo. Los casos nuevos permiten intentar aplicar la idea en otro ejemplo; no constituyen una medida validada de comprensión. Completar con ayuda no demuestra dominio independiente. Las fórmulas quedan opcionales: `100 × SV / (SV + NV)` y `100 × NS / LN`. Al reunir entidades se suman primero conteos: 2,022,419 entre 4,035,317, aproximadamente 50.12%. Sin base válida no se inventa un 0%.
 
-Ambas misiones prevén explicaciones, reintentos y apoyo. Un ejemplo didáctico nuevo, claramente sintético, permite comprobar si se comprendió la idea sin memorizar cifras. La ayuda y el intento independiente se distinguen: completar una misión con apoyo no acredita por sí solo dominio independiente.
+El archivo documenta exclusiones de casillas especiales y voto desde el extranjero. Un agregado no revela motivos individuales ni permite juzgar el valor cívico de una comunidad. La hoja conserva valores exactos, lecturas sencillas, año, base, fuente y estos límites.
+
+**Crea tu cartel para la reunión (opcional).** Tras las seis actividades, el taller permite elegir dos de las 32 entidades, cantidad o proporción y una pregunta neutral. La vista previa cambia con los datos elegidos y conserva conteos, bases, NS, año, fuente y límites. Se puede revisar y llevar a Inés durante la sesión. No añade una prueba, operaciones obligatorias ni preferencias políticas; tampoco cambia resultados de consulta o reconocimiento.
+
+**Procedencia:** el reporte local documenta 32 CSV, 9,773,730 filas y 33 agregados, con el SHA-256 del ZIP reproducido. Filas no equivalen a personas; consistencia aritmética no demuestra unicidad o exhaustividad.
 
 <div style="page-break-after: always;"></div>
 
 <!-- PÁGINA 3 -->
 
-## 3. Una plaza, varias ideas: autonomía y acceso
+## 3. Escuchar, decidir y dar seguimiento
 
-Inés recibe la exhibición y plantea una consulta ficticia: comenzar un proyecto entre sombra y bancas, un rincón de lectura o un jardín comunitario. Los tres reciben el mismo espacio y tono. Cada propuesta aporta algo y requiere cuidado; el presupuesto permite iniciar solo una. Las necesidades que no ganan siguen siendo legítimas.
+Antes de entrar a la consulta, Inés explica: **«Los datos del INE nos hablan de la participación en 2024. Esta consulta es inventada para practicar cómo escuchar y tomar decisiones».** Los hallazgos históricos no eligen el proyecto ni explican las preferencias de los personajes.
 
-Las cifras de esta escena son inventadas y están separadas de CCPC. Tres escenarios de participantes producen conteos A/B/C de 8/5/3, 11/8/6 y 8/10/7. Los dos últimos tienen 25 participantes y distinto proyecto ganador: un mayor total de participación no determina por sí mismo quién gana. Se trata de subconjuntos de un padrón ficticio de 30 personajes; quien juega es una persona adicional.
+La Casa de reunión ofrece tres propuestas con igual espacio y tono: **A, Sombra y bancas**, para descansar y conversar, con mantenimiento y riego; **B, Rincón de lectura**, para compartir historias y aprender, con cuidado de libros y facilitación; **C, Jardín comunitario**, para cuidar un espacio verde, con agua y trabajo continuo. Los recursos permiten comenzar una; las necesidades que quedan pendientes siguen siendo legítimas.
 
-La regla se explica antes de decidir: elegir añade una unidad a esa opción y al total; dejar la boleta sin marcar añade una unidad solo al total; no participar conserva ambos. Un empate debe mostrar un estado ficticio explícito de nueva decisión, sin preferencia automática por una opción. Estas reglas didácticas no se presentan como procedimiento electoral mexicano.
+Hay cinco acciones: elegir A, elegir B, elegir C, dejar la boleta sin marcar o no participar. Todas permiten el mismo final y reconocimiento. Elegir suma uno a esa opción y al total; dejar sin marcar suma solo al total; no participar conserva ambos. Si hay empate, la ficción requiere otra decisión, sin preferir automáticamente A. Estas reglas didácticas no reproducen todos los procedimientos de una elección constitucional.
 
-Todas las acciones permiten el mismo final y los mismos reconocimientos de aprendizaje. Playwright completó las cinco acciones en HTML y comprobó el avance tras recargar; las claves guardadas revisadas no contienen la elección ni resultados que la revelen. Las pruebas de reglas y recorrido Godot también comprobaron la lista permitida de guardado. Esto no sustituye una auditoría completa de privacidad, URLs o red. El diseño excluye perfiles políticos e identificadores personales.
+Los escenarios son inventados: conteos A/B/C de 8/5/3, 11/8/6 y 8/10/7. Los últimos dos tienen 25 participantes y ganadores distintos: el total de participación, por sí solo, no determina quién gana. Proceden de un grupo ficticio de 30 personajes; quien juega es una persona adicional. No son resultados del salón ni datos del INE.
 
-La conversación termina con preguntas como “¿Qué se hizo con el presupuesto?”, “¿Cómo sabremos si el proyecto se realizó?” y “¿Qué necesidades siguen pendientes?”. Participar aporta al conteo; que una opción pierda no borra su aportación. El seguimiento continúa después de la decisión.
+El cierre propone revisar el uso de recursos, el avance del proyecto o las necesidades aún pendientes. Las tres preguntas son válidas. Ninguna preferencia ni voluntad de votar se califica. La clase no solicita nombres, afiliaciones, intención de voto o elecciones de consulta; no recoge datos políticos de menores ni de personas adultas. La hoja permanece con quien la usa. En proyector se demuestra una acción anunciada, sin votar ni contar preferencias del grupo.
 
-El acceso forma parte del diseño: teclado, foco visible, texto ampliable, silencio, movimiento reducido y una alternativa a arrastrar o recorrer el mapa. Cada visualización debe tener texto y tabla con valores exactos. La ruta HTML semántica debe permitir las mismas misiones, apoyos, consulta y reflexión sin ejecutar el lienzo Godot. No basta una transcripción de diálogos.
+La ruta HTML semántica ofrece las mismas seis actividades, fuentes, apoyos y final sin ejecutar Godot. El taller opcional está disponible en ambas rutas. La aventura incorpora teclado, foco visible, texto ampliable, silencio, movimiento reducido y botones de ubicación. Las visualizaciones tienen tablas exactas; Linux ofrece una alternativa local. El registro de verificación identifica el entorno y alcance de las comprobaciones, sin prometer compatibilidad universal.
 
-El recorrido HTML automatizado pasó sin desbordamiento horizontal en los estados comprobados a 320, 768 y 1440 píxeles; se revisaron las clases de configuración de texto grande y movimiento reducido. Linux exportó y pasó arranque sin interfaz. Estas pruebas tienen un alcance automatizado y no establecen conformidad WCAG, compatibilidad universal, portabilidad a cualquier equipo o caché web sin conexión. La evaluación formal con lector de pantalla y el pilotaje con personas usuarias siguen pendientes.
+La elección y los resultados que la revelan no se guardan ni transmiten. Al retomar la historia, el cierre conserva un resumen neutral de lo completado. La revisión técnica de estas reglas es distinta de observar comprensión en una clase.
+
+El cartel opcional se conserva solo en memoria durante la sesión. Su pregunta puede invitar a reconocer información faltante, escuchar a quienes no han hablado o revisar si se cumplió lo acordado. No identifica personas ni recoge preferencias; los datos del cartel no eligen un proyecto para la consulta ficticia.
 
 <div style="page-break-after: always;"></div>
 
 <!-- PÁGINA 4 -->
 
-## 4. Difusión, reutilización y evidencia
+## 4. Reutilización y difusión propuesta
 
-La difusión propuesta combina una actividad breve con conversación guiada. No existen acuerdos de adopción institucional acreditados. Cualquier publicación o envío se realizará con autorización y revisión de las condiciones de la convocatoria y de los derechos de distribución.
+La propuesta es una sesión breve de ética o educación cívica sobre información honesta, comparación justa, pluralidad y seguimiento. La guía y la hoja están preparadas; su eficacia, duración y adecuación curricular necesitan observación. No se afirma certificación SEP ni adopción del INE.
 
-| Público / espacio | Canal y formato | Condiciones de uso |
+| Público / espacio propuesto | Material y formato | Condición de uso |
 | --- | --- | --- |
-| Personas adultas en talleres de educación cívica | Sesión facilitada: aventura o HTML, seguida de diálogo | Equipo y controles probados; no pedir intención de voto ni datos personales. |
-| Bibliotecas y espacios educativos | Estación individual o demostración grupal, con ficha de fuentes | Texto legible, reinicio entre sesiones, apoyo disponible y respaldo Linux verificado. |
-| Público digital por canales institucionales autorizados | Micrositio con dos rutas, transcripción y guía descargable | Enlaces y permisos comprobados; versión, fuentes, licencias y límites visibles. |
+| Bachillerato, 15–18 años | Guía de 20 minutos; actividad individual, en parejas o proyectada; hoja con fuentes y reflexión. | Docente, papel o equipo comprobado; no solicitar preferencias políticas ni conservar elecciones. |
+| Personas adultas principiantes; bibliotecas y talleres | La misma historia y hoja, con lectura acompañada y apoyo opcional. | Lenguaje respetuoso, texto legible y ruta de acceso adecuada al grupo. |
+| Canales educativos o institucionales autorizados | Aventura, HTML independiente y materiales descargables identificados por versión. | Publicación autorizada; comprobar enlaces, permisos, fuentes, licencias y alcance de acceso. |
 
-La [guía de facilitación](facilitator.md) propone pedir un hallazgo real, un límite y una pregunta de seguimiento. Ofrece apoyo sin confundirlo con respuesta independiente. Si se realizan sesiones formativas, se registrarán barreras y errores anónimos, su contexto y las reparaciones; no la elección de la consulta. Si solo hay revisión interna, se informará así. No hay resultados de pilotaje, ganancias de aprendizaje, retención o efectos electorales acreditados en este documento.
+**Secuencia de difusión propuesta:**
 
-**Evidencia actual.** Godot 4.7.2 y sus plantillas se instalaron con SHA-512 cotejado con sumas oficiales; GUT 9.7.1 está instalado. El SHA-256 del ZIP CCPC coincidió y se reprodujeron 9,773,730 filas de 32 CSV, con 33 agregados: nacional y 32 entidades. Pasaron **22 pruebas Python, 17 Node y 9/9 Godot GUT; Godot registra 40 aserciones y cero huérfanos**, incluyendo las dos pruebas de recorrido reparadas. La coherencia aritmética no demuestra unicidad o exhaustividad de la fuente.
+1. Una persona mantenedora de **Latas** prepararía un paquete identificado por versión, con fuentes, requisitos, guía, hoja y registro de cambios, para una persona facilitadora receptora.
+2. La persona facilitadora revisaría el encaje docente, prepararía el equipo y recorrería las seis actividades, la consulta y el cierre; decidiría si ofrece el taller opcional. Elegiría HTML, aventura, Linux o papel según el acceso disponible.
+3. Tras una sesión voluntaria, devolvería observaciones de claridad, tiempo y barreras, asociadas a la versión y modalidad; sin nombres, preferencias ni respuestas individuales del alumnado.
+4. Latas revisaría esas observaciones, corregiría el material y comprobaría datos y ambas rutas. Entregaría una nueva edición y sus cambios para repetir la preparación antes de difundirla por canales autorizados.
 
-Las exportaciones web y Linux finalizaron. Playwright completó HTML con las cinco acciones de consulta, persistencia y tres anchos; el arranque Godot web no registró errores de consola o página. Linux pasó arranque sin interfaz. Son alcances diferentes: no equivalen a un recorrido manual completo de ambas exportaciones. El reporte `build/evidence/browser-results.json` y sus capturas, el reporte de datos y los registros de herramientas sustentan estos avances; [verification.md](verification.md) conserva procedencia y límites.
+**Materiales preparados:** guía HTML, hoja HTML/PDF de dos páginas con datos y escenarios de consulta, glosario, narrativa de cuatro páginas, presentación de diez diapositivas y guion de pitch. Las capturas muestran la plaza, los interiores, el cierre y la ruta HTML.
 
-Los borradores locales están producidos: narrativa PDF de cuatro páginas y presentación PDF de diez, con revisión visual de sus catorce páginas sin recortes. El video es una grabación real de pantalla, silenciosa con subtítulos, de 108.07 segundos, 1920×1080 a 30 fps, H.264 High y yuv420p; incluye SRT y transcripción aparte, sin voz grabada. Quedan revisión del equipo, cartas firmadas, alojamiento de solo lectura, evaluación formal con lector de pantalla y pilotaje. No se presenta el borrador como una candidatura enviada ni como evidencia de efectos educativos o electorales.
+**Evaluación futura:** una revisión con una persona docente y 5–8 principiantes podría orientar mejoras. Con menores, coordinar participación voluntaria y condiciones escolares. Registrar barreras, apoyo y totales anónimos de explicaciones, e informar el número real observado. Aún no hay pilotaje ni evaluación formal con lector de pantalla; las comprobaciones técnicas no acreditan aprendizaje.
 
-La evaluación con lector de pantalla y el pilotaje son controles internos de calidad y evaluación del proyecto, no requisitos oficiales de entrega. Su estado pendiente delimita la evidencia disponible, sin atribuir al prototipo resultados de uso o aprendizaje que no se han observado.
+La rúbrica local pondera temática, claridad, originalidad y viabilidad en 35/30/20/15 puntos. El dictamen corresponde al comité; no se anticipa una puntuación.
 
-**Fuentes.** INE, [portal CCPC](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/), [datos abiertos de 2024 y diccionario incluido](https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip), y [manual 2009–2024](https://ine.mx/wp-content/uploads/2025/06/Manual-Conteos-Censales-2009-2024.pdf). La reproducción utiliza el conjunto `ccpc-2024-v1`; la comparación combina conteos antes de calcular. El [registro de fuentes](source_register.md) conserva enlaces, procedencia y límites. La [convocatoria](https://www.ine.mx/wp-content/uploads/2026/09/Convocatoria_Hackaton-1.pdf) establece los requisitos de participación y entrega.
+**Fuentes y uso:** INE, [portal CCPC](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/), [ZIP 2024 y diccionario](https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip); `game/content/ccpc.json`, `data/validation_report.json`, [registro de fuentes](source_register.md), [verificación](verification.md), [guía](facilitator.md), [hoja](classroom_handout.md) y [reutilización institucional propuesta](institutional_reuse.md). La rúbrica oficial local y la [convocatoria](https://www.ine.mx/wp-content/uploads/2026/09/Convocatoria_Hackaton-1.pdf) sustentan la revisión editorial y el checklist de entrega.
 
 <!-- FIN DEL CONTENIDO PARA PDF -->

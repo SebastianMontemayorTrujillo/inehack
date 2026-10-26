@@ -1,7 +1,9 @@
 # SPEC: accessible-story
 
-Version 1 · 24 October 2026 · Owner: web contributor; integration: main.
-Approved scope implemented. Node 17 passed; Playwright completed HTML independently of canvas for five ballot actions, persistence and tested widths 320/768/1440 px. Formal screen-reader evaluation/user pilot have not run; manual accessibility acceptance remains partial. See [verification](docs/verification.md).
+**Classroom amendment · 25 October 2026:** The independent semantic HTML route has three enterable house sections, restored focus, the same six activities and two transfers, optional mathematics, artifacts and ending. Shared content validation rejects missing fields. Keyboard and responsive checks run against the assembled export; assistive-technology observations are scoped in the verification record. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
+
+Version 2 · 25 October 2026 · Owner: web contributor; integration: main.
+Implementation and current verification evidence are recorded in [verification](docs/verification.md). Run the applicable suites and exported journeys after changes; previous results do not certify a changed artifact. Formal user evaluation remains distinct from automated checks.
 Depends on `ccpc-data`, `evidence-quests`, and `community-choice`.
 
 ## Objective
@@ -28,6 +30,8 @@ Use semantic headings, real buttons/links, labelled form groups, tables with cap
 Provide an introduction, settings, both quest interactions with hints/feedback/transfer cases, source details, final exhibit, synthetic choice, and reflection. Preserve the distinction between independent and assisted completion. Values and accepted answers follow provider records/rules; data changes must update the interface consistently.
 
 Every chart has equivalent exact-value text/table content with year, geography, denominator, source and limitation. Use labels or patterns as well as color. All essential narrative/audio information appears as text. HTML remains usable if the game engine fails; invalid/missing content instead produces an honest unavailable state with recovery guidance.
+
+The optional archive poster workshop implements EVID-06 with labelled keyboard selectors, a preview and a distinct publication action. Changing the states, count/proportion lens or neutral discussion prompt changes the public artifact. The same publication appears in the archive, exhibit and meeting; editing/cancelling cannot silently replace it. Keep it in session memory only, clear it on reset and never claim an old saved example was authored in the current session.
 
 Progress may be local to this route; cross-route save synchronization is not required. Apply the play-session save allowlist and consultation privacy rules. Storage refusal/corruption permits a fresh or memory-only session; no account or network telemetry.
 

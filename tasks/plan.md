@@ -1,5 +1,44 @@
 # Implementation plan · Voces de la Plaza
 
+## Classroom revision
+
+Implemented from the 24 October design during the 25 October completion pass: introductory ethics/civic courses in Mexico, simpler questions, a clearer rationale and three enterable houses. Current acceptance is recorded in [todo](todo.md#classroom-revision) and [verification](../docs/verification.md). The original 79/100 baseline and conditional 91/100 planning target are historical estimates; the [rubric review](../docs/rubric_review.md) assesses the revised artifacts independently. The user's 100/100 target does not authorize invented evidence or a guaranteed committee score.
+
+The primary audience becomes high-school beginners approaching their first vote; adults new to civic education use the same respectful language. Core flow: understand evidence → compare fairly → listen and decide → follow up. Keep one town, three characters, two CCPC quests, the separate synthetic consultation, semantic HTML equivalence and Linux fallback. Add small interiors to the existing three houses. Calculations stay correct and available, while conceptual graph-reading replaces required formula exercises.
+
+Revision task status lives only in [todo](todo.md#classroom-revision). Dependencies:
+
+`RV01 content contract → RV02 house-1 navigation → RV03 first simple quest → RV04 comparison → RV05 house 2 → RV06 house 3/ending → RV10 exported interaction checks → RV12 refreshed candidate`.
+
+`RV07 original room roles → RV08 asset records → RV10`; `RV01 + RV03 + RV04 + RV06 → RV09 equivalent HTML → RV10`; `RV01 + RV06 → RV11 teacher materials → RV12`.
+
+The subsequent rubric review adds **RV13**, implementing the original supported-headline interaction as an optional poster workshop: canonical content and exact generic comparison → Godot/HTML composition and publication → all 496 state-pair checks plus actual keyboard journeys → updated classroom/media and renewed rubric review → RV12 package freeze. Existing six required questions and the synthetic consultation remain intact. A published poster survives navigation and cancelled edits in the current session but is never serialized with progress or ballots.
+
+Build a complete first-house entry/quest/exit slice before rolling the room pattern out. Keep one active spatial scene below a persistent root; door interaction and menu travel share an entry action, with safe spawns, current-room bounds and no automatic quest completion. All rooms are physically accessible from the start; only consultation activity depends on the two evidence artifacts.
+
+Checkpoint A after RV01–RV03: enter/leave house 1 through actual input, publish a simpler sourced bulletin, retry safely and retain progress. Checkpoint B after RV04–RV06: both artifacts and every consultation action reach the same ending; room revisits do not leak ballots. Checkpoint C after RV07–RV10: original assets and both routes work in the revised exports with recorded accessibility results/limits. Checkpoint D after RV11–RV12: teacher materials and recorded media match the new candidate; remaining external requirements stay explicit. Checkpoints record acceptance evidence, not renewed phase-permission requests.
+
+Main owns canonical JSON, data rules, session/navigation, scene integration and final checks. After RV01 freezes content IDs/schema, the asset owner can prepare RV07–RV08 while main develops room/quest slices. Web implementation follows the same questions/rules and can proceed once those are stable; main serializes changes to shared JSON and shared test fixtures. The teacher guide can be drafted in parallel. Do not have two owners edit `main.gd` or `story.json` simultaneously.
+
+Rough additional implementation/review allowance: **18–30 focused person-hours**, excluding participant availability and external submission. This is a new estimate, not a measurement of time already spent or an assumption that the original 45–65-hour capacity has unused hours. First priorities are simpler shared content, one reusable interior, all three functioning houses and HTML equivalence. If time is tight, simplify room decoration and omit extra animations; preserve both quests, sources, accessibility paths and required package updates.
+
+Verification commands after implementation:
+
+```sh
+python3 -m unittest discover -s tests
+node --test tests/*.test.mjs
+./tools/godot --headless --path game -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
+node tools/render_submission.mjs --handout-only
+python3 tools/verify.py --build --browser --native-window --godot-browser
+node tools/render_submission.mjs
+node tools/record_pitch.mjs --record
+python3 tools/package_candidate.py
+```
+
+The browser checks require the documented preview server/tooling. Extend the meaningful tests for doors, new question parity and migration before running the aggregate verifier. Inspect revised PDFs, video and clean exports; do not treat the old 48-test report or code-call journeys as acceptance for new doors. Teacher/student feedback and screen-reader checks depend on actual availability and must be reported honestly. No learner results, formal curriculum approval or institutional adoption are asserted.
+
+## Version-1 implementation baseline
+
 24 October 2026 · **Approved and implemented through the recorded automated scope**. User authorized specs/implementation across all six modules; no renewed phase approval is required. Main owns code/data/integration; documentation records results without editing original research. [Verification](../docs/verification.md) records all 48 tests passing (Python 22, Node 17, Godot GUT 9/9; 40 GUT assertions, zero orphans), successful exports/browser checks and produced drafts: 4-page narrative, 10-page deck and silent captioned 108.07-second MP4. Team review, signed forms, hosting, screen-reader evaluation and pilot remain open. The local candidate is packaged and clean-checked.
 
 ## Delivery and capacity
@@ -47,6 +86,6 @@ At checkpoints main records actual results and continues within approved scope. 
 
 Implemented entry points: `python3 tools/bootstrap.py`, `python3 tools/build_data.py`, `./tools/godot --editor --path game`, `python3 -m unittest discover -s tests`, `node --test tests/*.test.mjs`, and `python3 tools/export_game.py --target web|linux --asset-set original|development` (choose one value for each option; do not execute the `|` notation literally). Full examples are in [architecture](../docs/architecture.md).
 
-Main ran setup/data/test/export entry points; this documentation does not rerun them. GUT's seven rule and two repaired journey tests pass. C1–C5 remain checkpoints for their complete scope, not automatic passes from code completion. Serve repository root with `python3 -m http.server 8765 --bind 127.0.0.1` and open `/build/web/` for `node tests/browser_smoke.mjs` defaults. No suite or local server establishes formal screen-reader support, pilot findings, offline caching or external hosting.
+Main runs the setup/data/test/export entry points; current commands, outcomes and fingerprints are recorded in [verification](../docs/verification.md). C1–C5 record their accepted scope rather than automatic passes from code completion. Serve repository root with `python3 -m http.server 8765 --bind 127.0.0.1` and open `/build/web/` for `node tests/browser_smoke.mjs` defaults. No suite or local server establishes formal screen-reader support, pilot findings, offline caching or external hosting.
 
 Risks: unavailable intended engine/templates → verify early and document compatible choice; changed/unavailable data → keep failure explicit, investigate provenance rather than invent bytes; content/evaluator drift → shared fixtures and IDs; missing original asset roles → fail final asset acceptance and integrate originals; time pressure → protect complete path and mandatory files; no pilot → report internal checks and proposed evaluation; signatures/hosting/timezone → keep external checklist pending while local work proceeds.

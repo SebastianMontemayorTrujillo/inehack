@@ -1,91 +1,132 @@
 # Voces de la Plaza · esquema de presentación
 
-Estado: **contenido estable y deck PDF de diez páginas producido**, 24 de octubre de 2026. Narrativa: cuatro páginas Letter, 11 pt; deck: diez páginas 16:9. Asset QA inspeccionó las catorce páginas sin recortes. No se afirma que exista PPTX. El MP4 producido es silencioso con subtítulos y transcripción aparte; no se grabó voz. El [guion opcional](pitch_script_es.md) no es una grabación de narración ni un requisito para el video actual.
+**Equipo Latas · Edición de aula · 25 de octubre de 2026.** Diez diapositivas para presentar la aventura, sus datos y su uso docente. El generador lee el texto en pantalla de este documento y lo combina con capturas reales del recorrido Linux y del export HTML. [Presentación PDF](../submission/voces_presentacion.pdf) y [versión HTML](../submission/presentacion.html).
 
-La evidencia actual incluye exportaciones web/Linux, Python 22, Node 17 y Godot GUT 9/9 aprobadas (40 aserciones, cero huérfanos), recorrido HTML Playwright y arranques Godot web/Linux. Ver [verification.md](verification.md) para alcance y capturas. No se ha realizado evaluación formal con lector de pantalla ni pilotaje; no están completos todos los controles manuales. Usar capturas del candidato probado y etiquetar diagramas/maquetas.
+La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional implementado en Godot y HTML. Se conserva la comparación guiada AGS/BC en la diapositiva 5. La vista previa nativa procede de `build/evidence/native-poster-preview.png`; el [recorrido nativo](../build/evidence/native-window.json) y la [verificación](verification.md) delimitan el alcance técnico comprobado. Las seis actividades siguen siendo obligatorias; el taller y los cálculos son opcionales.
 
-## Diapositiva 1 · La pregunta
+## Diapositiva 1 · Voces de la Plaza
 
-**Texto en pantalla:** “Voces de la Plaza”. “¿Cómo convertir datos de participación en una conversación comprensible?” “INEhack · Reto 3”.
+**Texto en pantalla:** «Una aventura de datos para conversar sobre decisiones colectivas». «Bachillerato, 15–18 años, y personas adultas principiantes». «Equipo Latas». «INEhack · Reto 3».
 
-**Visual:** título y ruta “Comprender → conversar → dar seguimiento”; imagen original de la plaza si está disponible y atribuida. No inventar nombre de equipo o integrantes.
+**Visual:** captura real de la plaza, `native-plaza.png`.
 
-**Nota de exposición:** presentar una actividad para personas adultas principiantes y facilitadoras. Duración objetivo de la aventura: 10–15 minutos, pendiente de comprobar.
+**Nota de exposición:** educación cívica para principiantes: explicar un hallazgo, reconocer un límite y pensar cómo dar seguimiento. No se requiere calcular para avanzar. Fuente: guía docente y contenido compartido.
 
-## Diapositiva 2 · Dos cifras, dos denominadores
+## Diapositiva 2 · Tres casas, una reunión por preparar
 
-**Texto en pantalla:** “CCPC federal 2024 · nacional”. “59.7% entre registros clasificados: SV/(SV+NV)”. “6.4% sin clasificación: NS/LN”. “Sin clasificación no significa abstención”.
+**Texto en pantalla:** «Villa Brisa quiere mejorar su plaza». «Luz: un boletín honesto». «Mateo: un cartel que compara con justicia». «Inés: escuchar necesidades y dar seguimiento».
 
-**Visual:** dos fichas separadas con unidades, denominadores y fuente; nunca un pastel que mezcle ambas medidas.
+**Visual:** tres estaciones con anfitrión y propósito, dentro de un mismo pueblo.
 
-**Nota de exposición:** aclarar el universo del dato y sus exclusiones. No equivale a preferencias por partido ni explica motivos individuales. Fuente: INE, ZIP/diccionario de 2024; registro nacional de `ccpc.json`.
+**Nota de exposición:** las tres casas se pueden visitar desde el inicio; la consulta requiere el boletín y el cartel. Son dos misiones CCPC, consulta ficticia y un cierre común. Objetivo de duración de la aventura: 10–15 minutos.
 
-## Diapositiva 3 · La historia y su alcance
+## Diapositiva 3 · Qué sabemos y qué falta
 
-**Texto en pantalla:** “Villa Brisa: una plaza, tres personajes”. “Dos misiones CCPC + consulta ficticia + exhibición final”. “Una historia breve, en español de México”.
+**Texto en pantalla:** «INE · CCPC federal 2024 · Nacional». «Con información conocida: cerca de 60 de cada 100 tienen marca de voto (59.67%)». «Del total analizado: cerca de 6 de cada 100 no tienen clasificación (6.43%)». «Bases distintas».
 
-**Visual:** diagrama de Luz/prensa → Mateo/cartel → Inés/consulta, con nombres tomados de `story.json`.
+**Visual:** dos cifras separadas, con bases exactas: 92,004,694 clasificados y 98,330,348 del total analizado. No formar una sola composición de 100%.
 
-**Nota de exposición:** la exhibición conserva hallazgos, fuentes y límites; las recompensas reconocen razonamiento y reflexión. No atribuir a la ficción un efecto en participación real.
+**Nota de exposición:** conteos exactos: SV 54,899,228; NV 37,105,466; NS 6,325,654. Porcentajes redondeados a dos decimales. NS no equivale a abstención ni voto nulo. No describen al salón ni a la población de 15–18 años. Fuente: INE, ZIP 2024/diccionario; registro nacional de `ccpc-2024-v1`.
 
-## Diapositiva 4 · Misión 1: La prensa de las voces
+## Diapositiva 4 · Luz: publicar sin inventar
 
-**Texto en pantalla:** “Distingue SV, NV y NS”. “Construye un boletín con año, lugar, fórmula y fuente”. “Consulta, explica, vuelve a intentar”.
+**Texto en pantalla:** «1. Leer qué categoría tiene más registros». «2. Conservar lo desconocido». «3. Probar con un ejemplo nuevo». «Ejemplo inventado: 60 con participación, 30 sin participación, 10 sin información».
 
-**Visual:** interacción real verificada o diagrama rotulado “Diseño de interacción”; ficha de fuente y tabla exacta.
+**Visual:** `native-house-1-complete.png`, con el boletín terminado. El ejemplo inventado se identifica por separado.
 
-**Nota de exposición:** mostrar cómo un registro determina el resultado y la explicación. La ayuda está prevista; ayuda e intento independiente se distinguen. Con denominador cero, valor nulo y explicación, nunca un 0% inventado.
+**Nota de exposición:** el caso nuevo pide clasificar diez registros como «No sabemos»; no exige calcular un porcentaje. Ofrecer reintento y apoyo, distinguiendo ayuda de explicación independiente. Fuente: actividades de la Imprenta en el contenido compartido.
 
-## Diapositiva 5 · Misión 2: El mapa que no lo dice todo
+## Diapositiva 5 · Mateo: cantidad y proporción
 
-**Texto en pantalla:** “Más registros ≠ tasa mayor”. “Aguascalientes: 626,084 SV; 58.66%”. “Baja California: 1,396,335 SV; 47.05%”. “Combinados: 50.12%, sumando conteos primero”.
+**Texto en pantalla:** «INE · CCPC federal 2024». «Aguascalientes: 626,084 con marca; 58.66% de 1,067,306 clasificados». «Baja California: 1,396,335 con marca; 47.05% de 2,968,011 clasificados». «BC tiene más registros; AGS, mayor proporción».
 
-**Visual:** tabla/comparación con 2024, denominadores SV+NV de 1,067,306 y 2,968,011, respectivamente. Paneles “El dato muestra / No permite saber / Faltan datos”.
+**Visual:** `native-poster-archive-before.png`, con la comparación guiada AGS/BC corregida antes de publicar un cartel propio; cantidades y bases visibles en texto.
 
-**Nota de exposición:** no promediar tasas para representar el conjunto. El promedio simple de 52.85% responde a otra operación. No inferir motivación ni valor cívico de las comunidades. Fuente: agregados `state_01`, `state_02` y suma documentada.
+**Nota de exposición:** el caso nuevo inventado es A:20/40 (50%), B:60/200 (30%). Leer porcentajes ya mostrados basta. Las tasas reales no explican motivos ni valor cívico. Cálculo opcional: reunir conteos antes de obtener 50.12%. Fuente: agregados `state_01` y `state_02`.
 
-## Diapositiva 6 · Una plaza, varias ideas
+## Diapositiva 6 · Inés: una consulta ficticia
 
-**Texto en pantalla:** “Consulta ficticia: reglas y límites visibles”. “Sombra y bancas · rincón de lectura · jardín comunitario”. “Elegir, dejar sin marcar o no participar permite el mismo final”. “Después: ¿qué se hizo con los recursos?”
+**Texto en pantalla:** «A · Sombra y bancas». «B · Rincón de lectura». «C · Jardín comunitario». «También: dejar sin marcar o no participar». «Cinco acciones, mismo final y reconocimiento».
 
-**Visual:** tres proyectos con idéntica jerarquía. Si se muestran resultados, rótulo “Escenario ficticio”; no usar sello de dato INE.
+**Visual:** `native-house-3.png`, con rótulo de consulta ficticia; igual jerarquía para los tres proyectos.
 
-**Nota de exposición:** las preferencias son inventadas; no dependen de CCPC. La elección y los resultados que permitan reconstruirla no deben persistirse. Un voto cuenta aunque su opción no gane; un empate tiene estado explícito. Verificar técnicamente estas reglas antes de afirmar que pasaron pruebas.
+**Nota de exposición:** cada proyecto aporta algo y requiere cuidado. Los datos históricos no eligen cuál necesita la plaza. Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar conserva ambos. Un empate necesita otra decisión ficticia. La elección no se guarda ni transmite.
 
-## Diapositiva 7 · Acceso previsto por dos rutas
+## Diapositiva 7 · Dos rutas y una hoja de trabajo
 
-**Texto en pantalla:** “Aventura Godot + HTML semántico”. “HTML automatizado: recorrido completo y anchos 320/768/1440 px”. “Teclado, texto ampliable, tablas, silencio y movimiento reducido: diseño y revisión”. “Evaluación formal con lector de pantalla pendiente”.
+**Texto en pantalla:** «Aventura Godot y HTML semántico independiente». «Las mismas preguntas, apoyos, taller opcional y cierre». «Teclado, texto legible y tablas con datos exactos». «Respaldo Linux y hoja para papel».
 
-**Visual:** dos rutas hacia los mismos hallazgos y final. Capturas etiquetadas solo según lo realmente disponible.
+**Visual:** captura de la portada de la ruta HTML del export final, con la misma historia compartida y sin cortar el título de la sección siguiente.
 
-**Nota de exposición:** Playwright completó HTML sin el lienzo, revisó persistencia y ausencia de desbordamiento horizontal en los estados comprobados. El script no acredita navegación solo con teclado, contraste, zoom ni evaluación formal de lector de pantalla. Linux fue exportado y arrancó sin interfaz; su recorrido manual sigue pendiente. No prometer caché web sin conexión o conformidad WCAG.
+**Nota de exposición:** HTML ofrece las actividades sin ejecutar el lienzo; el taller opcional está disponible en ambas rutas. La aventura añade silencio, movimiento reducido y botones de ubicación. Comprobar el equipo y la ruta adecuada antes de clase. El alcance de las comprobaciones está en el registro de verificación; no se promete compatibilidad universal, web sin conexión o evaluación formal con lector de pantalla.
 
-## Diapositiva 8 · Reproducción y estado real
+## Diapositiva 8 · Una clase de 20 minutos
 
-**Texto en pantalla:** “Godot 4.7.2 + plantillas: SHA-512 oficial verificado”. “CCPC: SHA-256 coincidente; 32 CSV; 9,773,730 filas; 33 agregados”. “Python 22 · Node 17 · Godot GUT 9/9; 40 aserciones, 0 huérfanos”. “Exportaciones web/Linux y arranques comprobados”.
+**Texto en pantalla:** «2 min: invitación». «13 min: aventura y cierre». «5 min: conversación opcional». «Individual, parejas o proyector». «Un hallazgo · Un límite · Una pregunta de seguimiento».
 
-**Visual:** flujo ZIP/diccionario → validación → JSON compartidos → ambas rutas. Referenciar registros locales sin exponer rutas privadas como único acceso al evaluador.
+**Visual:** secuencia de tiempo legible, sin resultados de participantes.
 
-**Nota de exposición:** evidencia: `.tools/toolchain.json`, `data/validation_report.json`, `game/content/ccpc.json`, reporte/capturas en `build/evidence/` y confirmación final de main. GUT incluye siete pruebas de reglas y dos de recorrido reparadas. Playwright completa HTML y comprueba arranque Godot web con cero errores capturados; Linux pasa arranque sin interfaz. No afirmar recorrido manual completo. Los 33 agregados son nacional + 32 entidades. La aritmética no acredita exhaustividad o unicidad.
+**Nota de exposición:** es tiempo de planeación. Si la aventura toma 15 minutos, extender la sesión a 22; prever tiempo adicional si se ofrece el taller opcional, sin apresurar las seis actividades. En proyector se anuncia una acción de demostración, sin sondeo ni recuento del salón. No recoger elecciones, identidad o intención de voto. Fuentes: guía y hoja de trabajo.
 
-## Diapositiva 9 · Reutilización y evaluación propuestas
+## Diapositiva 9 · Crea tu cartel para la reunión
 
-**Texto en pantalla:** “Talleres cívicos · bibliotecas · canales digitales autorizados”. “Guía de facilitación y fuentes reutilizables”. “Comprobar: un hallazgo, un límite, una pregunta de seguimiento”. “Sin resultados de aprendizaje o impacto electoral acreditados”.
+**Texto en pantalla:** «Opcional: dos de 32 entidades». «Cantidad o proporción; una pregunta neutral». «Revisa datos, bases, NS, fuente y límite». «Revisa tu cartel y llévalo a Inés».
 
-**Visual:** tres espacios de uso con sus condiciones de acceso y una tarjeta de preguntas; sin barras de resultados inventadas.
+**Visual:** captura nativa real `native-poster-preview.png`, con Nuevo León y Baja California, el hallazgo, sus proporciones, conteos exactos y registros sin clasificación. El contenido inferior se consulta desplazándose dentro de la vista previa del juego.
 
-**Nota de exposición:** son canales propuestos, no adopción institucional confirmada. Si se realizan sesiones, separar barreras, apoyo, comprensión y disfrute; informar participantes y límites reales. Si no hay pilotaje, presentar el diseño de evaluación como futuro. Consultar `facilitator.md` y la narrativa de difusión.
+**Nota de exposición:** taller disponible después de las seis actividades del recorrido principal. Elegir dos entidades del conjunto CCPC federal 2024, cantidad de registros con participación o proporción entre registros con información y una pregunta neutral. Las preguntas son sobre información faltante, voces por escuchar o seguimiento de acuerdos. La vista previa refleja las selecciones con conteos exactos, bases, NS, año, fuente y límites; se puede revisar antes de llevarla a Inés. El cartel permanece en memoria durante la sesión: no cambia resultados de consulta ni reconocimiento. No añade una pregunta calificada ni exige calcular. Los datos no explican motivos ni señalan qué proyecto necesita Villa Brisa.
 
-## Diapositiva 10 · Cierre y siguiente paso
+## Diapositiva 10 · La conversación continúa
 
-**Texto en pantalla:** “Comprender los datos. Conversar con información. Dar seguimiento”. “Borradores locales producidos: revisión del equipo y acceso para evaluación”. “Arte y sonidos finales originales; fuentes y licencias visibles”.
+**Texto en pantalla:** «Propuesta para bachilleratos, bibliotecas y talleres». «Latas prepara una edición con fuentes y guía». «La persona facilitadora prueba equipo y recorrido». «Observaciones por versión; Latas revisa y actualiza».
 
-**Visual:** exhibición final real o diagrama de propuesta; referencia legible a fuentes y material complementario disponible. Añadir enlaces/QR solo tras comprobar destino y permisos.
+**Visual:** `native-ending.png`, diálogo de cierre con la exposición completa.
 
-**Nota de exposición:** exportaciones y borradores locales producidos. Main confirma narrativa PDF de cuatro páginas, deck de diez y QA visual de las catorce sin recortes; MP4 silencioso con subtítulos de 108.07 s, 1920×1080, 30 fps, H.264 High, yuv420p, con SRT y transcripción aparte. Las 48 pruebas pasan: Python 22, Node 17, Godot 9. Quedan revisión del equipo, cartas firmadas, alojamiento, lector de pantalla y pilotaje. No anunciar voz grabada, envío, publicación o firmas.
+**Nota de exposición:** secuencia propuesta, sin adopción confirmada: una persona mantenedora de Latas prepara un paquete identificado por versión; la persona facilitadora receptora revisa el encaje docente, prepara el equipo y recorre la actividad. Después de una sesión voluntaria, devuelve observaciones de claridad, tiempo y barreras con versión y modalidad, sin datos personales. Latas revisa, corrige, comprueba datos y ambas rutas y entrega una nueva edición con registro de cambios. Repetir la preparación antes de difundir por canales autorizados. La [propuesta de reutilización](institutional_reuse.md) detalla requisitos. Esta revisión formativa no acredita eficacia ni efectos electorales.
 
-## Fuentes y control editorial dentro del límite
+## Revisión editorial contra la rúbrica local
 
-Usar [registro de fuentes](source_register.md) para portal CCPC, ZIP/diccionario, manual y convocatoria; cifras y métodos en [datos compartidos](../game/content/ccpc.json) y [reporte](../data/validation_report.json); ficción en [story.json](../game/content/story.json). Los hipervínculos locales deben sustituirse o acompañarse con referencias accesibles al empaquetar. El contenido narrativo para el PDF está en [storyline_and_dissemination_es.md](storyline_and_dissemination_es.md).
+Fuente: **Rúbrica de evaluación_Hackaton -1.pdf**, tres páginas leídas e inspeccionadas; SHA-256 `a5848c3f7100404a118cadd3efddaa73a8ad4c09942b452a345d86ab5b1f5f28`. Se usan sus cuatro criterios, sin asignar una puntuación ni anticipar el dictamen.
 
-Al cerrar el deck generado, comprobar capturas del candidato, denominador/año/fuente, alcance real de pruebas y pendientes visibles. El conteo PDF de diez páginas está confirmado por main; preservar ese máximo en revisiones. Main actualizará el handoff y checklist final después de completar la revisión de los artefactos.
+| Criterio / peso | Aporte del material | Límite para la evaluación |
+| --- | --- | --- |
+| Apego a la temática · 35 | CCPC sostiene boletín y comparación; fuente, año, bases y límites visibles. Cifras cotejadas con el archivo compartido y capturas finales incrustadas. La consulta se distingue de los datos históricos. | Los registros federales de 2024 no describen al salón ni permiten inferir preferencias o efectos del juego. |
+| Claridad y solidez · 30 | Seis actividades conceptuales, cifras exactas y sencillas, cálculos opcionales y guía de uso. La hoja incluye los tres escenarios canónicos de consulta y permite comparar ganadores con el mismo total. | Los casos nuevos permiten intentar aplicar una idea; no son una medida validada de comprensión. La duración con participantes aún no se ha observado. |
+| Originalidad y creatividad · 20 | Una reunión da sentido a tres interiores, un boletín que se publica, un cartel que se corrige y una consulta plural. El taller permite componer y revisar un mensaje propio con dos entidades, una medida y una pregunta neutral. | La creación del cartel es una interacción observable; no demuestra por sí sola aprendizaje o eficacia cívica. |
+| Viabilidad para el aprovechamiento institucional · 15 | Guía HTML, hoja HTML/PDF de dos caras, modalidades individual/parejas/proyector, respaldo Linux y secuencia propuesta de preparación, devolución y revisión por versión entre Latas y la persona facilitadora. | Revisar acceso en el entorno de destino y adecuación docente. No existe acuerdo de adopción acreditado. |
+
+Temática y claridad son los criterios de desempate. La revisión identifica sustento y límites de uso; no transforma objetivos numéricos del plan en resultados.
+
+La revisión de contenido coteja los documentos con la rúbrica local, los archivos canónicos y el alcance técnico documentado en [verificación](verification.md) y el [recorrido nativo](../build/evidence/native-window.json). La narrativa distingue aplicación de una idea de medición validada, la hoja incluye escenarios ficticios comparables y la difusión propone responsables y pasos concretos entre Latas y la persona facilitadora. El taller implementado añade composición y revisión de un mensaje propio, conservando fuente y límites. Los materiales y las comprobaciones técnicas están producidos; la observación educativa y la adopción institucional siguen siendo futuras. Esta revisión editorial no asigna un puntaje ni anticipa el dictamen.
+
+## Fuentes y producción
+
+Datos: [portal CCPC](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/), [ZIP 2024 y diccionario](https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip), [ccpc.json](../game/content/ccpc.json) y [reporte](../data/validation_report.json). Ficción: [story.json](../game/content/story.json). Alcance técnico: [verificación](verification.md). Materiales: [guía](facilitator.md), [hoja](classroom_handout.md), [narrativa](storyline_and_dissemination_es.md) y [pitch](pitch_script_es.md).
+
+El generador toma los diez textos en pantalla de este esquema. Las capturas se incrustan en el HTML para que la presentación no dependa de rutas externas de imágenes. La narrativa conserva sus cuatro bloques y el guion sus marcadores de locución. Los recursos de aula se generan solo con `--handout-only`, de forma independiente a los otros documentos.
+
+## Registro de producción de documentos
+
+**Edición con taller opcional, cerrada el 25 de octubre de 2026.** Narrativa de cuatro páginas, presentación de diez diapositivas y hoja de dos páginas. Los textos distinguen la función implementada y las comprobaciones técnicas de una evaluación educativa o adopción institucional.
+
+El marcador PDF se ejecutó **una sola vez**, inmediatamente antes de iniciar esta edición: operación `edit`, tres PDF esperados. Comando:
+
+```sh
+node /home/seb/.codex/plugins/cache/openai-primary-runtime/pdf/26.1017.22135/skills/pdf/container_tools/mark_artifact_operation_started.mjs --operation-kind edit --expected-output-count 3 --output-format pdf
+```
+
+Salida correcta, código 0. El marcador no se repitió durante los ajustes de esta edición. `node tools/render_submission.mjs --handout-only` produjo los recursos de aula del taller el **25 de octubre de 2026 a las 13:48, hora de Monterrey**. `pdfinfo` confirmó dos páginas Letter; ambas se renderizaron con `pdftoppm` y se inspeccionaron sin recortes ni superposiciones. La hoja conserva seis preguntas obligatorias, escenarios ficticios canónicos y una invitación opcional a crear un cartel con las líneas de reflexión. La guía reserva tiempo adicional para el taller. Los HTML pasaron revisión de estructura semántica, anchos 320/768/1440, navegación de teclado y controles de impresión; sin errores de página capturados.
+
+`node tools/render_submission.mjs` produjo la narrativa y la presentación finales, con sus versiones HTML, después de comprobar un recibo nativo **passed** para el PCK `4648111532bb916cdd9782b73b8919c33ab509ecef2b6cb9c9d98fe898dcc935`. El PCK y las seis capturas nativas se mantuvieron iguales antes y después del render. Las imágenes incrustadas coinciden byte por byte con esos archivos; la séptima imagen es la portada del export HTML, cuya historia coincide con el contenido canónico. La diapositiva 5 usa `native-poster-archive-before.png` para mostrar la comparación guiada AGS/BC; la 9 usa `native-poster-preview.png` para mostrar el cartel propio de Nuevo León y Baja California.
+
+`pdfinfo` confirmó **4 páginas Letter de narrativa y 10 diapositivas 16:9**. Se renderizaron e inspeccionaron las 14 páginas. Al refrescar los medios del PCK final, trece páginas conservaron exactamente los píxeles ya revisados y se volvió a inspeccionar la diapositiva 5 actualizada. Junto con las dos páginas de la hoja congelada, quedan **16 páginas revisadas**, legibles y sin recortes ni superposiciones. El renderizador comprobó espacio antes del pie y ausencia de desbordamiento o imágenes faltantes. Las tres propuestas de consulta mantienen igual tipografía. La extracción de texto confirma guiones ASCII, cifras y bases, y Equipo Latas en portada del deck y en los cuatro pies de la narrativa.
+
+| PDF entregado | Páginas | SHA-256 final |
+| --- | ---: | --- |
+| [Narrativa y difusión](../submission/voces_narrativa_y_difusion.pdf) | 4 | `ddb9ff75be6da10b82c6259d74f2a8b9fee4b9fba37febc3c411aad86cbcb1ca` |
+| [Presentación](../submission/voces_presentacion.pdf) | 10 | `d628f8012f70749348ccc2f6e258c2d8fc23854b62d14cac7e0a69192835cc34` |
+| [Hoja de trabajo](../submission/classroom-handout.pdf) | 2 | `fa7fb2f11684663483c7fea28ecf8226eb47965bba69738de77f8e62493520bd` |
+
+La generación final conservó los tres recursos de aula congelados: `classroom.html` tiene SHA-256 `7566455846e61adbf4dcef24b2dd8f11168a5ec94fee2b3cc18bc8fe15380c35` y `classroom-handout.html`, `54e90ecee1747e3cde4cefc122f05ddfc2e04939f68de64cc8622001abca42a3`; el PDF conserva el hash de la tabla. Sus copias en `build/web/` son idénticas a las de `submission/`. El cierre editorial retiró las notas de borrador de los Markdown y describe el taller implementado, sin regenerar los recursos de aula ya probados. Los seis documentos y el renderizador quedan congelados con este registro.
+
+El guion del pitch mantiene marcas de tiempo de planeación. El [recibo de codificación](../build/evidence/pitch-encoding.json) y los subtítulos/transcripción del video final identifican la grabación realmente entregada; este cierre no le atribuye una duración provisional. Las comprobaciones de documentos no sustituyen la evidencia del juego o del uso en aula.

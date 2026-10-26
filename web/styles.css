@@ -68,10 +68,10 @@ nav ol { list-style: none; padding: 0; margin: 0 0 2rem; }
 nav li + li { border-top: 1px solid var(--line); }
 nav button { display: flex; gap: .75rem; width: 100%; padding: 1rem .5rem; background: transparent; color: var(--ink); border: 0; border-left: 3px solid transparent; border-radius: 0; }
 nav button:disabled { background: transparent; border-color: transparent; }
-nav button[aria-current="step"] { background: var(--soft); border-left-color: var(--green); }
+nav button[aria-current="location"] { background: var(--soft); border-left-color: var(--green); }
 nav button:hover:not(:disabled) { color: var(--sheet); }
 nav button small, .chapter-stamp { display: block; font-size: .75em; margin-top: .5rem; }
-.step-number { font-family: Georgia, serif; font-size: 1.5em; line-height: 1; }
+.step-number { font-family: Georgia, serif; font-size: 1.5em; line-height: 1; flex: 0 0 1.25em; white-space: nowrap; }
 .chapter-stamp { font-weight: 650; }
 .margin-note { border-left: 2px solid var(--rust); padding-left: 1rem; font-family: Georgia, serif; font-style: italic; font-size: 1.05em; }
 main { background: var(--sheet); min-width: 0; padding: 2rem clamp(1rem, 3vw, 3rem) 3rem; border-left: 1px solid var(--line); }
@@ -96,21 +96,41 @@ th, td { text-align: right; padding: .65rem .5rem; border-bottom: 1px solid var(
 th:first-child, td:first-child { text-align: left; }
 thead { background: var(--soft); }
 .finding { padding: 1rem; border-left: 3px solid var(--green); background: var(--soft); }
-.source-slot { margin: 1.5rem 0 2rem; font-size: .85em; }
-.source-slot dl { margin: .5rem 0; }
-.source-slot dt { font-weight: 700; margin-top: .75rem; }
-.source-slot dd { margin: .15rem 0 .75rem; overflow-wrap: anywhere; }
+.source-details, .optional-math { margin: 1rem 0; font-size: .9em; }
+.source-details dl { margin: .5rem 0; }
+.source-details dt { font-weight: 700; margin-top: .75rem; }
+.source-details dd { margin: .15rem 0 .75rem; overflow-wrap: anywhere; }
 code { overflow-wrap: anywhere; font-size: .9em; }
-.quest { border-top: 1px solid var(--line); margin-top: 1.5rem; padding-top: .5rem; }
-.quest fieldset, #ballot fieldset, #reflection-form fieldset { min-width: 0; border: 0; margin: 0; padding: 0; }
+.activity { border-top: 1px solid var(--line); margin-top: 1.5rem; padding-top: 1.5rem; }
+.activity fieldset, #ballot fieldset, #reflection-form fieldset { min-width: 0; border: 0; margin: 0; padding: 0; }
 legend { font-weight: 700; padding: 0; margin-bottom: .75rem; }
 .choice { display: flex; align-items: flex-start; gap: .5rem; border: 1px solid var(--line); padding: .75rem; margin: .5rem 0; min-height: 2.75rem; cursor: pointer; border-radius: .2rem; background: var(--sheet); }
 .choice:hover, .choice:focus-within { background: #efefdf; border-color: var(--green); }
 .choice:has(input:checked) { border-color: var(--green); box-shadow: inset 3px 0 var(--green); }
-.quest button { margin: .75rem 0; }
+.activity button { margin: .75rem 0; }
 .feedback:not(:empty) { border-left: 3px solid var(--rust); padding: .75rem 1rem; background: #f5ebdf; }
 .feedback.correct { border-color: var(--green); background: var(--soft); }
-.quest details { border: 0; font-size: .85em; }
+.feedback.supported { border-color: var(--ochre); background: #f3efdf; }
+.activity-hint { border: 0; }
+.activity-navigation { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .75rem; border-top: 1px solid var(--line); margin-top: 1rem; }
+.activity-evidence { margin-bottom: 1.5rem; }
+.activity-evidence .evidence-label { margin-top: 1rem; }
+.unknown-note { border-left: 3px dotted var(--ochre); padding: .5rem 1rem; }
+.house > .finding { font-weight: 600; }
+.artifact { border-top: 2px solid var(--green); margin-top: 1.5rem; }
+.poster-workshop, .composed-poster { border-top: 2px solid var(--green); margin-top: 1.5rem; padding-top: 1rem; }
+#open-poster-workshop { margin-top: 1.5rem; }
+.poster-fields { display: grid; gap: 1rem; margin: 1.5rem 0; }
+.poster-fields label { display: block; font-weight: 650; margin-bottom: .5rem; }
+.poster-fields select { display: block; width: 100%; min-width: 0; max-width: 100%; }
+.poster-selection-text { display: none; margin: .4rem 0 0; overflow-wrap: anywhere; }
+.large-text .poster-selection-text { display: block; }
+.poster-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+.composed-poster .bar-row { grid-template-columns: minmax(0, 1fr); }
+.composed-poster .bar-value { grid-row: 2; }
+.composed-poster .bar-track { grid-column: 1; }
+.task { margin-top: 1.5rem; }
+button, summary, legend, h2, h3, h4, .bar-value { overflow-wrap: anywhere; }
 .synthetic-notice { border: 1px dashed var(--rust); background: #f8f1e5; margin: 1.5rem 0; padding: 1rem; }
 .synthetic-notice p { margin: .5rem 0 0; }
 .chapter-completion { margin-top: 2rem; padding-top: 1rem; border-top: 2px solid var(--green); }
@@ -128,6 +148,7 @@ legend { font-weight: 700; padding: 0; margin-bottom: .75rem; }
 .error { color: #822f20; border-left: 3px solid #822f20; padding: 1rem; background: #faeddf; }
 footer { border-top: 1px solid var(--line); padding: 1.5rem 0; font-size: .75em; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 1rem; }
 @media (max-width: 900px) {
+  .poster-selection-text { display: block; }
   .notebook { grid-template-columns: 12rem minmax(0, 1fr); }
   .itinerary { padding-right: 1rem; }
   .projects { grid-template-columns: 1fr; }
@@ -153,4 +174,4 @@ footer { border-top: 1px solid var(--line); padding: 1.5rem 0; font-size: .75em;
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
 body.reduced-motion *, body.reduced-motion *::before, body.reduced-motion *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 @media (forced-colors: active) { .bar-fill { background: CanvasText; } .choice:has(input:checked) { outline: 2px solid Highlight; } }
-@media print { .masthead, .settings, .itinerary, .game-link, button, form { display: none; } .notebook { display: block; } main { padding: 0; border: 0; } body { background: white; } .chapter[hidden] { display: block !important; } details > * { display: block; } }
+@media print { .masthead, .settings, .itinerary, .game-link, button, form { display: none; } .notebook { display: block; } main { padding: 0; border: 0; } body { background: white; } details > * { display: block; } }

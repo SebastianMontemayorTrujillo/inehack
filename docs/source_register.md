@@ -6,7 +6,7 @@ Recorded 24 October 2026. Original hyperlink recovery inspected local research i
 
 Main confirmed official-SHA-512-verified Godot 4.7.2/templates and installed GUT 9.7.1. Actual CCPC raw SHA-256 matched the historical reference; 32 CSV/9,773,730 rows produced 33 national/state aggregates, recorded in `data/validation_report.json` and `game/content/ccpc.json`. Thus the annex's historical fixtures have now been reproduced for implementation; the annex itself remains unchanged.
 
-Current reported suites: Python 22, Node 17 and Godot GUT 9/9 passing, 40 GUT assertions and zero orphans. Web/Linux exports, HTML Playwright journey/persistence/five actions/three widths and Godot web/Linux headless boot passed with the limits in the verification record. Formal screen-reader evaluation, user pilot and remaining manual checks have not run/finished. The documentation contributor reads the records and main's report, rather than claiming to have rerun these suites.
+Historical 24 October suites: Python 22, Node 17 and Godot GUT 9/9 passing, 40 GUT assertions and zero orphans. Current classroom results and scoped Orca observations are in [verification](verification.md). Web/Linux exports, HTML Playwright journey/persistence/five actions/three widths and Godot web/Linux headless boot passed with the limits in the verification record. Formal screen-reader evaluation, user pilot and remaining manual checks have not run/finished. The documentation contributor reads the records and main's report, rather than claiming to have rerun these suites.
 
 ## Recovery method and provenance
 
@@ -59,7 +59,7 @@ Original: `INEhack_Learning_Evidence_and_Pitch_Outline.docx`. IDs use the same r
 - `CAPABILITY_MAP.md`: earlier research records official-call/portal checks dated 24 October 2026. The current map records the subsequent user approval; it does not turn those checks into new runtime evidence.
 - `INEhack_Development_Blueprint.md` and `.docx`: original concept, calculations, scope, architecture candidates and submission requirements. Preserve both unchanged.
 - `INEhack_Learning_Evidence_and_Pitch_Outline.md` and `.docx`: educational hypotheses, proposed evaluation and ten-slide outline. Preserve both unchanged.
-- `Rúbrica de evaluación_Hackaton -1.pdf`: supplied rubric. Research records 35/30/20/15 weights and thematic-fit then clarity tiebreaks. No new scoring audit in this task.
+- `Rúbrica de evaluación_Hackaton -1.pdf`: supplied rubric, inspected directly for the current [iterative review](rubric_review.md). Four weights are 35/30/20/15, with thematic fit then clarity as tiebreaks. The historical research ledger below is distinct from this current scoring review.
 - `INEhack_Research_Annex.zip`: read-only inspection of member names, README texts and `ccpc/verified_ccpc2024.json`. `ccpc/reproduce_ccpc2024.py` was not executed. `Codex_Prompts_and_Feature_Spec.txt` is a research template, not installed implementation.
 
 The annex records a 23 October 2026 reproduction against a source ZIP of **82,419,841 bytes**, SHA-256 **`c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2`**, **32 CSV files**, **9,773,730 rows**, and **zero arithmetic LN identity violations**. These are historical recorded results; the hash was read from the annex, not measured from a fresh download. Do not use it as a newly computed hash or infer a complete uniqueness/source-quality audit.
@@ -69,6 +69,10 @@ Recorded dictionary path inside the official archive: `DatosAbiertos_DECEyEC_Con
 Annex national references: LN 98,330,348; SV 54,899,228; NV 37,105,466; NS 6,325,654. State/combined fixtures are in [SPEC-ccpc-data](../SPEC-ccpc-data.md). Arithmetic consistency is insufficient to infer motives, party choice, uniqueness, causality, intervention effects, or parity with differently filtered dashboards.
 
 ## Asset references and verification policy
+
+For the optional poster workshop, the official [Godot OptionButton reference](https://docs.godotengine.org/en/stable/classes/class_optionbutton.html) and [Control reference](https://docs.godotengine.org/en/stable/classes/class_control.html) were checked on 25 October 2026. The implementation uses item metadata and selection for public state IDs, labelled controls, inherited themes and explicit focus. Runtime tests remain necessary; reading the API documentation does not establish interface acceptance.
+
+The exported Linux workshop reproduced the parent-focus signal errors documented in official [Godot issue 89657](https://github.com/godotengine/godot/issues/89657), despite editor/GUT passes. The selected workaround uses documented [Window.force_native](https://docs.godotengine.org/en/stable/classes/class_window.html#class-window-property-force-native) for Linux dropdowns; web dropdowns remain embedded. The runtime checks keep rejecting engine errors. No debug export, engine upgrade or error suppression substitutes for a verified release build.
 
 Development references: Kenney **tiny-town**, **roguelike-characters**, **ui-pack**, **interface-sounds** under CC0. The asset owner's [register](asset_register.md) now records actual acquisitions, hashes, licences, original role production, Atkinson Hyperlegible Regular/Bold under OFL and validation/staging/import evidence. Original-set exports succeeded. This documentation update reads but does not edit that register or certify human rights clearance; final visible art/sounds resolve to original roles.
 

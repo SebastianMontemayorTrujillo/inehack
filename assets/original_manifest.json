@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-10-24T18:06:28+00:00",
+  "generated_at_utc": "2026-10-25T18:13:30+00:00",
   "authoring": "Original procedural SVG geometry and synthesized WAV notation authored for the Voces de la Plaza team; no reference pixels, traces or samples used.",
   "generator": "tools/create_original_assets.py",
-  "generator_sha256": "0bfb2855deae385eea30822d0ee773b635d65734d0a1b132a7830e9be28d923a",
+  "generator_sha256": "6992eaf8cfcf5d92d2d3bff0a9a5c3baf36dc1f7cf3b194d973ecaabb770671c",
   "font_dependency": "Atkinson Hyperlegible, Braille Institute of America, OFL-1.1; see reference_manifest.json and game/assets/fonts/OFL.txt",
   "files": [
     {
@@ -82,6 +82,26 @@
       "bytes": 516
     },
     {
+      "path": "game/assets/original/prop_bookshelf.svg",
+      "sha256": "20733446308389ab03a33e4d53d849e3162ca772e9f9e63c83e5357db06c8ad8",
+      "bytes": 1303
+    },
+    {
+      "path": "game/assets/original/prop_chair.svg",
+      "sha256": "e8a5e8a393b430d695a14d147370870b414d6b540cf6aa4eb70ac1719da14608",
+      "bytes": 628
+    },
+    {
+      "path": "game/assets/original/prop_desk.svg",
+      "sha256": "30b821e1582a57047203153ff37d39b64387bbbb1fea5cdac2e4f1d65201d4a9",
+      "bytes": 632
+    },
+    {
+      "path": "game/assets/original/prop_exit.svg",
+      "sha256": "063b7df7a1372cb7d67d6f07db1bce2494d5a03fa2532bff18b79312d4a99883",
+      "bytes": 691
+    },
+    {
       "path": "game/assets/original/prop_noticeboard.svg",
       "sha256": "e221b5fe4a9c1450ee18537d3aa17e81a5c44f2ae51f782f0bcab2fbce723da6",
       "bytes": 797
@@ -122,6 +142,11 @@
       "bytes": 7542
     },
     {
+      "path": "game/assets/original/terrain_floor.svg",
+      "sha256": "8f3c756a185ed952143197e6c2772af4c2d0497ad8ca081a464665e6bab74ab7",
+      "bytes": 513
+    },
+    {
       "path": "game/assets/original/terrain_grass.svg",
       "sha256": "cb5893241e5c7540dc45ae00d909b241695273cf28c35bb747596de2cb9f368c",
       "bytes": 512
@@ -135,6 +160,11 @@
       "path": "game/assets/original/terrain_paving.svg",
       "sha256": "1175e35485ffb4b0a0d7fb700ce69feb29ea47c9178dad0803dbd77c43942197",
       "bytes": 511
+    },
+    {
+      "path": "game/assets/original/terrain_wall.svg",
+      "sha256": "70007d0b21b5d2cda3c73c8f001e8a5c14a2374dcc62da2b3484d68e0f4f263d",
+      "bytes": 404
     },
     {
       "path": "game/assets/original/terrain_water.svg",

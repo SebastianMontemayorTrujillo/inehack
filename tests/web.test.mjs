@@ -1,11 +1,153 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   aggregateRecords, validateDataset, loadDataset, assessAnswer,
   SCENARIOS, createRoster, resolveConsultation, resolveTally,
   sanitizeProgress, readProgress, writeProgress, gameHref, creditsHref, normalizeStory,
   contentPaths, transferExercises,
 } from '../web/logic.mjs';
+import * as logic from '../web/logic.mjs';
+
+const canonicalStory = () => JSON.parse(readFileSync(new URL('../game/content/story.json', import.meta.url)));
+const canonicalData = () => JSON.parse(readFileSync(new URL('../game/content/ccpc.json', import.meta.url)));
+
+test('poster workshop contract requires shared labels, limits and exactly three named discussion questions', () => {
+  const shared = canonicalStory();
+  assert.deepEqual(normalizeStory(shared).poster_workshop, shared.poster_workshop);
+  for (const mutate of [
+    s => { delete s.poster_workshop; },
+    s => { s.poster_workshop.memory_note = ''; },
+    s => { s.poster_workshop.first_label = null; },
+    s => { s.poster_workshop.questions.pop(); },
+    s => { s.poster_workshop.questions[0].id = 'project-A'; },
+    s => { s.poster_workshop.questions[1].id = 'missing'; },
+    s => { s.poster_workshop.questions[2].text = ''; },
+  ]) {
+    const changed = canonicalStory(); mutate(changed);
+    assert.equal(normalizeStory(changed), null);
+  }
+});
+
+test('all 496 bundled state pairs compose count and rate posters from an exact reference, in either order', async () => {
+  const { composePoster } = await import('../web/poster.mjs');
+  const data = canonicalData(); const story = canonicalStory();
+  const before = JSON.stringify({ data, story });
+  const states = data.records.filter(r => r.geography_level === 'state');
+  assert.equal(states.length, 32);
+  let pairs = 0;
+  for (let i = 0; i < states.length; i++) for (let j = i + 1; j < states.length; j++) {
+    pairs++;
+    const [a, b] = [states[i], states[j]];
+    for (const metric of ['count', 'rate']) {
+      const left = BigInt(a.sv) * (metric === 'rate' ? BigInt(b.sv) + BigInt(b.nv) : 1n);
+      const right = BigInt(b.sv) * (metric === 'rate' ? BigInt(a.sv) + BigInt(a.nv) : 1n);
+      const expected = left === right ? story.comparison_artifact[`equal_${metric}`] :
+        story.comparison_artifact[metric].replace('{place}', (left > right ? a : b).geography_name);
+      for (const [first, second] of [[a.id, b.id], [b.id, a.id]]) {
+        const selection = { first, second, metric, question: 'voices' };
+        const poster = composePoster(data, story, selection);
+        assert.equal(poster.finding, expected, `${first}/${second}/${metric}`);
+        assert.equal(poster.metric, metric);
+        assert.deepEqual(poster.records.map(r => r.id), [first, second]);
+        assert.equal(poster.question, story.poster_workshop.questions.find(q => q.id === 'voices').text);
+        assert.deepEqual(selection, { first, second, metric, question: 'voices' });
+      }
+    }
+  }
+  assert.equal(pairs, 496);
+  assert.equal(JSON.stringify({ data, story }), before, 'Composition is pure');
+});
+
+test('poster composition fails closed for invalid selections, records or canonical content', async () => {
+  const { composePoster } = await import('../web/poster.mjs');
+  const data = canonicalData(); const story = canonicalStory();
+  const valid = { first: 'state_19', second: 'state_02', metric: 'count', question: 'missing' };
+  for (const selection of [null, {}, [], { ...valid, first: 'national' }, { ...valid, second: 'state_19' },
+    { ...valid, first: 'state_99' }, { ...valid, metric: 'turnout' }, { ...valid, question: '__proto__' }]) {
+    assert.equal(composePoster(data, story, selection), null);
+  }
+  for (const mutate of [
+    d => { d.records = d.records.filter(r => r.id !== 'state_19'); },
+    d => { d.records.find(r => r.id === 'state_19').ln++; },
+    d => { d.records.find(r => r.id === 'state_19').year = 2025; },
+  ]) {
+    const changed = canonicalData(); mutate(changed);
+    assert.equal(composePoster(changed, story, valid), null);
+  }
+  const incomplete = canonicalStory(); delete incomplete.poster_workshop.questions;
+  assert.equal(composePoster(data, incomplete, valid), null);
+  assert.equal(composePoster(null, story, valid), null);
+});
+
+test('poster state identities follow validated canonical IDs even without optional geography metadata', async () => {
+  const { composePoster } = await import('../web/poster.mjs');
+  const data = canonicalData(); const story = canonicalStory();
+  const selection = { first: 'state_19', second: 'state_02', metric: 'count', question: 'missing' };
+  for (const record of data.records) delete record.geography_level;
+  data.records.find(record => record.id === 'state_19').geography_level = 'national';
+  assert.equal(validateDataset(data), data, 'The existing contract identifies records by canonical ID');
+  assert.equal(composePoster(data, story, selection)?.finding, 'Más registros: NUEVO LEON.');
+  assert.equal(composePoster(data, story, { ...selection, first: 'national' }), null);
+});
+
+test('poster ties, zero classified records and unknown classification never invent an ordering', async () => {
+  const { composePoster } = await import('../web/poster.mjs');
+  const data = canonicalData(); const story = canonicalStory();
+  const replace = (id, sv, nv, ns) => Object.assign(data.records.find(r => r.id === id), {
+    sv, nv, ns, ln: sv + nv + ns, participation_pct: sv + nv ? 100 * sv / (sv + nv) : null,
+    unknown_pct: sv + nv + ns ? 100 * ns / (sv + nv + ns) : null,
+  });
+  const selection = { first: 'state_19', second: 'state_02', metric: 'rate', question: 'followup' };
+  replace('state_19', 20, 20, 100); replace('state_02', 60, 60, 0);
+  assert.equal(composePoster(data, story, selection).finding, story.comparison_artifact.equal_rate);
+  replace('state_19', 60, 40, 0);
+  assert.equal(composePoster(data, story, { ...selection, metric: 'count' }).finding, story.comparison_artifact.equal_count);
+  const original = composePoster(data, story, selection).finding;
+  replace('state_19', 60, 40, 1000000);
+  assert.equal(composePoster(data, story, selection).finding, original, 'NS is not NV or the classified denominator');
+  replace('state_19', 0, 0, 10);
+  assert.equal(composePoster(data, story, selection).finding, story.comparison_artifact.unavailable);
+  replace('state_02', 0, 0, 0);
+  assert.equal(composePoster(data, story, { ...selection, metric: 'count' }).finding, story.comparison_artifact.equal_count);
+});
+
+test('reusable exact comparator distinguishes near-rounded and overflow-sized ratios for quiz and poster', () => {
+  const a = { id: 'state_01', sv: 4000000000000000, nv: 3999999999999999, ns: 0, ln: 7999999999999999 };
+  const b = { id: 'state_02', sv: 4000000000000001, nv: 4000000000000000, ns: 0, ln: 8000000000000001 };
+  assert.equal(100 * a.sv / a.ln, 100 * b.sv / b.ln, 'IEEE-754 rounds these two distinct ratios together');
+  assert.equal(logic.compareRecord(a, b, 'rate'), 'state_01');
+  assert.equal(logic.compareRecord(a, b, 'count'), 'state_02');
+  assert.equal(logic.assessActivity('higher-rate', 'state_01', { records: [a, b] }, canonicalStory()).correct, true);
+  assert.equal(logic.compareRecord(a, b, 'unknown'), 'unavailable');
+  assert.equal(logic.compareRecord(a, null, 'count'), 'unavailable');
+  assert.equal(logic.compareRecord({ ...a, sv: -1 }, b, 'rate'), 'unavailable');
+});
+
+test('poster composition neither alters consultation outcomes nor enters the progress allowlist', async () => {
+  const { composePoster } = await import('../web/poster.mjs');
+  const data = canonicalData(); const story = canonicalStory();
+  const selection = { first: 'state_19', second: 'state_02', metric: 'rate', question: 'followup' };
+  const before = ['A', 'B', 'C', 'unmarked', 'decline'].map(choice => resolveConsultation(choice, 'baseline', story));
+  const poster = composePoster(data, story, selection);
+  assert.deepEqual(['A', 'B', 'C', 'unmarked', 'decline'].map(choice => resolveConsultation(choice, 'baseline', story)), before);
+  const progress = sanitizeProgress({ version: 2, completedChapters: ['printing', 'comparison'], poster, selection });
+  assert.deepEqual(Object.keys(progress).sort(), ['assisted', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
+  assert.equal(JSON.stringify(progress).includes('state_19'), false);
+});
+
+test('the corrected poster states the actual count and rate findings, including changed or unavailable records', () => {
+  const story = canonicalStory();
+  const data = { records: [
+    { id: 'state_01', geography_name: 'A', sv: 20, nv: 20, ns: 0, ln: 40 },
+    { id: 'state_02', geography_name: 'B', sv: 60, nv: 140, ns: 0, ln: 200 },
+  ] };
+  assert.equal(logic.comparisonCaption(data, story), 'Más registros: B.\nMayor proporción: A.');
+  Object.assign(data.records[0], { sv: 100, nv: 0, ln: 100 });
+  assert.equal(logic.comparisonCaption(data, story), 'Más registros: A.\nMayor proporción: A.');
+  Object.assign(data.records[0], { sv: 0, nv: 0, ln: 0 });
+  assert.match(logic.comparisonCaption(data, story), /Falta información/);
+});
 
 // Deliberately synthetic: never presented as official CCPC observations.
 function fixture() {
@@ -131,7 +273,8 @@ test('optional shared assessment fixtures drive both prompts and accepted answer
   assert.equal(exercises.transfer2.correctAnswer, '45');
   assert.equal(assessAnswer('transfer2', '45', fixture(), assessments).correct, true);
   assert.equal(assessAnswer('transfer2', '33.33', fixture(), assessments).correct, false);
-  assert.deepEqual(normalizeStory({ schema_version: '1.0.0', assessment_fixtures: assessments }).assessmentFixtures, assessments);
+  const shared = canonicalStory(); shared.assessment_fixtures = assessments;
+  assert.deepEqual(normalizeStory(shared).assessment_fixtures, assessments);
   assert.equal(transferExercises({ printing: { sv: -1 } }).transfer1.correctAnswer, '66.67');
 });
 
@@ -183,7 +326,8 @@ test('persistence whitelists chapter completion, settings and hints only, never 
     hints: ['denominator', 'denominator', 'vote:B'], vote: 'B', outcome: { A: 8, B: 6, C: 3 },
     reflection: 'private', attempts: { B: 1 },
   });
-  assert.deepEqual(progress, { version: 1, completedChapters: [1, 3], settings: { textSize: 'large', reducedMotion: true }, hints: ['denominator'] });
+  assert.deepEqual(progress, { version: 2, completedChapters: ['printing', 'consultation'], legacyCompleted: ['printing', 'consultation'],
+    settings: { textSize: 'large', reducedMotion: true }, hints: [], assisted: [] });
   let saved;
   const storage = { setItem: (key, value) => { saved = value; }, getItem: () => saved };
   assert.equal(writeProgress(storage, { ...progress, vote: 'B', outcome: 'B' }), true);
@@ -213,17 +357,125 @@ test('Godot link supports the source checkout and packages hosted at root or a s
   }
 });
 
-test('canonical shared story IDs and nested project prose normalize without making content mandatory', () => {
-  const story = normalizeStory({ schema_version: '1.0.0', title: 'Voces',
-    chapters: [{ id: 'printing', title: 'Archivo', npc: 'Luz', reflection: 'Revisemos la fuente.' },
-      { id: 'comparison', question: '¿Qué comparamos?' }, { id: 'consultation', intro: 'Una decisión ficticia.' },
-      { id: 'other', title: 'Invalid' }],
-    consultation: { projects: [{ id: 'A', name: 'Sombra', benefit: 'Descansar', tradeoff: 'Mantenimiento' }] },
-  });
-  assert.deepEqual(story.chapters.map(ch => ch.id), [1, 2, 3]);
-  assert.equal(story.chapters[0].npc, 'Luz');
-  assert.deepEqual(story.projects[0], { id: 'A', title: 'Sombra', description: 'Descansar', tradeoff: 'Mantenimiento' });
-  assert.equal(normalizeStory({ schema_version: '2.0.0' }), null);
+test('schema 2 is required: canonical prompts, choices, hints, explanations and views remain shared', () => {
+  const shared = canonicalStory();
+  shared.activities[0].prompt = 'Pregunta editada por quien escribe la historia';
+  shared.activities[0].hint = 'Una pista compartida';
+  const story = normalizeStory(shared);
+  assert.deepEqual(story.activities, shared.activities);
+  assert.deepEqual(story.houses, shared.houses);
+  assert.deepEqual(story.chapters.map(ch => ch.id), ['printing', 'comparison', 'consultation']);
+  assert.deepEqual(story.consultation, shared.consultation);
+  assert.equal(story.activities.length, 6);
+  assert.equal(story.activities.filter(a => a.transfer).length, 2);
+});
+
+test('missing or unsupported shared content is unavailable, never an old hard-coded quiz', () => {
+  for (const mutate of [
+    s => { s.schema_version = '1.0.0'; }, s => { s.activities.pop(); },
+    s => { s.activities[0].rule = 'eval(alert(1))'; }, s => { s.activities[0].view = 'unknown-view'; },
+    s => { s.activities[0].choices[0].id = 'state_99'; }, s => { s.activities[0].prompt = ''; },
+    s => { s.activities[1].id = s.activities[0].id; }, s => { s.activities[0].explanation = ''; },
+    s => { s.activities[0].id = '__proto__'; },
+    s => { s.houses[0].chapter = 'missing'; }, s => { s.houses.pop(); },
+    s => { s.assessment_fixtures.printing.sv = -1; }, s => { delete s.assessment_fixtures; },
+    s => { s.chapters.pop(); }, s => { s.consultation.projects.pop(); },
+  ]) {
+    const shared = canonicalStory(); mutate(shared);
+    assert.equal(normalizeStory(shared), null);
+  }
   assert.equal(normalizeStory(null), null);
-  assert.equal(normalizeStory({ schema_version: '1.0.0', chapters: [{ id: 1, title: '' }] }).chapters[0].title, undefined);
+});
+
+test('required shared story loading fails closed and uses the packaged path', async () => {
+  const paths = [];
+  const story = await logic.loadStory(async path => { paths.push(path); return { ok: true, json: async () => canonicalStory() }; }, '/build/web/');
+  assert.deepEqual(paths, ['./content/story.json']);
+  assert.equal(story.activities.length, 6);
+  await assert.rejects(() => logic.loadStory(async () => ({ ok: true, json: async () => ({ schema_version: '1.0.0' }) })), /historia compartida/);
+  await assert.rejects(() => logic.loadStory(async () => { throw Error('offline'); }), /reintentar/);
+});
+
+test('canonical consultation scenarios match retained fixtures for every action and preserve changed shared counts', () => {
+  const story = canonicalStory();
+  for (const [canonical, legacy] of [['baseline', 'base'], ['more_same_winner', 'more-a'], ['more_other_winner', 'more-b']]) {
+    for (const choice of ['A', 'B', 'C', 'unmarked', 'decline']) {
+      assert.deepEqual(resolveConsultation(choice, canonical, story), resolveConsultation(choice, legacy));
+    }
+  }
+  story.consultation.scenarios[0].votes = [8, 8, 3];
+  assert.deepEqual(resolveConsultation('decline', 'baseline', story).tied, ['A', 'B']);
+  assert.equal(resolveConsultation('B', 'baseline', story).winner, 'B');
+});
+
+test('six canonical activities evaluate shared rules and changed records without disclosing failed answers', () => {
+  const story = canonicalStory(); const data = fixture();
+  const answers = ['sv', 'separate', 'unknown', 'state_02', 'state_01', 'no'];
+  story.activities.forEach((activity, i) => {
+    const result = logic.assessActivity(activity, answers[i], data, story);
+    assert.equal(result.available, true, activity.id);
+    assert.equal(result.correct, true, activity.id);
+    assert.ok(result.message.includes(activity.explanation));
+    const wrong = activity.choices.find(choice => choice.id !== answers[i]);
+    const failure = logic.assessActivity(activity, wrong.id, data, story);
+    assert.equal(failure.correct, false);
+    assert.equal(failure.message.includes(activity.explanation), false, 'No solution before explicit help');
+  });
+  data.records[0] = { ...data.records[0], sv: 30, nv: 60 };
+  assert.equal(logic.assessActivity(story.activities[0], 'nv', data, story).correct, true);
+  data.records[1] = { ...data.records[1], sv: 240, nv: 160, ln: 405 };
+  assert.equal(logic.assessActivity(story.activities[3], 'state_01', data, story).correct, true);
+  assert.equal(logic.assessActivity({ ...story.activities[0], rule: 'arbitrary' }, 'sv', data, story).available, false);
+});
+
+test('new activity comparisons support ties, zero counts, absent records, and missing rates', () => {
+  const story = canonicalStory(); const data = fixture();
+  const activity = id => story.activities.find(item => item.id === id);
+  data.records[0] = { ...data.records[0], sv: 45, nv: 45 };
+  assert.equal(logic.assessActivity(activity('participation-reading'), 'equal', data, story).correct, true);
+  data.records[2] = { ...data.records[2], sv: 60, nv: 40, ln: 110 };
+  for (const id of ['more-count', 'higher-rate']) assert.equal(logic.assessActivity(activity(id), 'equal', data, story).correct, true);
+  for (const index of [1, 2]) data.records[index] = { ...data.records[index], sv: 0, nv: 0, ln: data.records[index].ns };
+  assert.equal(logic.assessActivity(activity('more-count'), 'equal', data, story).correct, true);
+  assert.equal(logic.assessActivity(activity('higher-rate'), 'equal', data, story).available, false);
+  data.records[0] = { ...data.records[0], sv: 0, nv: 0, ln: 10 };
+  assert.equal(logic.assessActivity(activity('participation-reading'), 'equal', data, story).available, false);
+  data.records.pop();
+  assert.equal(logic.assessActivity(activity('more-count'), 'state_01', data, story).available, false);
+  assert.equal(logic.assessActivity(activity('higher-rate'), 'unavailable', data, story).correct, true);
+});
+
+test('comparison uses unrounded counts/rates, including near-ties', () => {
+  const story = canonicalStory(); const data = fixture();
+  data.records[1] = { ...data.records[1], sv: 500000, nv: 500000, ns: 0, ln: 1000000 };
+  data.records[2] = { ...data.records[2], sv: 500001, nv: 499999, ns: 0, ln: 1000000 };
+  const activity = story.activities.find(item => item.id === 'higher-rate');
+  assert.equal(logic.assessActivity(activity, 'state_02', data, story).correct, true);
+  assert.equal(logic.assessActivity(activity, 'equal', data, story).correct, false);
+});
+
+test('shared transfer fixtures keep zero data explicit instead of silently substituting defaults', () => {
+  const story = canonicalStory();
+  story.assessment_fixtures.printing = { sv: 0, nv: 0, ns: 10, ln: 10 };
+  story.assessment_fixtures.comparison[0] = { sv: 0, nv: 0, ns: 10, ln: 10 };
+  assert.deepEqual(normalizeStory(story).assessment_fixtures, story.assessment_fixtures);
+  assert.equal(logic.assessActivity(story.activities[2], 'unknown', fixture(), story).correct, true);
+  assert.equal(logic.assessActivity(story.activities[5], 'no', fixture(), story).correct, true);
+});
+
+test('old completion is honored but no old answer, transfer or mastery migrates into six new checks', () => {
+  const old = sanitizeProgress({ version: 1, completedChapters: [1, 2, 3], hints: ['transfer1', 'unknown'],
+    answered: ['transfer1', 'transfer2'], mastery: true });
+  assert.deepEqual(old.completedChapters, ['printing', 'comparison', 'consultation']);
+  assert.deepEqual(old.legacyCompleted, old.completedChapters);
+  assert.deepEqual(old.hints, []);
+  assert.deepEqual(old.assisted, []);
+  const fresh = sanitizeProgress({ version: 2, completedChapters: ['printing', 'printing', 'fake'],
+    hints: ['unknown-transfer', 'transfer1', 'unknown-transfer'], assisted: ['unknown-transfer', 'ballot:A'],
+    legacyCompleted: ['printing', 'comparison'], answers: ['unknown'], result: 'A', decision: 'B' });
+  assert.deepEqual(fresh.completedChapters, ['printing']);
+  assert.deepEqual(fresh.legacyCompleted, ['printing']);
+  assert.deepEqual(fresh.hints, ['unknown-transfer']);
+  assert.deepEqual(fresh.assisted, ['unknown-transfer']);
+  assert.deepEqual(Object.keys(fresh).sort(), ['assisted', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
 });
