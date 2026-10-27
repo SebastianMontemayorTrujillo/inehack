@@ -71,7 +71,7 @@ Los escenarios son inventados: conteos A/B/C de 8/5/3, 11/8/6 y 8/10/7. Los últ
 
 El cierre propone revisar el uso de recursos, el avance del proyecto o las necesidades aún pendientes. Las tres preguntas son válidas. Ninguna preferencia ni voluntad de votar se califica. La clase no solicita nombres, afiliaciones, intención de voto o elecciones de consulta; no recoge datos políticos de menores ni de personas adultas. La hoja permanece con quien la usa. En proyector se demuestra una acción anunciada, sin votar ni contar preferencias del grupo.
 
-La ruta HTML semántica ofrece las mismas seis actividades, fuentes, apoyos y final sin ejecutar Godot. El taller opcional está disponible en ambas rutas. La aventura incorpora teclado, foco visible, texto ampliable, silencio, movimiento reducido y botones de ubicación. Las visualizaciones tienen tablas exactas; Linux ofrece una alternativa local. El registro de verificación identifica el entorno y alcance de las comprobaciones, sin prometer compatibilidad universal.
+La ruta HTML semántica ofrece las mismas seis actividades, fuentes, apoyos y final sin ejecutar Godot. El taller opcional está disponible en ambas rutas. En la aventura caminamos con WASD y cruzamos puertas; incorpora foco visible, texto ampliable, silencio y movimiento reducido. Las visualizaciones tienen tablas exactas; Linux ofrece una alternativa local. El registro de verificación identifica el entorno y alcance de las comprobaciones, sin prometer compatibilidad universal.
 
 La elección y los resultados que la revelan no se guardan ni transmiten. Al retomar la historia, el cierre conserva un resumen neutral de lo completado. La revisión técnica de estas reglas es distinta de observar comprensión en una clase.
 

@@ -1,5 +1,9 @@
 # Implementation plan · Voces de la Plaza
 
+## Interface follow-up · 27 October
+
+The approved UI follow-up is RV17 in [todo](todo.md): first establish a shared paper/ink theme and bounded exploration HUD; then contain panel focus/mouse interaction and verify restoration; finally inspect normal/enlarged real exports and refresh media/context/local candidate. Keep passive progress separate from interaction, equally style all answers and consultation choices, and preserve WASD-only travel and exact-data/privacy rules. The [interface contract](../docs/interface_polish.md) records the reproduced focus bug and actual checks; [verification](../docs/verification.md) identifies final artifacts.
+
 ## Classroom revision
 
 Implemented from the 24 October design during the 25 October completion pass: introductory ethics/civic courses in Mexico, simpler questions, a clearer rationale and three enterable houses. Current acceptance is recorded in [todo](todo.md#classroom-revision) and [verification](../docs/verification.md). The original 79/100 baseline and conditional 91/100 planning target are historical estimates; the [rubric review](../docs/rubric_review.md) assesses the revised artifacts independently. The user's 100/100 target does not authorize invented evidence or a guaranteed committee score.
@@ -14,7 +18,7 @@ Revision task status lives only in [todo](todo.md#classroom-revision). Dependenc
 
 The subsequent rubric review adds **RV13**, implementing the original supported-headline interaction as an optional poster workshop: canonical content and exact generic comparison → Godot/HTML composition and publication → all 496 state-pair checks plus actual keyboard journeys → updated classroom/media and renewed rubric review → RV12 package freeze. Existing six required questions and the synthetic consultation remain intact. A published poster survives navigation and cancelled edits in the current session but is never serialized with progress or ballots.
 
-Build a complete first-house entry/quest/exit slice before rolling the room pattern out. Keep one active spatial scene below a persistent root; door interaction and menu travel share an entry action, with safe spawns, current-room bounds and no automatic quest completion. All rooms are physically accessible from the start; only consultation activity depends on the two evidence artifacts.
+Build a complete first-house entry/quest/exit slice before rolling the room pattern out. Keep one active spatial scene below a persistent root, with safe spawns, current-room bounds and no automatic quest completion. The 26 October user amendment removes menu travel: WASD walking crosses the physical doorways, while E/Enter interacts only with nearby people/exhibits. All rooms are physically accessible from the start; only consultation activity depends on the two evidence artifacts.
 
 Checkpoint A after RV01–RV03: enter/leave house 1 through actual input, publish a simpler sourced bulletin, retry safely and retain progress. Checkpoint B after RV04–RV06: both artifacts and every consultation action reach the same ending; room revisits do not leak ballots. Checkpoint C after RV07–RV10: original assets and both routes work in the revised exports with recorded accessibility results/limits. Checkpoint D after RV11–RV12: teacher materials and recorded media match the new candidate; remaining external requirements stay explicit. Checkpoints record acceptance evidence, not renewed phase-permission requests.
 

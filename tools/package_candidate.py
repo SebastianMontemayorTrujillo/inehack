@@ -56,7 +56,8 @@ def main():
     for pattern in ["README.md", "AGENTS.md", "CAPABILITY_MAP.md", "SPEC-*.md", ".gitignore", "data/*.json",
                     "submission/*.pdf", "submission/*.mp4", "submission/*.html", "submission/*.srt", "submission/*.txt",
                     "build/evidence/*.json", "build/evidence/*.log", "build/evidence/godot-*.png", "build/evidence/native-*.png", "build/evidence/html-overview.png", "build/evidence/html-desktop.png",
-                    "build/evidence/assistive-workshop-final/*", "build/evidence/assistive-*/assistive-run.json"]:
+                    "build/evidence/assistive-workshop-final/*", "build/evidence/assistive-*/assistive-run.json",
+                    "build/pdf-review-*/review.md", "build/pitch-recording/*/review.md"]:
         files.update(p for p in ROOT.glob(pattern) if p.is_file())
     # Preserve the small research originals required by the recorded references.
     for pattern in ["INEhack_*.md", "INEhack_*.docx", "INEhack_Research_Annex.zip", "Rúbrica*.pdf"]:

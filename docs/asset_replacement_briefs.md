@@ -23,7 +23,7 @@ Art direction: simple integer-grid pixel forms, warm paper/terracotta, cool teal
 | `prop.desk` | 32×24 warm wood work desk, broad top, drawer handle, two dark legs and a blank paper. Full transparent canvas; recognizable separately from the slatted outdoor bench. |
 | `prop.bookshelf` | 24×32 upright wood case with two shelves and seven unequal book spines. Pale spine bands and shelf gaps keep it readable without relying only on book colors; no baked titles. |
 | `prop.chair` | 24×24 upright wood back, open back/seat gap, terracotta seat and two visible feet. Transparent surroundings; useful for the meeting arrangement without new character art. |
-| `prop.exit` | 24×32 open wood-framed doorway, dark teal interior, pale downward arrow and threshold. Place toward the lower room edge. The arrow is supplemental: Main must retain the visible “Salir a la plaza” control and keyboard/menu paths. |
+| `prop.exit` | 24×32 open wood-framed doorway, dark teal interior, pale downward arrow and threshold. Place toward the lower room edge. The arrow is supplemental to the visible exit label. The user's 26 October movement amendment replaces the former remote-exit/menu control with WASD walking through the doorway; the asset and role are unchanged. |
 | `icon.shade` | 24×24 framed shade-tree and bench symbol. Must identify shade independently of the label color. |
 | `icon.reading` | 24×24 framed open book. Pages/spine visibly distinguish it from the garden icon. |
 | `icon.garden` | 24×24 framed soil, stem, two leaves and small flower. No numerical outcome embedded in icon. |

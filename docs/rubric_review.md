@@ -1,5 +1,7 @@
 # Reto 3: rubric review of the classroom candidate
 
+**26–27 October amendments:** the user subsequently requested WASD-only Godot movement, a redesigned final poster and continued UI improvement. Those changes and their fresh runtime evidence are tracked in RV14–RV17 and `verification.md`. The assessment below is the independent **25 October** review; no new rubric score is inferred from a later test pass.
+
 25 October 2026. This is an internal model review, not a committee result or a prediction of winning. The user requested repeated improvement toward 100/100; scores must follow the evidence. No teacher, learner, institutional adoption or electoral-impact result is invented.
 
 ## Authority and scoring

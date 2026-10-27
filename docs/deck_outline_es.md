@@ -1,6 +1,6 @@
 # Voces de la Plaza · esquema de presentación
 
-**Equipo Latas · Edición de aula · 25 de octubre de 2026.** Diez diapositivas para presentar la aventura, sus datos y su uso docente. El generador lee el texto en pantalla de este documento y lo combina con capturas reales del recorrido Linux y del export HTML. [Presentación PDF](../submission/voces_presentacion.pdf) y [versión HTML](../submission/presentacion.html).
+**Equipo Latas · Edición de aula · presentación revisada el 27 de octubre de 2026.** Diez diapositivas para presentar la aventura, sus datos y su uso docente. El generador lee el texto en pantalla de este documento y lo combina con capturas reales del recorrido Linux y del export HTML. [Presentación PDF](../submission/voces_presentacion.pdf) y [versión HTML](../submission/presentacion.html).
 
 La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional implementado en Godot y HTML. Se conserva la comparación guiada AGS/BC en la diapositiva 5. La vista previa nativa procede de `build/evidence/native-poster-preview.png`; el [recorrido nativo](../build/evidence/native-window.json) y la [verificación](verification.md) delimitan el alcance técnico comprobado. Las seis actividades siguen siendo obligatorias; el taller y los cálculos son opcionales.
 
@@ -58,7 +58,7 @@ La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional im
 
 **Visual:** captura de la portada de la ruta HTML del export final, con la misma historia compartida y sin cortar el título de la sección siguiente.
 
-**Nota de exposición:** HTML ofrece las actividades sin ejecutar el lienzo; el taller opcional está disponible en ambas rutas. La aventura añade silencio, movimiento reducido y botones de ubicación. Comprobar el equipo y la ruta adecuada antes de clase. El alcance de las comprobaciones está en el registro de verificación; no se promete compatibilidad universal, web sin conexión o evaluación formal con lector de pantalla.
+**Nota de exposición:** HTML ofrece las actividades sin ejecutar el lienzo; el taller opcional está disponible en ambas rutas. En la aventura caminamos con WASD y cruzamos puertas; hay silencio, movimiento reducido y texto ampliable. Comprobar el equipo y la ruta adecuada antes de clase. El alcance de las comprobaciones está en el registro de verificación; no se promete compatibilidad universal, web sin conexión o evaluación formal con lector de pantalla.
 
 ## Diapositiva 8 · Una clase de 20 minutos
 
@@ -72,9 +72,9 @@ La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional im
 
 **Texto en pantalla:** «Opcional: dos de 32 entidades». «Cantidad o proporción; una pregunta neutral». «Revisa datos, bases, NS, fuente y límite». «Revisa tu cartel y llévalo a Inés».
 
-**Visual:** captura nativa real `native-poster-preview.png`, con Nuevo León y Baja California, el hallazgo, sus proporciones, conteos exactos y registros sin clasificación. El contenido inferior se consulta desplazándose dentro de la vista previa del juego.
+**Visual:** captura nativa real `native-poster-preview.png`, con Nuevo León y Baja California, titular del hallazgo, proporciones en una misma escala, bases y registros sin clasificación. La pregunta neutral ocupa un panel destacado. El botón de datos y fuente abre los conteos completos; el texto ampliado permite desplazarse dentro de la vista previa del juego.
 
-**Nota de exposición:** taller disponible después de las seis actividades del recorrido principal. Elegir dos entidades del conjunto CCPC federal 2024, cantidad de registros con participación o proporción entre registros con información y una pregunta neutral. Las preguntas son sobre información faltante, voces por escuchar o seguimiento de acuerdos. La vista previa refleja las selecciones con conteos exactos, bases, NS, año, fuente y límites; se puede revisar antes de llevarla a Inés. El cartel permanece en memoria durante la sesión: no cambia resultados de consulta ni reconocimiento. No añade una pregunta calificada ni exige calcular. Los datos no explican motivos ni señalan qué proyecto necesita Villa Brisa.
+**Nota de exposición:** taller disponible después de las seis actividades del recorrido principal. Elegir dos entidades del conjunto CCPC federal 2024, cantidad de registros con participación o proporción entre registros con información y una pregunta neutral. Las preguntas son sobre información faltante, voces por escuchar o seguimiento de acuerdos. La vista previa muestra hallazgo, valores, bases, NS, año, fuente y límites; los conteos completos y la procedencia se consultan en un botón. Guardar conserva la posición; se camina con WASD hasta Inés. El cartel permanece en memoria durante la sesión: no cambia resultados de consulta ni reconocimiento. No añade una pregunta calificada ni exige calcular. Los datos no explican motivos ni señalan qué proyecto necesita Villa Brisa.
 
 ## Diapositiva 10 · La conversación continúa
 
@@ -105,7 +105,7 @@ Datos: [portal CCPC](https://ine.mx/transparencia/datos-abiertos/visualizacion-d
 
 El generador toma los diez textos en pantalla de este esquema. Las capturas se incrustan en el HTML para que la presentación no dependa de rutas externas de imágenes. La narrativa conserva sus cuatro bloques y el guion sus marcadores de locución. Los recursos de aula se generan solo con `--handout-only`, de forma independiente a los otros documentos.
 
-## Registro de producción de documentos
+## Registro histórico de producción · 25 de octubre
 
 **Edición con taller opcional, cerrada el 25 de octubre de 2026.** Narrativa de cuatro páginas, presentación de diez diapositivas y hoja de dos páginas. Los textos distinguen la función implementada y las comprobaciones técnicas de una evaluación educativa o adopción institucional.
 
@@ -130,3 +130,36 @@ Salida correcta, código 0. El marcador no se repitió durante los ajustes de es
 La generación final conservó los tres recursos de aula congelados: `classroom.html` tiene SHA-256 `7566455846e61adbf4dcef24b2dd8f11168a5ec94fee2b3cc18bc8fe15380c35` y `classroom-handout.html`, `54e90ecee1747e3cde4cefc122f05ddfc2e04939f68de64cc8622001abca42a3`; el PDF conserva el hash de la tabla. Sus copias en `build/web/` son idénticas a las de `submission/`. El cierre editorial retiró las notas de borrador de los Markdown y describe el taller implementado, sin regenerar los recursos de aula ya probados. Los seis documentos y el renderizador quedan congelados con este registro.
 
 El guion del pitch mantiene marcas de tiempo de planeación. El [recibo de codificación](../build/evidence/pitch-encoding.json) y los subtítulos/transcripción del video final identifican la grabación realmente entregada; este cierre no le atribuye una duración provisional. Las comprobaciones de documentos no sustituyen la evidencia del juego o del uso en aula.
+
+## Registro histórico de movimiento y cartel · 26 de octubre
+
+La edición del 26 de octubre sustituyó las instrucciones de viaje por caminar con WASD y actualizó las capturas al PCK Linux `3fe62632978450850cb08d218e5ecb1271e5d1dd8c55db532f8d0d3fb4a05d84`, con recorrido nativo aprobado. La diapositiva 9 mostró el nuevo cartel de papel con titular, barras, bases/NS, pregunta neutral y límites. Las notas de exposición explican guardar sin cambiar de lugar y caminar hasta Inés; los diez textos en pantalla conservan el contenido docente.
+
+El marcador de esta edición se ejecutó una sola vez: operación `edit`, **dos PDF** esperados. `node tools/render_submission.mjs` terminó correctamente después de reiniciar el servidor local que interrumpió el primer intento. Los PDF se escribieron el 26 de octubre a las 23:59:27 y 23:59:28 UTC. La hoja y guía de aula no se regeneraron.
+
+Se ejecutaron `pdfinfo`, `pdftoppm -r 120 -png` y, como apoyo, `pdftotext -layout`. Se inspeccionaron individualmente las **14 páginas** a resolución original: narrativa legible, tablas completas, pies separados y diez diapositivas sin recortes ni superposiciones. La captura de la diapositiva 9 incluye el papel completo, 55.70% de Nuevo León, 47.05% de Baja California, pregunta y notas. Los hashes se comprobaron antes y después de la revisión; los PDF no cambiaron.
+
+| PDF de esa edición | Páginas | SHA-256 |
+| --- | ---: | --- |
+| Narrativa y difusión | 4 Letter | `928cae2459fa3e6f753731e588800c536769a9d85eec9d89ecf00e5969df0550` |
+| Presentación | 10 de 16:9 | `5fea7af356af5de256d3fa6e3b79933a4799873b04ba6f5ef732bd0131c3e831` |
+| Hoja de trabajo, sin cambios | 2 Letter | `fa7fb2f11684663483c7fea28ecf8226eb47965bba69738de77f8e62493520bd` |
+
+La grabación de esa edición dura **140.10 segundos**. Se revisaron los 32 fotogramas extraídos (27 escenas y cinco vistas de preguntas) y los 27 subtítulos; todos coincidían con su recibo y transcripción. El inicio muestra la entrada con W al archivo; el taller posterior muestra HTML. La revisión del cartel Godot corresponde al recorrido nativo y a la presentación de esa edición. Registros de trabajo: `build/pdf-review-2026-10-26/review.md` y `build/pitch-recording/2026-10-26T23-59-25.895Z/visual-review.md`. Estos registros de inspección no acreditan aprendizaje, evaluación formal de accesibilidad ni adopción institucional.
+
+## Producción de la presentación · 27 de octubre
+
+Se refrescó solo la presentación para mostrar la interfaz revisada: progreso y objetivo separados, controles WASD visibles, encabezados compactos y fondo atenuado al abrir un panel. El marcador PDF de la habilidad `pdf/26.1020.11618` se ejecutó correctamente **una sola vez**, inmediatamente antes de `node tools/render_submission.mjs --deck-only`, con operación `edit`, **un PDF** esperado y formato `pdf`. El comando terminó con código 0; produjo el PDF a las **15:56:20 UTC**. La narrativa y los tres recursos de aula conservaron sus hashes; su revisión anterior no se atribuye a esta operación.
+
+`pdfinfo -f 1 -l 10 -box` confirmó **10 páginas de 960 x 540 pt, 16:9**. Se renderizaron con `pdftoppm -r 120 -png` y se inspeccionaron individualmente las diez imágenes de 1600 x 900 a resolución original: sin recortes, superposiciones, imágenes faltantes ni colisiones con los pies. `pdftotext -layout` apoyó el cotejo de cifras, bases y texto. La diapositiva 9 conserva el cartel completo y sus datos/fuente/límites.
+
+Las seis capturas nativas incrustadas coinciden byte por byte con el recorrido aprobado de **328.061 segundos**, sin errores de ejecución, del PCK Linux `d02c9b19efc305c76547885e4221cfd54c79c0eb34fb483a95d78ef0a4b5ba27`. La séptima imagen, portada HTML de 1440 x 716, coincidió con una recaptura independiente; la historia exportada coincidió con la canónica. Los siete hashes, seis rutas nativas y el recibo nativo completo quedan en [document-render.json](../build/evidence/document-render.json).
+
+| Artefacto de esta revisión | SHA-256 |
+| --- | --- |
+| Presentación PDF | `4a5421f8cdddece23fe65189a4bcbb3237172aa74468f29e58c21b468cb87a7b` |
+| Presentación HTML | `c4ab866bc3b645d3980d01bb74f3b6475febbddaf902dc851bc1902839ac0c1d` |
+
+La [revisión de las diez páginas](../build/pdf-review-2026-10-27/review.md) registra observaciones individuales y hashes de preservación. Este cierre cubre el PDF y sus imágenes; no certifica el recorrido canvas nuevo, pilotaje, accesibilidad formal, eficacia educativa, adopción institucional ni una nueva puntuación de rúbrica. El video y el paquete corresponden al trabajo separado de integración.
+
+La integración del 27 de octubre produjo un video nuevo de **137.67 segundos**, 1080p/30 fps, H.264/yuv420p y sin audio: SHA-256 `f6c3549793b3de1732a8982aca7e197a2273019465038419ee869eec64ddb4bf`. La revisión independiente abrió las 32 imágenes codificadas y comprobó los 27 subtítulos, sin solapamientos y con máximo dos líneas. El último subtítulo excede la duración exacta de la pista en 11.33 ms, menos de un cuadro de 33.33 ms; se comprobó el texto completo en el último cuadro decodificado. `build/evidence/pitch-visual-review-2026-10-27.json` conserva esta medición, los hashes y el alcance de la revisión por muestras. La narrativa y los recursos de aula permanecieron sin cambios.

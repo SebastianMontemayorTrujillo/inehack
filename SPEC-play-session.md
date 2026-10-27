@@ -1,8 +1,10 @@
 # SPEC: play-session
 
-**Classroom amendment · 25 October 2026:** The plaza and all three enterable interiors are implemented. One persistent session owns the reusable room, physical and menu entry, safe exit points and focus restoration. Houses open from the start; activities have separate prerequisites. The audience is high-school beginners and adults new to civic education. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
+**Interface amendment · 27 October 2026:** Show bounded location/objective text and three noninteractive progress indicators. Open paper panels dim the world and contain keyboard/mouse interaction; closing restores a usable world control without changing location. Keep controls and content readable at enlarged text, with equal presentation of answer and consultation choices. See `docs/interface_polish.md` and RV17.
 
-Version 2 · 25 October 2026 · Owner: main, game/integration.
+**Movement amendment · 26 October 2026:** At the user's request, WASD is the only world movement. Walk into a doorway to enter a house and down through its exit to return. House buttons, remote exit, Escape travel, prerequisite travel and poster-publication travel are removed. E/Enter and the interaction button act only on nearby people/exhibits. Escape closes panels; arrow keys still operate interface controls. Reset starts a new run in the plaza. The independent semantic HTML route retains normal document navigation.
+
+Version 4 · 27 October 2026 · Owner: main, game/integration.
 Implementation and current verification evidence are recorded in [verification](docs/verification.md). Run the applicable suites and exported journeys after changes; previous results do not certify a changed artifact. Formal user evaluation remains distinct from automated checks.
 
 ## Objective and scope
@@ -33,7 +35,7 @@ State example: `explore → dialogue → evidence_panel → explore`. Closing a 
 
 ## Acceptance and verification
 
-- PLAY-01: A fresh player can start, move/interact by keyboard or choose menu travel, meet all three characters, open the notebook, and return without a soft lock. No required dragging, rapid reaction, or timer.
+- PLAY-01: A fresh player walks with physical WASD keys, crosses all three doorways in both directions, meets nearby characters, opens the notebook and returns without a soft lock. Arrow keys, Escape, mouse controls, prerequisite messages and poster publication cannot move the avatar or change rooms. Walking pauses while a panel is open. No required dragging, rapid reaction, or timer.
 - PLAY-02: Enlarged text, visible focus, mute, reduced motion, and readable contrast preserve every essential interaction. Sound activation failure has no gameplay penalty. Controls and instructions are in Mexican Spanish.
 - PLAY-03: Resume/reset, corrupt save, incompatible version, interrupted feedback, repeated clicks, and unavailable storage behave safely. Inspection of saved data reveals no ballot choice or reconstructable option-linked result.
 - PLAY-04: Main records actual engine/template versions, browser and Linux environment, command outcomes, and a full exported walkthrough. Development-assets runs do not satisfy final originality acceptance.

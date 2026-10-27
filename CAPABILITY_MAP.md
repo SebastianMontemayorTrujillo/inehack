@@ -1,5 +1,9 @@
 # Capability map for Voces de la Plaza
 
+**27 October interface revision:** A shared theme and bounded HUD distinguish location, objective, passive progress and nearby interaction. Paper panels dim the world, contain keyboard/mouse interaction and restore controls on close. See [interface contract](docs/interface_polish.md), `SPEC-play-session.md` and RV17.
+
+**26 October user amendment:** Godot world movement is WASD-only. Walking crosses physical doors/exits; remote travel buttons, Escape exits and automatic poster/prerequisite travel are removed. The final authored poster receives a spacious paper-and-ink layout with a strong finding, labelled bars and discussion question. See `SPEC-play-session.md`, `SPEC-evidence-quests.md` and RV14–RV16. The HTML route remains independently navigable.
+
 **25 October classroom revision:** the game targets introductory ethics/civic courses in Mexico, especially high-school students approaching their first vote and adults new to civic education. Six shared simple questions, coherent story progression and three enterable houses extend the same six modules. See [design](docs/classroom_redesign.md), [revision tasks](tasks/todo.md#classroom-revision), [current evidence](docs/verification.md), and [rubric review](docs/rubric_review.md). Historical implementation counts below are the version-1 baseline; current acceptance is tied to the revised candidate's fingerprints.
 
 The optional archive workshop implements the supported-headline interaction below: a learner chooses two of the 32 bundled states, count or proportion, and a neutral discussion question; previews and revises the sourced poster; then brings it to Inés. This is an additional way to communicate the same evidence, not another required quiz. Draft and published choices remain in session memory and do not affect the consultation.

@@ -4,82 +4,82 @@ Demostración automatizada, silenciosa y subtitulada. No contiene narración ni 
 00:00:00,000 — 00:00:05,501
 Equipo Latas presenta Voces de la Plaza, una aventura de educación cívica para bachillerato y personas adultas.
 
-00:00:05,629 — 00:00:09,629
+00:00:06,335 — 00:00:14,915
 Villa Brisa prepara una reunión. Luz, Mateo e Inés nos reciben en tres casas.
 
-00:00:13,642 — 00:00:18,142
-Podemos entrar a las casas desde el inicio. Aquí entramos a la imprenta de Luz.
+00:00:15,484 — 00:00:19,984
+Caminamos con WASD y cruzamos la puerta del archivo de Mateo. Las tres casas abren desde el inicio.
 
-00:00:18,787 — 00:00:23,287
+00:00:20,510 — 00:00:25,010
 La ruta HTML cuenta la misma historia con texto ampliable, gráficas y controles de teclado.
 
-00:00:23,705 — 00:00:27,204
+00:00:25,352 — 00:00:28,852
 Primera misión: preparar un boletín que diga qué sabemos.
 
-00:00:27,425 — 00:00:33,425
+00:00:29,053 — 00:00:35,055
 INE, CCPC federal 2024: cerca de 60 de cada 100 registros con información conocida muestran participación.
 
-00:00:33,651 — 00:00:37,151
+00:00:35,286 — 00:00:38,787
 Leemos las barras. No necesitamos hacer divisiones para avanzar.
 
-00:00:37,341 — 00:00:42,342
+00:00:38,944 — 00:00:43,944
 El boletín conserva conteos exactos, fuente y año. Los registros sin información se muestran aparte.
 
-00:00:42,697 — 00:00:47,698
+00:00:44,288 — 00:00:49,288
 Si falta información, no afirmamos que alguien no participó. Pedir apoyo se distingue de responder sin ayuda.
 
-00:00:47,861 — 00:00:51,860
+00:00:49,473 — 00:00:53,473
 Otro caso: 60 participaron, 30 no y 10 no se sabe. Este ejemplo es inventado.
 
-00:00:52,206 — 00:00:55,706
+00:00:53,769 — 00:00:57,270
 Publicamos el boletín con su fuente. Queda disponible para volver a leerlo.
 
-00:00:55,902 — 00:00:59,901
+00:00:57,461 — 00:01:01,462
 En el archivo de Mateo revisamos un cartel que confunde cantidades y porcentajes.
 
-00:01:00,062 — 00:01:04,562
+00:01:01,651 — 00:01:06,151
 Segunda misión: corregir el cartel. Baja California tiene más registros con participación.
 
-00:01:04,837 — 00:01:09,836
+00:01:06,408 — 00:01:11,408
 De cada 100 registros con información, Aguascalientes tiene mayor proporción. Las bases son distintas.
 
-00:01:10,116 — 00:01:14,616
+00:01:11,657 — 00:01:16,157
 En otro ejemplo inventado, una cantidad mayor puede representar una parte menor del grupo.
 
-00:01:14,956 — 00:01:19,957
+00:01:16,374 — 00:01:21,373
 Corregimos el cartel: más registros y mayor proporción no son lo mismo. Podemos revisar ambas medidas.
 
-00:01:20,167 — 00:01:25,168
+00:01:21,573 — 00:01:26,573
 Ahora creamos nuestro cartel: elegimos dos estados, qué comparar y una pregunta para la reunión.
 
-00:01:25,414 — 00:01:31,414
+00:01:26,815 — 00:01:32,816
 Nuestro cartel cambia con los datos elegidos. Conserva fuente, bases y límites; podemos revisarlo antes de publicarlo.
 
-00:01:31,579 — 00:01:36,579
+00:01:32,992 — 00:01:37,992
 Inés recibe nuestro cartel y la pregunta. La evidencia abre la conversación; no decide por quién votar.
 
-00:01:36,716 — 00:01:41,716
+00:01:38,143 — 00:01:43,144
 Con Inés escuchamos tres proyectos. La consulta y sus cifras son inventadas, separadas del CCPC.
 
-00:01:41,879 — 00:01:46,879
+00:01:43,324 — 00:01:48,325
 Elegir A, B o C, dejar sin marca o no participar permite el mismo final. Ninguna preferencia se califica.
 
-00:01:47,111 — 00:01:51,114
+00:01:48,546 — 00:01:52,546
 Este resultado es inventado. Las necesidades que no ganan siguen mereciendo atención.
 
-00:01:51,246 — 00:01:56,247
+00:01:52,690 — 00:01:57,691
 Después de decidir podemos preguntar qué se hizo con el presupuesto y cuándo revisaremos los avances.
 
-00:01:56,515 — 00:02:01,515
+00:01:57,916 — 00:02:02,917
 Regresamos a la plaza con el boletín y el cartel. La elección ficticia y su resultado no se guardan.
 
-00:02:01,585 — 00:02:06,086
+00:02:02,960 — 00:02:07,460
 Hay una guía para facilitar la actividad de forma individual, en parejas o con proyector.
 
-00:02:06,109 — 00:02:11,109
+00:02:07,485 — 00:02:12,486
 La hoja para imprimir reúne datos, fuentes y preguntas para conversar sin recoger preferencias políticas.
 
-00:02:11,352 — 00:02:16,352
+00:02:12,678 — 00:02:17,678
 Demostración automatizada y sin audio. El pilotaje con docentes y estudiantes sigue pendiente.
 
 Fuente: INE, CCPC federal 2024. Conteos exactos y bases en el boletín y el cartel. Villa Brisa, los casos de transferencia y la consulta son ficción educativa.

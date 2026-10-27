@@ -64,7 +64,7 @@ export function makePlan(data) {
   return [
     ['opening', 5.5, 'Equipo Latas presenta Voces de la Plaza, una aventura de educación cívica para bachillerato y personas adultas.'],
     ['plaza', 4, 'Villa Brisa prepara una reunión. Luz, Mateo e Inés nos reciben en tres casas.'],
-    ['door', 4.5, 'Podemos entrar a las casas desde el inicio. Aquí entramos a la imprenta de Luz.'],
+    ['door', 4.5, 'Caminamos con WASD y cruzamos la puerta del archivo de Mateo. Las tres casas abren desde el inicio.'],
     ['html', 4.5, 'La ruta HTML cuenta la misma historia con texto ampliable, gráficas y controles de teclado.'],
     ['printshop', 3.5, 'Primera misión: preparar un boletín que diga qué sabemos.'],
     ['participation-reading', 6, `INE, CCPC federal 2024: cerca de ${Math.round(rate)} de cada 100 registros con información conocida muestran participación.`],
@@ -114,14 +114,14 @@ async function preflight() {
     assert.equal(sha(actual), sha(expected), `Stale final export: ${served}. Wait for main to export.`);
     receipts.push({ source, url: new URL(served, webURL).href, sha256: sha(actual), bytes: actual.length });
   }
-  for (const file of ['content/story.json', 'scripts/main.gd', 'scripts/civic_rules.gd', 'scripts/room.gd', 'scripts/poster_view.gd', 'scripts/poster_workshop.gd', 'scenes/room.tscn']) {
+  for (const file of ['content/story.json', 'scripts/main.gd', 'scripts/interface_theme.gd', 'scripts/interface_shell.gd', 'scripts/civic_rules.gd', 'scripts/room.gd', 'scripts/poster_view.gd', 'scripts/poster_card.gd', 'scripts/poster_workshop.gd', 'scenes/room.tscn']) {
     assert.equal(sha(await readFile(path.join(root, 'build/staging-web', file))), sha(await readFile(path.join(root, 'game', file))), `Stale Godot staging: ${file}`);
   }
   const pack = path.join(root, 'build/web/game/index.pck');
   const manifest = JSON.parse(await readFile(path.join(root, 'build/staging-web/assets/export_manifest.json'), 'utf8'));
   assert.equal(manifest.asset_set, 'original', 'Record the final original asset set');
   const packTime = (await stat(pack)).mtimeMs;
-  for (const file of ['scripts/main.gd', 'scripts/civic_rules.gd', 'scripts/room.gd', 'scripts/poster_view.gd', 'scripts/poster_workshop.gd', 'content/story.json']) {
+  for (const file of ['scripts/main.gd', 'scripts/interface_theme.gd', 'scripts/interface_shell.gd', 'scripts/civic_rules.gd', 'scripts/room.gd', 'scripts/poster_view.gd', 'scripts/poster_card.gd', 'scripts/poster_workshop.gd', 'content/story.json']) {
     assert.ok(packTime >= (await stat(path.join(root, 'game', file))).mtimeMs, `Godot PCK predates ${file}`);
   }
   receipts.push({ source: relative(pack), sha256: sha(await readFile(pack)), bytes: (await stat(pack)).size });
@@ -164,12 +164,13 @@ async function record(data, story, plan, receipts, rehearsal = false) {
   const cues = [];
   let doorProbe;
   const elapsed = () => (performance.now() - origin) / 1000;
-  const hold = async (id, showQuestion) => {
+  const hold = async (id, showQuestion, during) => {
     const scene = plan.find(item => item.id === id);
     assert.ok(scene, `Unknown scene ${id}`);
     const start = elapsed();
     console.log(`${rehearsal ? 'Rehearsing' : 'Recording'} ${String(cues.length + 1).padStart(2, '0')}/${plan.length}: ${id} (${rehearsal ? 'no video' : `${scene.seconds}s`})`);
     await page.screenshot({ path: path.join(run, `${String(cues.length + 1).padStart(2, '0')}-${id}.png`) });
+    if (during) await during();
     if (showQuestion) {
       const firstHalf = (rehearsal ? 0.1 : scene.seconds / 2) - (elapsed() - start);
       if (firstHalf > 0) await page.waitForTimeout(firstHalf * 1000);
@@ -203,23 +204,30 @@ async function record(data, story, plan, receipts, rehearsal = false) {
     await page.locator(`#feedback-${id}.correct, #feedback-${id}.supported`).waitFor();
   };
   const next = chapter => page.locator(`#activities-${chapter} [data-next-activity]`).click();
+  const walk = async (key, milliseconds) => {
+    await page.keyboard.down(key);
+    try { await page.waitForTimeout(milliseconds); }
+    finally { await page.keyboard.up(key); }
+    await page.waitForTimeout(120);
+  };
   try {
     await page.goto(new URL('game/index.html', webURL).href);
     await page.locator('#status').waitFor({ state: 'hidden', timeout: 90000 });
     await page.waitForTimeout(700);
     await hold('opening');
     await page.keyboard.press('Escape');
-    await hold('plaza');
     const exterior = await page.screenshot({ clip: { x: 48, y: 158, width: 8, height: 8 } });
-    // Same actual mouse/key path as the native-window smoke: menu gives a known
-    // exterior spawn, then walking to the door and E performs physical entry.
-    await page.mouse.click(110, 711); await page.waitForTimeout(200);
-    await page.mouse.click(470, 765); await page.waitForTimeout(200);
-    await page.keyboard.down('w'); await page.waitForTimeout(1800); await page.keyboard.up('w');
-    await page.keyboard.press('e'); await page.waitForTimeout(250);
+    await hold('plaza', null, async () => {
+      // The fresh plaza spawn faces Mateo's doorway. Show that short actual
+      // walk during the plaza caption and observe the visible room transition.
+      for (let attempt = 0; attempt < 12; attempt++) {
+        await walk('w', 350);
+        if (sha(await page.screenshot({ clip: { x: 48, y: 158, width: 8, height: 8 } })) !== sha(exterior)) break;
+      }
+    });
     const interior = await page.screenshot({ clip: { x: 48, y: 158, width: 8, height: 8 } });
-    assert.notEqual(sha(interior), sha(exterior), 'Physical E entry must visibly change the plaza into a room');
-    doorProbe = { exterior_sha256: sha(exterior), interior_sha256: sha(interior), input: 'menu exit, W approach, E at physical door' };
+    assert.notEqual(sha(interior), sha(exterior), 'Walking through the doorway must visibly change the plaza into a room');
+    doorProbe = { exterior_sha256: sha(exterior), interior_sha256: sha(interior), input: 'W from the fresh plaza spawn through Mateo’s doorway, with visible room feedback; no teleport controls' };
     await hold('door');
     await page.keyboard.press('Escape');
     await page.goto(webURL.href);

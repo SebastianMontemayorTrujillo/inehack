@@ -2,11 +2,15 @@
 
 An original Godot adventure for introductory ethics/civic classes in Mexico, especially high-school beginners approaching their first vote and adults new to civic education. Visit three houses, answer six short conceptual questions, publish two CCPC exhibits, explore a clearly fictional consultation and choose a follow-up question. Calculations are optional. The design target is 10–15 minutes; learner duration and educational effects have not been measured.
 
-**94 tests pass: 30 Python, 33 Node, 31 Godot/GUT; 1,128 Godot assertions, zero orphans.** [Verification and limits](docs/verification.md) records the exported HTML/Linux/browser-canvas journeys, all five consultation choices, artifact fingerprints and actual assistive-technology observations.
+**105 tests pass: 30 Python, 33 Node, 42 Godot/GUT; 1,418 Godot assertions, zero orphans.** [Verification and limits](docs/verification.md) records the exported HTML/Linux/browser-canvas journeys, all five consultation choices, artifact fingerprints and actual assistive-technology observations.
 
 After Mateo's archive, an optional workshop lets you choose two of the 32 states, a count/proportion view and a discussion question. Preview and revise your sourced poster, then bring it to Inés. The published poster stays in memory for that session and never changes the fictional vote. All 496 state pairs are checked against exact references in both measures.
 
+**26 October revision:** walk with **WASD** and cross doorways to enter or leave houses. Approach a person or exhibit and press **E/Enter** to interact. **Escape** closes panels; **J** opens the diary. There are no travel buttons. Save your designed poster in place, then walk to Inés to discuss it. The semantic HTML route retains its independent document navigation.
+
 ## Play and teach
+
+**27 October interface:** location/objective and three passive progress indicators have distinct places in the header. Shared paper dialogs dim the world, keep keyboard focus inside and restore controls when closed. Buttons, source cards and enlarged text use the same paper/ink palette as the final poster.
 
 From this repository, run:
 

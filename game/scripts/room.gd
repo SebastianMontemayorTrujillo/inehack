@@ -107,7 +107,7 @@ func _plaza() -> void:
 		sprite("prop.tree", point)
 	sprite("prop.bench", Vector2(170, 181))
 	sprite("prop.bench", Vector2(330, 181))
-	label("Acércate a una puerta y pulsa E · También puedes usar los botones", Vector2(55, 192), 7)
+	label("Camina con WASD · Cruza una puerta para entrar", Vector2(92, 192), 7)
 
 func _interior() -> void:
 	bounds = Rect2(24, 40, 432, 148)
@@ -146,7 +146,7 @@ func _interior() -> void:
 	artifact_label = label("", Vector2(38, 151), 8)
 	sprite("prop.exit", Vector2(240, 192))
 	target("exit", house_index, Vector2(240, 186), Vector2(44, 18))
-	label("SALIR · E", Vector2(263, 178), 7)
+	label("SALIR · CAMINA HACIA ABAJO", Vector2(263, 178), 7)
 
 func update_artifacts(completed: Array, data: Dictionary, selection: Dictionary = {}) -> void:
 	var unfinished := ["BOLETÍN POR PUBLICAR", "CARTEL POR REVISAR", "REUNIÓN POR PREPARAR"]

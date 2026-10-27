@@ -13,15 +13,19 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const evidence = join(root, 'build/evidence');
 const reportPath = join(evidence, 'godot-web-journey.json');
 const viewport = { width: 1280, height: 800 };
+const worldSpeed = 65 / 2.5; // CharacterBody2D velocity is global; the world is scaled.
 const sha256 = data => createHash('sha256').update(data).digest('hex');
 const activities = ['participation-reading', 'unknown', 'unknown-transfer', 'more-count', 'higher-rate', 'comparison-transfer'];
-const crops = { panel: [180, 160, 1080, 205], house: [116, 248, 800, 294], body: [184, 264, 1080, 664] };
-const cream = [246, 240, 218];
+const crops = { panel: [180, 160, 1080, 205], house: [116, 248, 800, 294], body: [184, 264, 1080, 664], poster: [124, 210, 1140, 650] };
+const posterViews = new Set(['poster-count', 'poster-count-details', 'poster-rate', 'poster-rate-details', 'poster-preview',
+  'poster-saved', 'poster-published', 'poster-unpublished-draft', 'poster-after-cancel', 'poster-from-journal',
+  'poster-large-preview', 'poster-large-preview-edit', 'poster-large-preview-footer']);
 const nativePath = name => join(evidence, `native-${name}.png`);
 const workshopRefs = ['poster-archive-before', 'poster-defaults', 'poster-duplicate-error', 'poster-count', 'poster-count-details',
   'poster-first', 'poster-metric', 'poster-question', 'poster-rate', 'poster-preview', 'poster-rate-details', 'poster-source', 'poster-source-details',
-  'poster-carried-intro', 'poster-carried-acknowledgment', 'poster-published', 'poster-unpublished-draft', 'poster-cancelled-room',
+  'poster-saved', 'poster-saved-room', 'poster-carried-intro', 'poster-carried-acknowledgment', 'poster-published', 'poster-unpublished-draft', 'poster-cancelled-room',
   'poster-after-cancel', 'poster-from-journal', 'consultation-intro', 'consultation-poster', 'journal-empty', 'journal-empty-end',
+  'poster-large-preview', 'poster-large-preview-edit', 'poster-large-preview-footer', 'poster-large-source', 'poster-large-source-details',
   'journal-reset', 'journal-reset-end', ...['first', 'second', 'metric', 'question', 'back-metric', 'back-second', 'back-first', 'duplicate-error'].map(x => `poster-large-${x}`)];
 
 // Pillow is already required by native_window_smoke.py. Inspect screenshot bytes,
@@ -29,33 +33,72 @@ const workshopRefs = ['poster-archive-before', 'poster-defaults', 'poster-duplic
 const pixelReader = String.raw`
 import hashlib, io, json, sys
 from PIL import Image, ImageChops
-from tests.native_window_smoke import focus_bounds
+from tests.native_window_smoke import focus_bounds, avatar_position, poster_bounds
 options = json.loads(sys.argv[1])
 image = Image.open(io.BytesIO(sys.stdin.buffer.read())).convert('RGB')
 assert image.size == (1280, 800), image.size
 result = {'terrain': list(image.getpixel((50, 160))),
           'panel': list(image.getpixel((180, 160))),
           'title_sha256': hashlib.sha256(image.crop((180, 160, 1080, 205)).tobytes()).hexdigest(),
+          'house_sha256': hashlib.sha256(image.crop((116, 248, 800, 294)).tobytes()).hexdigest(),
           'body_sha256': hashlib.sha256(image.crop((184, 264, 1080, 664)).tobytes()).hexdigest(),
+          'poster_sha256': hashlib.sha256(image.crop((124, 210, 1140, 650)).tobytes()).hexdigest(),
           'artifact_sha256': hashlib.sha256(image.crop((132, 536, 1080, 596)).tobytes()).hexdigest()}
+result['spacious'] = image.getpixel((110, 120)) == (246, 240, 218)
+result['panel_open'] = result['spacious'] or result['panel'] == [246, 240, 218]
+result['paper_bounds'] = poster_bounds(image) if result['spacious'] else None
+if result['paper_bounds']:
+    result['poster_sha256'] = hashlib.sha256(image.crop(result['paper_bounds']).tobytes()).hexdigest()
+
+def browser_avatar():
+    try:
+        return avatar_position(image)
+    except AssertionError:
+        # Chromium can rasterize the 20-pixel shadow as 19 or 21 pixels at a
+        # fractional world position. Require a complete rectangle, teal shirt
+        # and exactly one match; never infer a missing player's location.
+        pixels = image.load()
+        shadow, shirt = (120, 144, 128), (54, 124, 131)
+        matches = []
+        for y in range(176, 671):
+            for x in range(41, 1219):
+                if pixels[x, y] != shadow or pixels[x - 1, y] == shadow or pixels[x, y - 1] == shadow:
+                    continue
+                for width in (19, 21):
+                    if pixels[x + width, y] == shadow or pixels[x + width // 2, y - 10] != shirt:
+                        continue
+                    if all(pixels[xx, yy] == shadow for yy in range(y, y + 5) for xx in range(x, x + width)):
+                        matches.append([round((x + width / 2 - 40) / 2.5, 2), round((y - 7.5 - 156) / 2.5, 2)])
+        assert len(matches) == 1, f'Expected one visible original player; raster candidates: {matches}'
+        return matches[0]
+
 try:
-    result['focus_rows'] = focus_bounds(image)
+    result['avatar'] = browser_avatar() if not result['panel_open'] else None
+except AssertionError:
+    result['avatar'] = None
+try:
+    result['focus_rows'] = focus_bounds(image) if options.get('focus', True) else []
 except AssertionError:
     result['focus_rows'] = []
 if options.get('reference'):
     reference = Image.open(options['reference']).convert('RGB')
     assert reference.size == image.size, reference.size
     crop = tuple(options['crop'])
-    masks = [item.crop(crop).convert('L').point(lambda p: 255 if p < 110 else 0, mode='1') for item in (image, reference)]
+    regions = [crop, crop]
+    if crop == (124, 210, 1140, 650):
+        bounds = [poster_bounds(item) for item in (image, reference)]
+        if all(bounds):
+            regions = bounds
+    masks = [item.crop(region).convert('L').point(lambda p: 255 if p < 110 else 0, mode='1') for item, region in zip((image, reference), regions)]
     counts = [mask.convert('L').histogram()[255] for mask in masks]
-    overlap = ImageChops.logical_and(*masks).convert('L').histogram()[255]
+    overlap = ImageChops.logical_and(*masks).convert('L').histogram()[255] if masks[0].size == masks[1].size else 0
     result['ink_pixels'] = counts
     result['title_ink_f1'] = 2 * overlap / sum(counts) if min(counts) > 200 else 0
 print(json.dumps(result))
 `;
 
-function pixels(png, reference, crop = crops.panel) {
-  const result = spawnSync('python3', ['-c', pixelReader, JSON.stringify({ reference, crop })], {
+function pixels(png, reference, crop = crops.panel, focus = true) {
+  const result = spawnSync('python3', ['-c', pixelReader, JSON.stringify({ reference, crop, focus })], {
     input: png, cwd: root, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' }, maxBuffer: 1024 * 1024, timeout: 5000,
   });
   assert.equal(result.status, 0, `Screenshot decoding failed: ${result.error || result.stderr}`);
@@ -77,9 +120,12 @@ async function selfTest() {
     assert.ok(!titleMatches(pixels(await readFile(nativePath(wrong)), nativePath(name), crop)), `Reject wrong state for ${name}`);
   }
   for (const name of ['poster-count', 'poster-rate', 'poster-published', 'poster-source']) {
-    assert.ok(titleMatches(pixels(await readFile(nativePath(name)), nativePath(name), crops.body)), name);
-    assert.ok(!titleMatches(pixels(await readFile(nativePath('ending')), nativePath(name), crops.body)), `Reject wrong poster state: ${name}`);
+    const crop = posterViews.has(name) ? crops.poster : crops.body;
+    assert.ok(titleMatches(pixels(await readFile(nativePath(name)), nativePath(name), crop)), name);
+    assert.ok(!titleMatches(pixels(await readFile(nativePath('ending')), nativePath(name), crop)), `Reject wrong poster state: ${name}`);
   }
+  assert.deepEqual(plaza.avatar, [240, 175.8], 'Visible original avatar at the plaza spawn');
+  assert.ok(interior.avatar?.every((value, index) => Math.abs(value - [240, 155][index]) <= 2), 'Visible original avatar at the interior spawn');
   assert.ok(pixels(await readFile(nativePath('poster-large-question'))).focus_rows.length, 'Enlarged question focus is fully visible');
   console.log('Pixel oracle preflight passed: physical markers, 14 matching states and 14 wrong-state rejections, enlarged focus. No browser run.');
 }
@@ -132,7 +178,7 @@ async function main() {
     status: 'running', created_at_utc: new Date().toISOString(), url: url.href, viewport,
     run_kind: process.argv.includes('--implementation') ? 'implementation-on-existing-export' : 'final-export',
     environment: 'Playwright Chromium, fresh non-persistent context, exported Godot canvas',
-    phases: [], screenshots: [], progress: [], browser_errors: [], page_errors: [], error_context: [], reference_mismatches: [], warnings: [], request_failures: [],
+    phases: [], movement_checks: [], screenshots: [], progress: [], browser_errors: [], page_errors: [], error_context: [], reference_mismatches: [], warnings: [], request_failures: [],
     visual_review: 'Required separately: pixel comparison is not OCR or a semantic reading of screenshots.',
     limits: ['Automated operator, not a participant pilot or accessibility certification',
       'One unmarked consultation path; all-five-choice coverage belongs to compiled-PCK/GUT and HTML checks'],
@@ -140,6 +186,8 @@ async function main() {
   let browser, context, page, stage = 'preflight', closing = false, timedOut = false;
   let watchdog;
   const nativeNames = ['plaza', 'door-entry', 'door-return', 'house-1', 'house-2', 'house-3',
+    'no-move-left', 'no-move-right', 'no-move-up', 'no-move-down', 'no-teleport-0', 'no-teleport-1', 'no-teleport-2', 'no-teleport-3', 'no-escape-exit',
+    'house-2-prerequisite', 'house-2-prerequisite-closed', 'house-3-prerequisite', 'house-3-prerequisite-closed',
     'quest-1-1', 'quest-1-2', 'quest-1-3', 'quest-2-1', 'quest-2-2', 'quest-2-3', 'ending', ...workshopRefs];
   const artifactFiles = ['index.html', 'index.js', 'index.wasm', 'index.pck'];
   const responseChecks = [];
@@ -153,17 +201,19 @@ async function main() {
   }
 
   async function checkpoint(name, { inside = true, panel = false, reference, referenceCrop, differentTitle, differentBody,
-    sameBody, differentArtifact, visibleFocus = false, deferReference = false } = {}) {
+    sameBody, differentPoster, samePoster, differentArtifact, visibleFocus = false, spacious = false, deferReference = false } = {}) {
     stage = name;
     const deadline = Date.now() + 8000;
     let png, metrics;
     do {
       png = await page.screenshot({ type: 'png', timeout: 5000 });
       metrics = pixels(png, reference ? nativePath(reference) : undefined, referenceCrop || (panel ? crops.panel : crops.house));
-      const terrain = inside ? report.markers.interior : report.markers.plaza;
-      if (equalRGB(metrics.terrain, terrain) && (equalRGB(metrics.panel, cream) === panel)
+      const location = inside ? 'interior' : 'plaza';
+      const terrain = report.markers[panel ? `${location}_panel` : location];
+      if (equalRGB(metrics.terrain, terrain) && metrics.panel_open === panel && metrics.spacious === spacious
           && (!reference || titleMatches(metrics) || deferReference) && (!differentTitle || metrics.title_sha256 !== differentTitle)
           && (!differentBody || metrics.body_sha256 !== differentBody) && (!sameBody || metrics.body_sha256 === sameBody)
+          && (!differentPoster || metrics.poster_sha256 !== differentPoster) && (!samePoster || metrics.poster_sha256 === samePoster)
           && (!differentArtifact || metrics.artifact_sha256 !== differentArtifact) && (!visibleFocus || metrics.focus_rows.length)) {
         await capture(name, png, { ...metrics, native_reference: reference || null, reference_crop: referenceCrop || null });
         if (reference && !titleMatches(metrics)) report.reference_mismatches.push({ phase: name, reference, ink_f1: metrics.title_ink_f1 });
@@ -189,8 +239,72 @@ async function main() {
     for (let i = 0; i < Math.abs(index - current); i++) await key(index > current ? 'ArrowDown' : 'ArrowUp');
     await key('Enter');
   }
+  // Movement probes need only visible world/actor state. Focus is still decoded
+  // and asserted at every applicable UI checkpoint, including enlarged controls.
+  const worldState = async () => pixels(await page.screenshot({ type: 'png', timeout: 5000 }), undefined, crops.panel, false);
+  async function hold(name, milliseconds) {
+    await page.keyboard.down(name);
+    try { await page.waitForTimeout(milliseconds); } finally { await page.keyboard.up(name); }
+    await page.waitForTimeout(120); // Observe the idle frame after movement, not its animated bob.
+  }
+  async function walkTo({ x, y }) {
+    stage = `WASD-to-${x ?? 'same'}-${y ?? 'same'}`;
+    const start = (await worldState()).avatar;
+    assert.ok(start, 'Walking starts with an unobscured original player');
+    for (const [axis, target] of [x, y].entries()) {
+      if (target === undefined) continue;
+      let reached = false;
+      for (let i = 0; i < 24; i++) {
+        const position = (await worldState()).avatar;
+        assert.ok(position, 'Physical movement must leave the player visible');
+        const delta = target - position[axis];
+        if (Math.abs(delta) <= 2) { reached = true; break; }
+        const direction = axis === 0 ? (delta > 0 ? 'd' : 'a') : (delta > 0 ? 's' : 'w');
+        await hold(direction, Math.min(1800, Math.max(25, Math.abs(delta) / worldSpeed * 1000)));
+      }
+      assert.ok(reached, `WASD did not reach axis ${axis}=${target}`);
+    }
+    report.movement_checks.push({ check: 'physical WASD path', from: start, to: (await worldState()).avatar, target: [x ?? null, y ?? null] });
+  }
+  function stationary(name, before, after) {
+    assert.ok(before.avatar && after.avatar, `${name}: world/player must remain visible`);
+    assert.ok(before.avatar.every((value, index) => Math.abs(value - after.avatar[index]) <= .4), `${name}: player moved ${before.avatar} -> ${after.avatar}`);
+    assert.deepEqual(after.terrain, before.terrain, `${name}: room changed`);
+    assert.equal(after.house_sha256, before.house_sha256, `${name}: house changed`);
+    report.movement_checks.push({ check: name, before: before.avatar, after: after.avatar });
+  }
+  async function enterHouse(index) {
+    assert.deepEqual((await worldState()).terrain, report.markers.plaza, 'Entry starts outside');
+    await walkTo({ y: 140 });
+    await walkTo({ x: 80 + index * 160 });
+    let position;
+    for (let i = 0; i < 16; i++) {
+      await hold('w', 100);
+      const state = await worldState();
+      if (equalRGB(state.terrain, report.markers.interior)) { position = state.avatar; break; }
+    }
+    assert.ok(position, `Walking W into house ${index + 1} must enter automatically`);
+    assert.ok(Math.abs(position[0] - 240) <= 2 && position[1] >= 140 && position[1] <= 156, `Interior spawn: ${position}`);
+    await walkTo({ x: 240, y: 155 });
+    report.movement_checks.push({ check: 'automatic W door entry', house: index + 1, spawn: position });
+  }
+  async function leaveHouse(index) {
+    assert.deepEqual((await worldState()).terrain, report.markers.interior, 'Exit starts inside');
+    await walkTo({ y: 155 });
+    await walkTo({ x: 240 });
+    let position;
+    for (let i = 0; i < 16; i++) {
+      await hold('s', 100);
+      const state = await worldState();
+      if (equalRGB(state.terrain, report.markers.plaza)) { position = state.avatar; break; }
+    }
+    assert.ok(position, `Walking S through house ${index + 1} exit must leave automatically`);
+    assert.ok(Math.abs(position[0] - (80 + index * 160)) <= 2 && position[1] >= 119 && position[1] <= 135, `Outside spawn: ${position}`);
+    report.movement_checks.push({ check: 'automatic S exit', house: index + 1, spawn: position });
+  }
+  const approachHost = () => walkTo({ x: 175, y: 130 });
   const posterCheckpoint = (name, options = {}) => checkpoint(name, {
-    panel: true, reference: name, referenceCrop: crops.body, ...options,
+    panel: true, spacious: posterViews.has(name), reference: name, referenceCrop: posterViews.has(name) ? crops.poster : crops.body, ...options,
   });
   async function workshop() {
     await key('Escape');
@@ -212,69 +326,84 @@ async function main() {
     await key('Tab'); await option(1);
     await posterCheckpoint('poster-question', { visibleFocus: true });
     await choose();
-    const rate = await posterCheckpoint('poster-rate', { differentBody: count.body_sha256 });
-    await posterCheckpoint('poster-preview', { sameBody: rate.body_sha256 });
+    const rate = await posterCheckpoint('poster-rate', { differentPoster: count.poster_sha256 });
+    await posterCheckpoint('poster-preview', { samePoster: rate.poster_sha256 });
     await key('Tab'); await posterCheckpoint('poster-rate-details', { visibleFocus: true });
     await key('Tab'); await choose();
     await posterCheckpoint('poster-source');
     await key('Tab'); await posterCheckpoint('poster-source-details', { visibleFocus: true });
-    await choose(); await choose(2);
-    await posterCheckpoint('poster-carried-intro');
-    await key('Tab'); await key('Tab'); await posterCheckpoint('poster-carried-acknowledgment', { visibleFocus: true });
+    await choose(); await choose(2); // Guardar mi cartel: published preview in place.
+    const published = await posterCheckpoint('poster-saved', { samePoster: rate.poster_sha256 });
     await assertProgress(['printing', 'comparison']);
     await key('Escape');
-    await click(250, 711); await click(140, 765); await choose(3);
-    const published = await posterCheckpoint('poster-published', { sameBody: rate.body_sha256 });
+    const savedRoom = await checkpoint('poster-saved-room', { reference: 'house-2' });
+    stationary('Saving the poster stays at the same archive position', archive, savedRoom);
+    await walkTo({ x: 283, y: 130 }); // Approach the physical archive artifact.
+    await key('Enter');
+    await posterCheckpoint('poster-published', { samePoster: published.poster_sha256 });
     await choose();
     await key('Tab'); await option(0, 18);
     await key('Tab'); await option(2, 1);
     await key('Tab'); await option(0, 1);
     await key('Tab'); await option(2, 1);
     await choose();
-    await posterCheckpoint('poster-unpublished-draft', { differentBody: published.body_sha256 });
+    await posterCheckpoint('poster-unpublished-draft', { differentPoster: published.poster_sha256 });
     await choose(); await choose(6);
     await checkpoint('poster-cancelled-room', { reference: 'house-2', differentArtifact: archive.artifact_sha256 });
-    await click(140, 765); await choose(3);
-    await posterCheckpoint('poster-after-cancel', { sameBody: published.body_sha256 });
+    await key('e');
+    await posterCheckpoint('poster-after-cancel', { samePoster: published.poster_sha256 });
     await key('Escape'); await key('j'); await choose(2);
-    await posterCheckpoint('poster-from-journal', { sameBody: published.body_sha256 });
+    await posterCheckpoint('poster-from-journal', { samePoster: published.poster_sha256 });
     await assertProgress(['printing', 'comparison']);
     await key('Escape');
     report.poster_input = { first: 'state_19', second: 'state_02', metric: 'rate', question: 'voices' };
-    report.phases.push('Real OptionButtons, duplicate rejection, changed preview, exact-data/source panel, publication, archive/journal re-entry and cancelled-draft preservation');
+    report.phases.push('Real OptionButtons, duplicate rejection, redesigned poster, exact-data/source panel, save in place, nearby artifact/journal re-entry and cancelled-draft preservation');
   }
-  async function walk(direction) {
-    await page.keyboard.down(direction);
-    try { await page.waitForTimeout(3000); } finally { await page.keyboard.up(direction); }
-    await key('e');
-  }
-  async function assertProgress(completed) {
+  async function assertProgress(completed, settings = { large_text: false, muted: false, reduced_motion: false }) {
     stage = `save-${completed.length}`;
     let saved;
     const deadline = Date.now() + 10000;
     do {
       saved = await progress(page);
-      if (JSON.stringify(saved?.value.completed) === JSON.stringify(completed)) break;
+      if (JSON.stringify(saved?.value.completed) === JSON.stringify(completed)
+          && Object.entries(settings).every(([name, value]) => saved?.value.settings?.[name] === value)) break;
       await page.waitForTimeout(150);
     } while (Date.now() < deadline);
     assert.deepEqual(saved?.value.completed, completed, 'UI choices reached the expected persisted chapters');
     assert.deepEqual(Object.keys(saved.value).sort(), ['completed', 'hints', 'schema_version', 'settings']);
     assert.equal(saved.value.schema_version, 1);
     assert.deepEqual(saved.value.hints, [], 'Journey completed without assisted shortcuts');
-    assert.deepEqual(saved.value.settings, { large_text: false, muted: false, reduced_motion: false });
+    assert.deepEqual(saved.value.settings, settings);
     report.progress.push(saved);
   }
 
   try {
     report.test_sha256 = sha256(await readFile(fileURLToPath(import.meta.url)));
     report.native_script_sha256 = sha256(await readFile(join(root, 'tests/native_window_smoke.py')));
+    const nativeReportBytes = await readFile(join(evidence, 'native-window.json'));
+    const nativeReport = JSON.parse(nativeReportBytes);
+    assert.equal(nativeReport.status, 'passed', 'Fresh native journey must pass before canvas comparisons');
+    assert.equal(nativeReport.test_sha256, report.native_script_sha256, 'Native references must come from the current harness');
+    assert.equal(nativeReport.pack_sha256, sha256(await readFile(join(root, 'build/linux/voces-de-la-plaza.pck'))), 'Native references must match the current Linux export');
+    report.native_run_sha256 = sha256(nativeReportBytes);
+    report.source_sha256 = nativeReport.source_sha256;
+    assert.ok(Object.keys(report.source_sha256).length >= 10, 'Native run must record the current game sources');
+    for (const [path, fingerprint] of Object.entries(report.source_sha256)) {
+      assert.equal(sha256(await readFile(join(root, path))), fingerprint, `Source changed since native run: ${path}`);
+    }
     report.artifacts = Object.fromEntries(await Promise.all(artifactFiles.map(async name => [name, sha256(await readFile(join(root, 'build/web/game', name)))])));
     report.native_references = Object.fromEntries(await Promise.all(nativeNames.map(async name => [name, sha256(await readFile(nativePath(name)))])));
     report.markers = { coordinate: [50, 160], plaza: pixels(await readFile(nativePath('plaza'))).terrain,
-      interior: pixels(await readFile(nativePath('door-entry'))).terrain };
+      interior: pixels(await readFile(nativePath('door-entry'))).terrain,
+      plaza_panel: pixels(await readFile(nativePath('journal-empty'))).terrain,
+      interior_panel: pixels(await readFile(nativePath('quest-1-1'))).terrain };
     assert.ok(!equalRGB(report.markers.plaza, report.markers.interior));
+    assert.ok(!equalRGB(report.markers.plaza_panel, report.markers.interior_panel));
+    assert.ok(!equalRGB(report.markers.plaza, report.markers.plaza_panel), 'Dialog backdrop dims the plaza');
+    assert.ok(!equalRGB(report.markers.interior, report.markers.interior_panel), 'Dialog backdrop dims the interior');
     assert.ok(equalRGB(pixels(await readFile(nativePath('door-return'))).terrain, report.markers.plaza));
-    watchdog = setTimeout(() => { timedOut = true; void browser?.close(); }, 165000);
+    // The new route walks every journey leg and checks each position from pixels.
+    watchdog = setTimeout(() => { timedOut = true; void browser?.close(); }, 600000);
     browser = await chromium.launch({
       executablePath: process.env.BROWSER_EXECUTABLE || '/home/seb/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome',
       headless: true, timeout: 20000, args: ['--no-sandbox', '--enable-unsafe-swiftshader'],
@@ -311,7 +440,25 @@ async function main() {
     // A click in the heading focuses the actual canvas and unlocks browser audio.
     await click(80, 40);
     await key('Escape');
-    await checkpoint('plaza', { inside: false });
+    const plaza = await checkpoint('plaza', { inside: false });
+    assert.ok(plaza.avatar && plaza.avatar.every((value, index) => Math.abs(value - [240, 176][index]) <= .4));
+    for (const direction of ['Left', 'Right', 'Up', 'Down']) {
+      const before = await worldState();
+      await hold(`Arrow${direction}`, 300);
+      stationary(`${direction} arrow is UI only`, before, await checkpoint(`no-move-${direction.toLowerCase()}`, { inside: false }));
+    }
+    for (const name of ['e', 'Enter']) {
+      const before = await worldState();
+      await key(name);
+      stationary(`${name} without a nearby host/artifact does nothing`, before, await worldState());
+    }
+    await click(140, 765);
+    stationary('Distant action button is disabled', plaza, await worldState());
+    for (const [index, [x, y]] of [[110, 711], [250, 711], [390, 711], [470, 765]].entries()) {
+      const before = await worldState();
+      await click(x, y); await key('Escape');
+      stationary(`Old travel control ${x},${y} cannot move the player`, before, await checkpoint(`no-teleport-${index}`, { inside: false }));
+    }
     const initial = await progress(page);
     assert.ok(initial === null || initial.value.completed.length === 0, 'Fresh context has no completed chapters');
     await key('j');
@@ -320,24 +467,48 @@ async function main() {
     const emptyJournalEnd = await posterCheckpoint('journal-empty-end', { inside: false, deferReference: true });
     await key('Escape');
 
-    await click(110, 711); await checkpoint('menu-entry', { reference: 'house-1' });
-    await click(470, 765); await checkpoint('menu-return', { inside: false });
-    await walk('w'); await checkpoint('door-entry', { reference: 'house-1' });
-    await walk('s'); await checkpoint('door-return', { inside: false });
-    report.phases.push('Physical W/E entry and S/E exit verified by native terrain marker and room pixels');
+    await enterHouse(0); await checkpoint('door-entry', { reference: 'house-1' });
+    const interior = await worldState();
+    await key('Escape');
+    stationary('Escape cannot leave a house', interior, await checkpoint('no-escape-exit', { reference: 'house-1' }));
+    for (const action of ['e', 'Enter']) {
+      await key(action);
+      stationary(`${action} cannot interact from interior spawn`, interior, await worldState());
+    }
+    await click(470, 765);
+    stationary('Removed global exit cannot leave a house', interior, await worldState());
+    await leaveHouse(0); await checkpoint('door-return', { inside: false });
+    report.phases.push('Physical W entry and S exit occur automatically; arrows, Escape, distant interactions and removed controls never teleport');
     console.log('Verified physical door entry and exit.');
-    for (const [index, x] of [110, 250, 390].entries()) {
-      await click(x, 711);
+    for (const index of [0, 1, 2]) {
+      await enterHouse(index);
       await checkpoint(`house-${index + 1}`, { reference: `house-${index + 1}` });
-      await click(470, 765);
+      const before = await worldState();
+      for (const [x, y] of [[110, 711], [250, 711], [390, 711], [470, 765]]) {
+        await click(x, y); await key('Escape');
+        stationary(`Old control ${x},${y} cannot leave house ${index + 1}`, before, await worldState());
+      }
+      if (index > 0) {
+        await approachHost();
+        const position = await worldState();
+        await key('e');
+        await checkpoint(`house-${index + 1}-prerequisite`, { panel: true, reference: `house-${index + 1}-prerequisite` });
+        await choose(index); await key('Escape');
+        stationary(`House ${index + 1} prerequisite gives directions without travel`, position,
+          await checkpoint(`house-${index + 1}-prerequisite-closed`, { reference: `house-${index + 1}` }));
+        assert.deepEqual((await progress(page))?.value.completed || [], []);
+      }
+      await leaveHouse(index);
       await checkpoint(`house-${index + 1}-return`, { inside: false });
     }
     report.phases.push('All three houses entered and left before completing any quest');
 
-    for (const [chapter, { x, answers }] of [{ x: 110, answers: [1, 1, 1] }, { x: 250, answers: [2, 1, 1] }].entries()) {
-      await click(x, 711);
+    for (const [chapter, answers] of [[1, 1, 1], [2, 1, 1]].entries()) {
+      await enterHouse(chapter);
       await checkpoint(`quest-${chapter + 1}-room`, { reference: `house-${chapter + 1}` });
-      await click(140, 765);
+      await approachHost();
+      if (chapter === 0) await key('e');
+      else await click(140, 765);
       await checkpoint(`intro-${chapter + 1}`, { panel: true });
       await choose();
       for (const [step, answer] of answers.entries()) {
@@ -351,16 +522,19 @@ async function main() {
       if (chapter === 1) await workshop();
       else await key('Escape');
       await checkpoint(`house-${chapter + 1}-complete`, { reference: `house-${chapter + 1}` });
+      await leaveHouse(chapter);
       console.log(`Verified chapter ${chapter + 1}: three questions and persisted completion.`);
     }
     report.activities = activities;
     report.phases.push('Six decisions completed via Tab/Enter; question title pixels match six native captures; both chapter saves verified');
 
-    await click(390, 711); await checkpoint('consultation-room', { reference: 'house-3' });
-    await click(140, 765);
+    await enterHouse(2); await checkpoint('consultation-room', { reference: 'house-3' });
+    await approachHost(); await key('e');
     const intro = await posterCheckpoint('consultation-intro');
+    await posterCheckpoint('poster-carried-intro');
     await key('Tab'); await key('Tab');
     await posterCheckpoint('consultation-poster', { visibleFocus: true });
+    await posterCheckpoint('poster-carried-acknowledgment', { visibleFocus: true });
     await key('Shift+Tab'); await key('Enter');
     // Intro and ballot both say "Una plaza, varias ideas"; their bodies differ.
     const options = await checkpoint('consultation-options', { panel: true, differentBody: intro.body_sha256 });
@@ -371,9 +545,11 @@ async function main() {
     await assertProgress(['printing', 'comparison', 'consultation']);
     report.phases.push('Unmarked consultation, follow-up and ending reached through UI; save contains only allowed progress/settings');
 
-    await key('Escape'); await click(640, 711);
+    await key('Escape'); await click(205, 711);
     for (let i = 0; i < 3; i++) { await key('Tab'); await key('Space'); }
-    await key('Escape'); await click(250, 711); await click(140, 765); await choose(2);
+    await assertProgress(['printing', 'comparison', 'consultation'], { large_text: true, muted: true, reduced_motion: true });
+    await key('Escape'); await leaveHouse(2); await enterHouse(1); await approachHost();
+    await click(140, 765); await choose(2);
     for (const control of ['first', 'second', 'metric', 'question']) {
       await key('Tab'); await posterCheckpoint(`poster-large-${control}`, { visibleFocus: true });
     }
@@ -382,7 +558,17 @@ async function main() {
     }
     await key('Tab'); await option(0, 2); await choose(3);
     await posterCheckpoint('poster-large-duplicate-error', { visibleFocus: true });
-    await choose(5); await key('Shift+Tab'); await key('Enter');
+    await choose(5);
+    await key('j'); await choose(2);
+    await posterCheckpoint('poster-large-preview');
+    await key('Tab'); await posterCheckpoint('poster-large-preview-edit', { visibleFocus: true });
+    await choose();
+    await posterCheckpoint('poster-large-source');
+    await key('Tab'); await posterCheckpoint('poster-large-source-details', { visibleFocus: true });
+    await choose();
+    await page.mouse.move(1000, 620); await page.mouse.wheel(0, 10000); await page.waitForTimeout(250);
+    await posterCheckpoint('poster-large-preview-footer');
+    await key('Escape'); await click(205, 711);
     for (let i = 0; i < 3; i++) { await key('Tab'); await key('Space'); }
     await choose(); await choose(); await key('Escape');
     await checkpoint('reset-plaza', { inside: false });
@@ -391,7 +577,7 @@ async function main() {
     await posterCheckpoint('journal-reset', { inside: false, sameBody: emptyJournal.body_sha256, deferReference: true });
     await key('Tab'); await key('Tab');
     await posterCheckpoint('journal-reset-end', { inside: false, sameBody: emptyJournalEnd.body_sha256, deferReference: true });
-    report.phases.push('Tab/Shift+Tab reveal enlarged workshop controls; confirmed reset removes session poster and returns the journal to fresh-session pixels');
+    report.phases.push('Tab/Shift+Tab reveal enlarged workshop controls; enlarged published poster/source/toolbar/footer captured; confirmed reset removes session poster and returns the journal to fresh-session pixels');
 
     await Promise.all(responseChecks);
     assert.equal(report.served_pack_sha256, report.artifacts['index.pck'], 'Browser loaded the exact recorded export');
@@ -401,16 +587,22 @@ async function main() {
     for (const name of nativeNames) {
       assert.equal(sha256(await readFile(nativePath(name))), report.native_references[name], `Native reference changed during test: ${name}`);
     }
+    assert.equal(sha256(await readFile(fileURLToPath(import.meta.url))), report.test_sha256, 'Canvas harness changed during the journey');
+    assert.equal(sha256(await readFile(join(root, 'tests/native_window_smoke.py'))), report.native_script_sha256, 'Native pixel oracle changed during the journey');
+    assert.equal(sha256(await readFile(join(evidence, 'native-window.json'))), report.native_run_sha256, 'Native reference run changed during canvas verification');
+    for (const [path, fingerprint] of Object.entries(report.source_sha256)) {
+      assert.equal(sha256(await readFile(join(root, path))), fingerprint, `Source changed during canvas run: ${path}`);
+    }
     assert.deepEqual(report.browser_errors, []);
     assert.deepEqual(report.page_errors, []);
     assert.deepEqual(report.request_failures, []);
     assert.deepEqual(report.reference_mismatches, [], 'Native reference mismatches were retained; inspect the captured rendering differences');
     assert.equal(timedOut, false);
     report.status = 'passed';
-    console.log('Godot browser journey passed: doors, six decisions, poster composition/publication/cancellation, Inés, ending, enlarged focus, private save and reset; zero browser/page errors.');
+    console.log('Godot browser journey passed: WASD-only movement, automatic doors/exits, no teleport, six decisions, poster saved in place, Inés reached on foot, enlarged poster/source/focus, private save and reset; zero browser/page errors.');
   } catch (error) {
     report.status = 'failed';
-    report.failure = { stage, message: timedOut ? `165-second deadline exceeded: ${error.message}` : error.message };
+    report.failure = { stage, message: timedOut ? `600-second deadline exceeded: ${error.message}` : error.message };
     if (page && !page.isClosed()) {
       try { await capture('failure', await page.screenshot({ timeout: 3000 }), {}); } catch { /* Original failure is retained. */ }
     }

@@ -44,6 +44,10 @@ A synthetic formula fixture `SV=60, NV=30, NS=10, LN=100` must produce 66.67% cl
 
 ## Verification and boundaries
 
+### Poster design amendment · 26 October 2026
+
+The final Godot poster is a designed public exhibit: a paper-and-ink masthead, prominent sourced finding, aligned labelled comparison bars, concise values and a distinct discussion question. Keep year, geography, measure, denominator and unknown-classification limits readable; exact counts and provenance remain available from its source control. Preserve equal/unavailable/near-rounded comparisons and enlarged-text usability. Saving or revising a poster never moves the player: publication remains in memory, and the learner walks to Inés to discuss it. Cancel/reset/privacy contracts are unchanged. Verify the rendered poster at normal and enlarged text in actual Linux and browser exports.
+
 Test correct/incorrect selections, null data, source visibility, dependent-answer changes after a fixture update, retries, interrupted/repeated completion, transfer scoring, save/resume, and parity between evaluators. Manually complete both quests with keyboard, enlarged text, no audio, and reduced motion; inspect the persistent exhibit. Record a timed exported walkthrough rather than declaring the 10–15 minute target achieved from a script test.
 
 Always expose provenance and safe assisted progress. Main may reconcile JSON field names with implementation and the web owner without seeking renewed phase approval; update these contracts together. Ask only before material educational scope changes. Never claim learning improvement, infer motives, or duplicate official numbers into disconnected answer keys. Download and runtime checks remain main's verification work.

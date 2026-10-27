@@ -22,22 +22,93 @@ func test_all_houses_open_before_quests_and_return_safely() -> void:
 		assert_true(game.player.position.distance_to(Vector2([80, 240, 400][index], 120)) < 1)
 	assert_eq(game.progress.completed, [], "Exploring never grants a learning artifact")
 
-func test_door_input_enters_and_exit_input_returns() -> void:
+func movement_key(key: Key, pressed: bool) -> void:
+	var event := InputEventKey.new()
+	event.keycode = key
+	event.physical_keycode = key
+	event.pressed = pressed
+	Input.parse_input_event(event)
+
+func test_walking_through_doors_enters_and_leaves_every_house() -> void:
 	var game := fresh_game()
-	var press := InputEventKey.new()
-	press.keycode = KEY_E
-	press.pressed = true
 	for index in 3:
-		game.player.position = Vector2(80 + index * 160, 96)
+		game.player.position = Vector2(80 + index * 160, 120)
 		await wait_physics_frames(3)
-		game._unhandled_key_input(press)
+		movement_key(KEY_W, true)
+		await wait_physics_frames(12)
+		movement_key(KEY_W, false)
 		await wait_physics_frames(2)
 		assert_eq(game.location_id, ["printshop", "archive", "hall"][index])
-		game.player.position = Vector2(240, 186)
-		await wait_physics_frames(3)
-		game._unhandled_key_input(press)
+		movement_key(KEY_S, true)
+		await wait_physics_frames(42)
+		movement_key(KEY_S, false)
 		await wait_physics_frames(2)
 		assert_eq(game.location_id, "plaza")
+		assert_true(game.player.position.y > 116, "Returning outside never immediately re-enters")
+	assert_eq(game.progress.completed, [], "Walking never bypasses the learning tasks")
+
+func test_only_wasd_moves_and_escape_cannot_leave_a_house() -> void:
+	var game := fresh_game()
+	await wait_physics_frames(3)
+	for key in [KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN]:
+		var before: Vector2 = game.player.position
+		movement_key(key, true)
+		await wait_physics_frames(8)
+		movement_key(key, false)
+		assert_eq(game.player.position, before, "Arrow keys belong to controls, not world movement")
+	for key in [KEY_A, KEY_D, KEY_W, KEY_S]:
+		var before: Vector2 = game.player.position
+		movement_key(key, true)
+		await wait_physics_frames(8)
+		movement_key(key, false)
+		assert_gt(game.player.position.distance_to(before), 2.0, "WASD moves the player")
+	game._enter_house(1)
+	await wait_physics_frames(3)
+	var position: Vector2 = game.player.position
+	var escape := InputEventKey.new()
+	escape.keycode = KEY_ESCAPE
+	escape.pressed = true
+	game._unhandled_key_input(escape)
+	await wait_physics_frames(2)
+	assert_eq(game.location_id, "archive", "Escape does not teleport out")
+	assert_eq(game.player.position, position)
+
+func test_world_interactions_require_a_nearby_person_or_exhibit() -> void:
+	var game := fresh_game()
+	game._enter_house(0)
+	await wait_physics_frames(3)
+	assert_true(game.action_button.disabled, "Cannot talk across the room")
+	game._accessible_action()
+	assert_false(game.overlay.visible)
+	game.player.position = Vector2(175, 119)
+	await wait_physics_frames(3)
+	assert_false(game.action_button.disabled)
+	game._accessible_action()
+	assert_true(game.overlay.visible)
+	assert_eq(game.location_id, "printshop")
+
+func test_stationary_door_interactions_do_not_change_location() -> void:
+	var game := fresh_game()
+	for inside in [false, true]:
+		if inside:
+			game._enter_house(0)
+			await wait_physics_frames(2)
+		game.player.position = Vector2(240, 186) if inside else Vector2(80, 96)
+		await wait_physics_frames(3)
+		var before: Vector2 = game.player.position
+		var place: String = game.location_id
+		for key in [KEY_E, KEY_ENTER]:
+			var press := InputEventKey.new()
+			press.keycode = key
+			press.pressed = true
+			game._unhandled_key_input(press)
+			await wait_physics_frames(2)
+			assert_eq(game.location_id, place, "Interaction keys never cross a doorway")
+			assert_eq(game.player.position, before)
+		assert_true(game.action_button.disabled)
+		game._accessible_action()
+		assert_eq(game.location_id, place)
+		assert_false(game.overlay.visible)
 
 func test_preview_progress_revisit_and_escape_close_panel_first() -> void:
 	var game := fresh_game()

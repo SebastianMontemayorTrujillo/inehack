@@ -1,7 +1,7 @@
 extends RefCounted
 
 const Poster = preload("res://scripts/poster_workshop.gd")
-const Rules = preload("res://scripts/civic_rules.gd")
+const Card = preload("res://scripts/poster_card.gd")
 
 static func chooser(app: Node, label: String, choices: Array, selected: String, node_name: String) -> OptionButton:
 	app._text(label)
@@ -46,21 +46,7 @@ static func editor(app: Node) -> void:
 static func evidence(app: Node, selection: Dictionary) -> void:
 	var result := Poster.compose(app.bundle, app.story, selection)
 	if result.is_empty(): return
-	var a: Dictionary = result.records[0]
-	var b: Dictionary = result.records[1]
-	app._text("INE · CCPC · Elección federal 2024\n" + a.geography_name + " y " + b.geography_name)
-	app._text(result.finding)
-	var maximum: float = maxf(a.sv, b.sv) if result.metric == "count" else 100.0
-	for record in result.records:
-		var base: int = int(record.sv) + int(record.nv)
-		var value: Variant = record.sv if result.metric == "count" else Rules.rate(record.sv, base)
-		var display: String = app._number(record.sv) + " registros con participación" if result.metric == "count" else app._percentage(value) + " entre registros con información conocida"
-		app._bar(record.geography_name + ": " + display, 0.0 if value == null else 100.0 * value / maxf(1, maximum))
-		app._text("Exactos: %s con participación de %s con información conocida. Por separado, %s sin información de %s en toda la lista." % [app._number(record.sv), app._number(base), app._number(record.ns), app._number(record.ln)])
-	if result.metric == "rate":
-		app._text("Base: SV + NV. La comparación usa conteos exactos aunque los porcentajes redondeados se parezcan.")
-	app._text(app.story.poster_workshop.limit)
-	app._text("Para conversar: " + result.question)
+	app.body.add_child(Card.create(app, result))
 
 static func acknowledge(app: Node) -> void:
 	if app.meeting_poster.is_empty(): return
@@ -73,20 +59,53 @@ static func acknowledge(app: Node) -> void:
 
 static func preview(app: Node, published: bool = false) -> void:
 	var selection: Dictionary = app.meeting_poster if published else app.poster_selection
-	app._panel("Mi cartel publicado" if published else "Tu cartel para la reunión")
-	evidence(app, selection)
-	app._text(app.story.poster_workshop.memory_note)
-	app._button("Cambiar mi cartel", func():
+	app._panel("Mi cartel publicado" if published else "Tu cartel para la reunión", true)
+	var actions := HBoxContainer.new()
+	actions.name = "PosterActions"
+	actions.add_theme_constant_override("separation", 12)
+	app.body.add_child(actions)
+	_action(app, actions, "Cambiar mi cartel", "PosterEdit", func():
 		app.poster_selection = selection.duplicate()
 		app._poster_workshop())
 	if not published:
-		app._button("Llevar a la reunión", func():
-			app.meeting_poster = selection.duplicate()
-			app._enter_house(2)
-			app._start_chapter(2))
-	app._button("Datos exactos y fuente del cartel", func():
-		app._panel("Datos y fuente de mi cartel")
-		for record in Poster.compose(app.bundle, app.story, selection).get("records", []): app._data_card(record)
-		app._text("Fuente: " + app.bundle.source.url + "\nSHA-256: " + app.bundle.source.sha256)
-		app._button("Abrir portal oficial CCPC", func(): OS.shell_open(app.bundle.source.portal_url))
-		app._button("Volver a mi cartel", func(): preview(app, published)))
+		var publish := _action(app, actions, "Guardar mi cartel", "PosterPublish", func(): app._publish_poster(selection))
+		_primary(app, publish)
+	var source := _action(app, actions, "Datos exactos y fuente del cartel", "PosterSourceButton", func(): _source(app, selection, published))
+	source.size_flags_stretch_ratio = 1.6
+	evidence(app, selection)
+	app._text(app.story.poster_workshop.memory_note)
+
+static func _source(app: Node, selection: Dictionary, published: bool) -> void:
+	app._panel("Datos y fuente de mi cartel")
+	for record in Poster.compose(app.bundle, app.story, selection).get("records", []): app._data_card(record)
+	app._text("Fuente: " + app.bundle.source.url + "\nSHA-256: " + app.bundle.source.sha256)
+	app._button("Abrir portal oficial CCPC", func(): OS.shell_open(app.bundle.source.portal_url))
+	app._button("Volver a mi cartel", func(): preview(app, published))
+
+static func _action(app: Node, parent: HBoxContainer, title: String, node_name: String, action: Callable) -> Button:
+	var button: Button = app._button(title, action)
+	button.name = node_name
+	button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	button.custom_minimum_size.y = 48
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	app.body.remove_child(button)
+	parent.add_child(button)
+	return button
+
+static func _primary(app: Node, button: Button) -> void:
+	for state in ["normal", "hover", "pressed"]:
+		var box := StyleBoxFlat.new()
+		box.bg_color = app.INK if state == "normal" else Color("28564d")
+		box.set_corner_radius_all(6)
+		box.set_content_margin_all(12)
+		button.add_theme_stylebox_override(state, box)
+	for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		button.add_theme_color_override(state, app.CREAM)
+	var focus := StyleBoxFlat.new()
+	focus.draw_center = false
+	focus.border_color = Card.RED
+	focus.set_border_width_all(3)
+	focus.set_corner_radius_all(6)
+	focus.set_expand_margin_all(3)
+	button.add_theme_stylebox_override("focus", focus)

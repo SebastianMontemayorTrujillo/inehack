@@ -6,6 +6,8 @@ const Rules = preload("res://scripts/civic_rules.gd")
 const Catalog = preload("res://scripts/asset_catalog.gd")
 const RoomScene = preload("res://scenes/room.tscn")
 const PosterView = preload("res://scripts/poster_view.gd")
+const InterfaceTheme = preload("res://scripts/interface_theme.gd")
+const InterfaceShell = preload("res://scripts/interface_shell.gd")
 const CREAM := Color("f6f0da")
 const INK := Color("173b39")
 const GOLD := Color("e4ba5c")
@@ -37,10 +39,15 @@ var location_id := "plaza"
 var house_index := -1
 var transitioning := false
 var action_button := Button.new()
-var exit_button := Button.new()
 var awaiting_answer := false
 var poster_selection := {"first": "state_01", "second": "state_02", "metric": "count", "question": "missing"}
 var meeting_poster: Dictionary = {}
+var world_controls := Control.new()
+var backdrop := ColorRect.new()
+var progress_labels: Array[Label] = []
+var hud_labels: Array[Label] = []
+var diary_button: Button
+var panel_return_focus: WeakRef
 
 func _ready() -> void:
 	story = _read_json("res://content/story.json")
@@ -66,7 +73,7 @@ func _ready() -> void:
 	if not valid:
 		_panel("Contenido no disponible")
 		_text("No pudimos validar los datos o la historia incluidos. Vuelve a abrir una copia completa del prototipo o consulta a la persona facilitadora. No mostramos cifras sustitutas.")
-		_button("Cerrar", func(): overlay.hide())
+		_button("Cerrar", _close_panel)
 	else:
 		_welcome()
 
@@ -79,35 +86,21 @@ func _read_json(path: String) -> Dictionary:
 	return parser.data if parser.data is Dictionary else {}
 
 func _theme() -> void:
-	theme.default_font_size = 26 if progress.settings.large_text else 20
-	var font: Font = catalog.font("font.regular")
-	if font != null:
-		theme.default_font = font
-	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		var box := StyleBoxFlat.new()
-		box.bg_color = Color("e7dbb9") if state == "normal" else Color("d4bd80")
-		if state == "disabled":
-			box.bg_color = Color("d0cbbb")
-		box.border_color = Color("9b4d2d") if state == "focus" else Color("6d8774")
-		box.set_border_width_all(3 if state == "focus" else 1)
-		box.set_corner_radius_all(8)
-		box.content_margin_left = 16
-		box.content_margin_right = 16
-		box.content_margin_top = 9
-		box.content_margin_bottom = 9
-		theme.set_stylebox(state, "Button", box)
-		theme.set_color("font_color" if state == "normal" else "font_" + state + "_color", "Button", INK)
-	theme.set_color("font_color", "Label", INK)
+	InterfaceTheme.apply(theme, catalog, progress.settings.large_text)
+	if not progress_labels.is_empty():
+		InterfaceShell.refresh(self, Rules.first_missing(progress.completed, 3))
 
 func _configure_input() -> void:
-	var keys := {"left": [KEY_A, KEY_LEFT], "right": [KEY_D, KEY_RIGHT], "up": [KEY_W, KEY_UP], "down": [KEY_S, KEY_DOWN]}
+	var keys := {"left": KEY_A, "right": KEY_D, "up": KEY_W, "down": KEY_S}
 	for action in keys:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
-		for key in keys[action]:
-			var event := InputEventKey.new()
-			event.physical_keycode = key
-			InputMap.action_add_event(action, event)
+		# Replace old arrow/duplicate bindings when another session is created.
+		# https://docs.godotengine.org/en/stable/classes/class_inputmap.html#class-inputmap-method-action-erase-events
+		InputMap.action_erase_events(action)
+		var event := InputEventKey.new()
+		event.physical_keycode = keys[action]
+		InputMap.action_add_event(action, event)
 
 
 func _build_world() -> void:
@@ -171,80 +164,50 @@ func _interact() -> void:
 	if target.is_empty():
 		return
 	match target.kind:
-		"door": _enter_house(target.index)
-		"exit": _exit_house()
 		"host": _start_chapter(target.index)
 		"artifact":
 			if target.index == 1 and not meeting_poster.is_empty(): _published_poster()
 			else: _start_chapter(target.index)
 
 func _accessible_action() -> void:
-	if house_index >= 0:
-		_start_chapter(house_index)
-	else:
-		_interact()
+	_interact()
+
+func _walk_through_door(movement: Vector2, target: Dictionary) -> bool:
+	if target.is_empty(): return false
+	if target.kind == "door" and movement.y < 0:
+		_enter_house(target.index)
+		return true
+	if target.kind == "exit" and movement.y > 0:
+		_exit_house()
+		return true
+	return false
 
 func _close_panel() -> void:
 	awaiting_answer = false
 	overlay.hide()
+	backdrop.hide()
+	world_controls.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
+	world_controls.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_INHERITED
 	for child in body.get_children():
 		body.remove_child(child)
 		child.queue_free()
-	if action_button.is_inside_tree() and not action_button.disabled:
+	var previous: Control = panel_return_focus.get_ref() if panel_return_focus != null else null
+	panel_return_focus = null
+	if previous != null and previous.is_inside_tree() and previous is BaseButton and not previous.disabled:
+		previous.grab_focus()
+	elif action_button.is_inside_tree() and not action_button.disabled:
 		action_button.grab_focus()
+	else:
+		get_viewport().gui_release_focus()
 
 func _build_interface() -> void:
 	var root := Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.theme = theme
 	canvas.add_child(root)
-	var heading := Label.new()
-	heading.text = "VOCES DE LA PLAZA"
-	heading.position = Vector2(40, 20)
-	heading.add_theme_font_size_override("font_size", 32)
-	heading.add_theme_color_override("font_color", CREAM)
-	root.add_child(heading)
-	var sub := Label.new()
-	sub.text = "Informarnos · Comparar con justicia · Escuchar y decidir · Dar seguimiento"
-	sub.position = Vector2(40, 65)
-	sub.add_theme_color_override("font_color", Color("d4dfca"))
-	root.add_child(sub)
-	status.position = Vector2(40, 103)
-	status.add_theme_color_override("font_color", GOLD)
-	root.add_child(status)
-	var nav := HBoxContainer.new()
-	nav.position = Vector2(40, 690)
-	nav.add_theme_constant_override("separation", 10)
-	root.add_child(nav)
-	for i in 3:
-		var button := Button.new()
-		button.text = ["1 · Imprenta", "2 · Archivo", "3 · Reunión"][i]
-		button.pressed.connect(_travel.bind(i))
-		nav.add_child(button)
-	for item in [["Diario · J", _journal], ["Ajustes", _settings]]:
-		var button := Button.new()
-		button.text = item[0]
-		button.pressed.connect(item[1])
-		nav.add_child(button)
-	var help := Label.new()
-	help.text = "Flechas / WASD: caminar · E: interactuar\nTab: botones · J: diario · Esc: volver"
-	help.position = Vector2(650, 741)
-	help.add_theme_font_size_override("font_size", 17)
-	help.add_theme_color_override("font_color", CREAM)
-	root.add_child(help)
-	action_button.position = Vector2(40, 744)
-	action_button.pressed.connect(_accessible_action)
-	root.add_child(action_button)
-	exit_button.position = Vector2(390, 744)
-	exit_button.text = "Salir a la plaza"
-	exit_button.pressed.connect(_exit_house)
-	root.add_child(exit_button)
-	var shade := StyleBoxFlat.new()
-	shade.bg_color = CREAM
-	shade.set_corner_radius_all(12)
+	InterfaceShell.build(self, root)
+	var shade := InterfaceTheme.panel(CREAM, GOLD, 2, 6)
 	shade.set_content_margin_all(24)
-	shade.border_color = GOLD
-	shade.set_border_width_all(3)
 	overlay.add_theme_stylebox_override("panel", shade)
 	overlay.position = Vector2(160, 136)
 	overlay.size = Vector2(960, 555)
@@ -257,6 +220,7 @@ func _build_interface() -> void:
 	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	body.add_theme_constant_override("separation", 14)
 	scroll.add_child(body)
+	overlay.hide()
 	_update_status()
 
 func _physics_process(delta: float) -> void:
@@ -268,8 +232,9 @@ func _physics_process(delta: float) -> void:
 		player.position.x = clampf(player.position.x, limits.position.x, limits.end.x)
 		player.position.y = clampf(player.position.y, limits.position.y, limits.end.y)
 		var target: Dictionary = room.nearest_target(player)
-		action_button.disabled = house_index < 0 and target.is_empty()
-		action_button.text = "Entrar · E" if house_index < 0 else "Hablar con " + story.chapters[house_index].npc
+		if _walk_through_door(movement, target): return
+		action_button.disabled = target.is_empty() or target.kind not in ["host", "artifact"]
+		action_button.text = "Acércate para conversar" if action_button.disabled else "Hablar con " + story.chapters[house_index].npc if target.kind == "host" else "Examinar · E"
 		anim_time += delta
 		if movement != Vector2.ZERO:
 			facing = ("right" if movement.x > 0 else "left") if abs(movement.x) > abs(movement.y) else ("down" if movement.y > 0 else "up")
@@ -283,25 +248,47 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		if event.keycode == KEY_ESCAPE:
 			if overlay.visible:
 				_close_panel()
-			elif house_index >= 0:
-				_exit_house()
-		elif event.keycode == KEY_J:
+		elif event.keycode == KEY_J and not overlay.visible:
 			_journal()
 		elif event.keycode in [KEY_E, KEY_ENTER] and not overlay.visible:
 			_interact()
 
-func _panel(title: String) -> void:
+func _panel(title: String, spacious: bool = false) -> void:
 	awaiting_answer = false
+	if not overlay.visible:
+		var focused := get_viewport().gui_get_focus_owner()
+		panel_return_focus = weakref(focused) if focused != null and world_controls.is_ancestor_of(focused) else null
 	for child in body.get_children():
 		body.remove_child(child)
 		child.queue_free()
+	var scroll: ScrollContainer = body.get_parent()
+	scroll.custom_minimum_size = Vector2(1032, 680) if spacious else Vector2(904, 497)
+	scroll.scroll_vertical = 0
+	overlay.position = Vector2(100, 36) if spacious else Vector2(160, 136)
+	overlay.size = Vector2(1080, 728) if spacious else Vector2(960, 555)
+	# Disable the world branch for both keyboard traversal and mouse input.
+	# https://docs.godotengine.org/en/stable/classes/class_control.html#class-control-property-focus-behavior-recursive
+	world_controls.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
+	world_controls.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED
+	backdrop.show()
 	overlay.show()
-	var label := _text(title)
-	label.add_theme_font_size_override("font_size", 30)
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 16)
+	body.add_child(header)
+	var label := Label.new()
+	label.text = title
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	label.add_theme_font_size_override("font_size", int(theme.default_font_size) + 4 if spacious else 30)
+	label.add_theme_font_override("font", catalog.font("font.bold"))
+	header.add_child(label)
 	var close := Button.new()
 	close.text = "Volver al lugar · Esc"
+	close.theme_type_variation = "QuietButton"
+	close.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	close.pressed.connect(_close_panel)
-	body.add_child(close)
+	header.add_child(close)
 	call_deferred("_focus_if_available", weakref(close), weakref(label))
 
 func _focus_if_available(reference: WeakRef, reveal: WeakRef = null) -> void:
@@ -321,10 +308,13 @@ func _text(value: String, container: VBoxContainer = null) -> Label:
 	(container if container != null else body).add_child(label)
 	return label
 
-func _button(title: String, action: Callable) -> Button:
+func _button(title: String, action: Callable, primary: bool = false) -> Button:
 	var button := Button.new()
 	button.text = title
 	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	button.custom_minimum_size.y = 46
+	if primary: button.theme_type_variation = "PrimaryButton"
 	button.pressed.connect(func(): _sound("sound.select"); action.call())
 	body.add_child(button)
 	return button
@@ -344,10 +334,10 @@ func _welcome() -> void:
 	_text(story.opening)
 	_text(story.audience)
 	_text(story.get("message", "Comprender los datos nos ayuda a participar con información."))
-	_text("Duración orientativa: 10–15 minutos. No hay cronómetro. Puedes explorar, pedir pistas, ampliar el texto o usar los botones para viajar.")
+	_text("Duración orientativa: 10–15 minutos. No hay cronómetro. Camina con WASD y cruza las puertas para visitar las casas. Acércate a cada persona u objeto y pulsa E. Puedes pedir pistas y ampliar el texto.")
 	if not storage_message.is_empty():
 		_text(storage_message)
-	_button("Entrar a la plaza", _close_panel)
+	_button("Entrar a la plaza", _close_panel, true)
 	_button("Elegir ajustes de lectura", _settings)
 
 func _record(id: String) -> Dictionary:
@@ -356,9 +346,6 @@ func _record(id: String) -> Dictionary:
 			return record
 	return {}
 
-
-func _travel(index: int) -> void:
-	_enter_house(index)
 
 func _start_chapter(index: int) -> void:
 	if not valid:
@@ -373,14 +360,15 @@ func _start_chapter(index: int) -> void:
 		_text("Para continuar esta actividad, prepara primero " + ("el boletín con Luz." if missing == 0 else "el cartel con Mateo."))
 		if index == 2:
 			_button("Conocer las propuestas", _project_preview)
-		_button("Ir a la imprenta" if missing == 0 else "Ir al archivo", _travel.bind(missing))
+		_text("Sal por la puerta inferior y camina hasta " + ("la imprenta, la casa de la izquierda." if missing == 0 else "el archivo, la casa del centro."))
+		_button("Seguir explorando", _close_panel)
 		return
 	if id in progress.completed:
 		_text("Ya preparaste este material. Puedes revisarlo sin perder tus avances.")
 	_text(story.chapters[index].intro)
 	if index == 1:
 		_text("Titular por revisar: «" + story.comparison_artifact.before + "» Mira los datos antes de publicarlo.")
-	_button("Comenzar la actividad", _question)
+	_button("Comenzar la actividad", _question, true)
 	if index == 1: _poster_controls()
 	if index == 2: PosterView.acknowledge(self)
 
@@ -398,6 +386,12 @@ func _poster_preview() -> void:
 func _published_poster() -> void:
 	if valid and not meeting_poster.is_empty(): PosterView.preview(self, true)
 
+func _publish_poster(selection: Dictionary) -> void:
+	if not valid or "comparison" not in progress.completed: return
+	meeting_poster = selection.duplicate()
+	_update_status()
+	_published_poster()
+
 func _project_preview() -> void:
 	_panel("Tres necesidades para la plaza")
 	for project in story.consultation.projects:
@@ -405,7 +399,8 @@ func _project_preview() -> void:
 	_text("Todas las necesidades cuentan. La consulta se abre después del boletín y el cartel.")
 
 func _simple_card(record: Dictionary, counts: bool = false, container: VBoxContainer = null) -> void:
-	_text(record.geography_name.capitalize() + " · CCPC 2024", container)
+	var heading := _text(record.geography_name.capitalize() + " · CCPC 2024", container)
+	heading.add_theme_font_override("font", catalog.font("font.bold"))
 	var known: int = int(record.sv) + int(record.nv)
 	var pct: Variant = Rules.rate(record.sv, known)
 	if counts:
@@ -440,6 +435,9 @@ func _bar(title: String, percent: float, container: VBoxContainer = null) -> voi
 	bar.value = percent
 	bar.show_percentage = false
 	bar.custom_minimum_size.y = 22
+	var track := StyleBoxFlat.new()
+	track.bg_color = Color("dfd9c7")
+	bar.add_theme_stylebox_override("background", track)
 	var fill := StyleBoxFlat.new()
 	fill.bg_color = TEAL
 	bar.add_theme_stylebox_override("fill", fill)
@@ -507,7 +505,7 @@ func _question() -> void:
 		for i in 2:
 			var example: Dictionary = story.assessment_fixtures.comparison[i]
 			_text("Grupo %s: %d participantes de %d · %s" % ["A" if i == 0 else "B", example.sv, int(example.sv) + int(example.nv), _percentage(Rules.rate(example.sv, int(example.sv) + int(example.nv)))])
-	_text(activity.prompt)
+	_text(activity.prompt).add_theme_font_override("font", catalog.font("font.bold"))
 	var answer := Rules.activity_answer(activity, bundle, story)
 	if answer == "unavailable":
 		_text("Falta información para resolver esta comparación. Revisa la fuente o pide apoyo.")
@@ -566,7 +564,7 @@ func _answer(correct: bool, explanation: String) -> void:
 		if step >= _chapter_activities().size():
 			_complete()
 		else:
-			_button("Continuar la investigación", _question)
+			_button("Continuar la investigación", _question, true)
 	else:
 		_sound("sound.corrective")
 		_button("Volver a los datos y reintentar", _question)
@@ -593,7 +591,7 @@ func _complete() -> void:
 	else:
 		_text("La exposición está completa. Tu recorrido ayudó a traducir datos oficiales en una historia comprensible. La conversación democrática continúa.")
 		_text(story.message)
-	_button("Ver mi exposición y las fuentes", _journal)
+	_button("Ver mi exposición y las fuentes", _journal, true)
 	_button("Volver al lugar", _close_panel)
 	if chapter == 1: _poster_controls()
 
@@ -703,7 +701,7 @@ func _settings() -> void:
 		toggle.button_pressed = progress.settings[setting[0]]
 		toggle.toggled.connect(_toggle.bind(setting[0]))
 		body.add_child(toggle)
-	_text("Todas las acciones tienen botones y se pueden completar con teclado. Tab recorre los controles; Enter o Espacio activa el seleccionado.")
+	_text("Camina con WASD y cruza las puertas. E o Enter interactúa con una persona u objeto cercano. Tab recorre los controles; Enter o Espacio activa el seleccionado. Esc cierra el panel sin cambiar de lugar.")
 	if not valid:
 		return
 	_button("Reiniciar mi recorrido", func():
@@ -744,9 +742,9 @@ func _update_status() -> void:
 		next = "Visita a Inés"
 	if missing == -1:
 		next = "La conversación continúa · Consulta tu diario"
-	status.text = "%s · %d/3 materiales · %s" % [place, progress.completed.size(), next]
-	exit_button.visible = house_index >= 0
-	action_button.text = "Acércate a una puerta" if house_index < 0 else "Hablar con " + story.chapters[house_index].npc
-	action_button.disabled = house_index < 0
+	status.text = "%s  ·  %d/3 pasos  ·  %s" % [place, progress.completed.size(), next]
+	InterfaceShell.refresh(self, missing)
+	action_button.text = "Acércate para conversar"
+	action_button.disabled = true
 	if room != null:
 		room.update_artifacts(progress.completed, bundle, meeting_poster)

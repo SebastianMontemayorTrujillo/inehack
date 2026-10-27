@@ -57,9 +57,11 @@ def main():
     if args.browser:
         results.append(run("browser-smoke", ["node", "tests/browser_smoke.mjs"], 180))
     if args.native_window:
-        results.append(run("native-window-tests", [sys.executable, "tests/native_window_smoke.py"], 180))
+        # The WASD journey physically walks every route; no teleport shortcuts.
+        results.append(run("native-window-tests", [sys.executable, "tests/native_window_smoke.py"], 480))
     if args.godot_browser:
-        results.append(run("godot-browser-journey", ["node", "tests/godot_browser_smoke.mjs"], 180))
+        # Allow the canvas harness's 600-second watchdog to write its own result.
+        results.append(run("godot-browser-journey", ["node", "tests/godot_browser_smoke.mjs"], 630))
     tested = fingerprint_sources()
     if tested != source_start:
         raise RuntimeError("Sources changed during verification; freeze the revision and rerun")
