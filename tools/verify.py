@@ -58,8 +58,9 @@ def main():
         results.append(run("browser-smoke", ["node", "tests/browser_smoke.mjs"], 180))
         results.append(run("browser-campaign", ["node", "tests/browser_campaign.mjs"], 180))
     if args.native_window:
-        # The WASD journey physically walks every route; no teleport shortcuts.
-        results.append(run("native-window-tests", [sys.executable, "tests/native_window_smoke.py"], 480))
+        # Physical visits, full-poster scroll comparisons and both FIN text sizes
+        # extend the journey. The harness keeps its strict 2.5-second reveal gate.
+        results.append(run("native-window-tests", [sys.executable, "tests/native_window_smoke.py"], 600))
         results.append(run("native-pdf-save", [sys.executable, "tests/native_pdf_save_smoke.py"], 300))
     if args.godot_browser:
         # The fourth mission adds a physical return, PDF download and dialogue

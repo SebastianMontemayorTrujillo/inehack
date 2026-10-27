@@ -1,5 +1,7 @@
 # SPEC: evidence-quests
 
+**Sequential/pink campaign amendment · 27 October 2026:** Simplify the six shared prompts/hints/feedback without changing IDs, exact-data rules or provenance. Inspectable exhibits and diary retain findings formerly drawn on the floor. The [pink citizen-poster contract](docs/sequential_campaign_design.md) applies to Godot/HTML/PDF, preserving exact values, sources/limits and searchable vector Carta output.
+
 **Campaign amendment · 27 October 2026:** The published personal poster, or a guided Aguascalientes/Baja California proportion default, supplies a frozen print job and downloadable Carta PDF. Exact data, bases, NS, neutral questions and limitations remain visible. No Latas/INEhack branding or official endorsement appears in the campaign. See [contract](docs/campaign_finale.md).
 
 **Classroom amendment · 25 October 2026:** Both routes use six canonical, plain-language decisions, including two conceptual transfer checks. Exact CCPC mathematics and original formula fixtures remain optional. Reading, unknown classification and count/proportion comparisons produce two sourced persistent artifacts; division is not required to finish. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).

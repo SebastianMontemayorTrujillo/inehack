@@ -12,9 +12,11 @@ import shutil
 import subprocess
 import tempfile
 import time
+from collections import Counter
 
 from PIL import Image
-from native_window_smoke import ROOT, EVIDENCE, X11, SPEED, avatar_position, dialogue_bounds, runtime_errors
+from native_window_smoke import (ROOT, EVIDENCE, X11, SPEED, SETTINGS, DEFAULT_SETTINGS, PINK, WHITE, POSTER_INK, PALE,
+                                 avatar_position, dialogue_bounds, prompt_bounds, ending_visible, focus_bounds, runtime_errors)
 from runtime_pdf_check import verify_pdf
 
 
@@ -44,6 +46,7 @@ def main():
     server = subprocess.Popen([str(X11/'bin/Xvfb'), display, '-screen', '0', '1280x800x24', '-nolisten', 'tcp', '-ac'],
                               env=env, stdout=subprocess.DEVNULL, stderr=log)
     game = None
+    expected_settings = dict(DEFAULT_SETTINGS, reduced_motion=True)
 
     def tool(*args):
         return subprocess.run([str(X11/'bin/xdotool'), *args], env=env, check=True, capture_output=True, text=True, timeout=10).stdout.strip()
@@ -112,6 +115,7 @@ def main():
         value = json.loads(paths[0].read_text())
         assert set(value) == {'schema_version', 'completed', 'hints', 'settings', 'campaign_printed'}, value
         assert value['schema_version'] == 2 and value['completed'] == completed and value['campaign_printed'] is printed, value
+        assert value['hints'] == [] and value['settings'] == expected_settings, value
         return value
 
     try:
@@ -130,6 +134,13 @@ def main():
         time.sleep(1)
         key('Escape')
         plaza = capture('plaza').getpixel((50, 160))
+        tool('mousemove', str(SETTINGS[0]), str(SETTINGS[1]), 'click', '1')
+        time.sleep(.25)
+        for _ in range(3): key('Tab')
+        key('space')  # Fresh first print must use immediate reduced motion.
+        capture('reduced-motion-setting')
+        saved([])
+        key('Escape')
         for chapter, answers in enumerate([[1, 1, 1], [2, 1, 1]]):
             enter(chapter); walk(x=175, y=130); key('e')
             assert dialogue_bounds(capture(f'intro-{chapter + 1}')) == (40, 420, 1240, 776)
@@ -147,14 +158,26 @@ def main():
         choose(); capture('review'); choose()
         assert dialogue_bounds(capture('sent'))
         key('Escape'); leave(); enter(0); walk(x=283, y=110)
-        key('e'); capture('press'); choose(); time.sleep(.7)
-        capture('ending')
+        press_position = avatar_position(screen())
+        assert prompt_bounds(capture('prompt-press')), 'Print action must be physically nearby'
+        tool('mousemove', '140', '765', 'click', '1')  # Actual contextual action, same target as E.
+        time.sleep(.25)
+        capture('press')
+        key('Tab')
+        print_started = time.monotonic()
+        key('Return')
+        ending = capture('ending')
+        observed = time.monotonic() - print_started
+        assert ending_visible(ending) and observed < 1, 'Reduced motion must show FIN immediately without a reveal'
+        focus_bounds(ending)
+        report['reduced_motion'] = {'fresh_first_print': True, 'observation_seconds': round(observed, 3),
+                                    'settings': expected_settings, 'press_position': press_position}
         saved(['printing', 'comparison', 'consultation'], True)
         for index, filename in enumerate(filenames):
             output = save_dir/filename
             assert not output.exists(), f'Per-run native save destination must be new: {output}'
             before = set(tool('search', '--onlyvisible', '--pid', str(game.pid)).splitlines())
-            choose()  # Ending's first action: Descargar cartel PDF.
+            key('Return')  # FIN directly focuses Descargar cartel PDF.
             deadline = time.monotonic() + 8
             while True:
                 windows = set(tool('search', '--onlyvisible', '--pid', str(game.pid)).splitlines()) - before
@@ -178,9 +201,18 @@ def main():
             assert dialog not in tool('search', '--onlyvisible', '--pid', str(game.pid)).splitlines(), 'Successful save should close FileDialog'
             tool('windowfocus', window)
             capture(f'saved-{index + 1}')
-            report['pdfs'].append(verify_pdf(output, {'first': 'state_01', 'second': 'state_02', 'metric': 'rate', 'question': 'missing'}))
+            pdf = verify_pdf(output, {'first': 'state_01', 'second': 'state_02', 'metric': 'rate', 'question': 'missing'})
+            colors = Counter(Image.open(ROOT/pdf['render']).convert('RGB').getdata())
+            assert colors[PINK] > 10000 and colors[WHITE] > 10000 and colors[POSTER_INK] > 500 and colors[PALE] > 10000, 'Saved PDF must use the approved pink design'
+            text = (ROOT/pdf['text']).read_text().lower()
+            assert 'latas' not in text and 'inehack' not in text, 'Citizen PDF must not contain submission branding'
+            pdf['checks'].extend(['approved pink/white/ink/pale palette', 'no Latas/INEhack branding'])
+            report['pdfs'].append(pdf)
             report['save'] = saved(['printing', 'comparison', 'consultation'], True)
-            key('Escape'); key('e')  # Reopen FIN at the same nearby press for repeat download.
+            key('Escape')
+            assert max(abs(a - b) for a, b in zip(avatar_position(screen()), press_position)) <= .4
+            key('e')  # Reopen FIN at the same nearby press for repeat download.
+            assert ending_visible(capture(f'reopened-{index + 1}')), 'Reopen has no reveal and keeps Download available'
         assert report['pdfs'][0]['sha256'] == report['pdfs'][1]['sha256'], 'Repeated downloads must preserve bytes'
         assert all(hashlib.sha256(path.read_bytes()).hexdigest() == hashes[str(path.relative_to(ROOT))] for path in files), 'Source/export/harness changed during supplementary run'
         report['runtime_errors'] = runtime_errors(log_path)

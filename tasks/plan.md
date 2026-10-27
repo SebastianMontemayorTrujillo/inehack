@@ -1,5 +1,17 @@
 # Implementation plan · Voces de la Plaza
 
+## Sequential interaction and pink campaign revision · 27 October 2026
+
+Approved execution: keep all houses enterable while enforcing Luz → Mateo → Inés → nearby press → FIN. Early Mateo/Inés speech directs players to Luz on the left; after Luz, Inés directs them to Mateo in the center. Only hosts start lessons; the press is exclusively the final-poster machine. Remove floor text, move directions into a focused HUD, and show one nearby [E] prompt from the same resolved target that input activates. Keep WASD-only travel and independent semantic HTML navigation.
+
+Keep six activity IDs/rules while simplifying Spanish questions, choices, hints and feedback for beginners. Use a shared pink (#B41476), white (#FFFFFF), ink (#242124) and pale-pink (#FBEAF3) design for the original citizen poster/preview/ending, inspired by earlier INE civic materials; preserve Atkinson/OFL and the pixel town. No official logo, Latas/INEhack mark or claimed endorsement appears on the poster. Keep searchable vector Carta PDFs, exact data, bases/NS/source/limitations and native/JS parity.
+
+At printing, mark completion once and reveal the sheet/finished poster in at most 2.5 seconds, with E/Enter/button skip and immediate reduced-motion mode. The dedicated FIN screen keeps its heading and Download/Enlarge/Explore controls visible; expanded poster content may scroll. Reopening skips animation; closing never travels; reload never fabricates session-only PDF bytes. No save-format migration is needed.
+
+Install and inspect Anthropic canvas-design/frontend-design at revision dbd4588f9e1033efb41dad4bef2f7947c8993d44. The installation does not replace established accessibility/data constraints. Work is divided into main-owned progression/content/HUD, poster/PDF, HTML, and ending slices with disjoint file ownership. Then freeze and verify actual exports, refresh materials/media, obtain a fresh independent official-rubric review (35/30/20/15) and clean-check the local Latas candidate. The older 100/100 remains historical; no predetermined score or user-pilot claim.
+
+Acceptance and evidence are tracked in RV21–RV26 below; older unfinished external-release tasks are preserved.
+
 ## Interface follow-up · 27 October
 
 The approved UI follow-up is RV17 in [todo](todo.md): first establish a shared paper/ink theme and bounded exploration HUD; then contain panel focus/mouse interaction and verify restoration; finally inspect normal/enlarged real exports and refresh media/context/local candidate. Keep passive progress separate from interaction, equally style all answers and consultation choices, and preserve WASD-only travel and exact-data/privacy rules. The [interface contract](../docs/interface_polish.md) records the reproduced focus bug and actual checks; [verification](../docs/verification.md) identifies final artifacts.

@@ -66,6 +66,34 @@ test('campaign snapshots a publication before async generation; cancel, failure 
   assert.equal(await resetPending, false); assert.equal(session.ready, false);
 });
 
+test('the printed preview and bytes stay frozen across replay, later edits and cancelled replacement', async () => {
+  const { createCampaignSession, composePoster } = await import('../web/poster.mjs');
+  const data = canonicalData(); const story = canonicalStory();
+  const selected = { first: 'state_19', second: 'state_02', metric: 'count', question: 'voices' };
+  const expected = structuredClone(composePoster(data, story, selected));
+  let calls = 0;
+  const session = createCampaignSession({ data, story,
+    createPDF: async () => { calls++; return new TextEncoder().encode('%PDF-frozen'); } });
+  const progress = sanitizeProgress({ version: 3, completedChapters: ['printing', 'comparison', 'consultation'] });
+  assert.equal(session.poster, null);
+  await session.queue(progress, selected);
+  data.records.find(record => record.id === selected.first).geography_name = 'Edited after dispatch';
+  story.poster_workshop.questions.find(question => question.id === 'voices').text = 'Edited question';
+  session.print(progress);
+  const copy = session.poster;
+  assert.deepEqual(copy, expected);
+  copy.records[0].geography_name = 'Edited preview';
+  selected.first = 'state_01';
+  assert.equal(await session.queue(progress, selected, true), false);
+  session.cancel();
+  assert.equal(session.print(progress), true);
+  assert.deepEqual(session.poster, expected);
+  assert.equal(calls, 1, 'Replay does not generate or replace a print');
+  session.clear();
+  assert.equal(session.poster, null);
+  assert.equal(session.print(progress), false, 'Saved completion cannot fabricate a session print');
+});
+
 test('version 3 migrates old progress and allowlists only completion and bounded audio settings', () => {
   for (const version of [1, 2]) {
     const saved = sanitizeProgress({ version, campaign_printed: true,

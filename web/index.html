@@ -64,6 +64,7 @@
         <nav aria-label="Entrar a las casas"><ol id="house-navigation"></ol></nav>
         <p class="margin-note">«Comprender los datos nos ayuda a conversar con información.»</p>
         <p class="small-note" id="progress-summary" aria-live="off">Cargando el recorrido…</p>
+        <button type="button" id="reopen-ending" class="quiet" hidden>Ver FIN</button>
       </aside>
       <main id="main-content">
         <p id="data-status" role="status">Cargando los datos y la historia compartida…</p>
@@ -78,18 +79,6 @@
             <h3 id="exhibit-title">La exposición de la plaza</h3>
             <div id="exhibit-content"><p>Aquí quedarán el boletín y el cartel que preparemos.</p></div>
           </section>
-          <section id="ending" class="ending" aria-labelledby="ending-title" hidden>
-            <p class="eyebrow">Recorrido completo · Villa Brisa</p>
-            <h3 id="ending-title" tabindex="-1"></h3>
-            <p id="ending-message"></p>
-            <p id="campaign-reload-note" class="small-note" hidden></p>
-            <a id="download-campaign" class="download-link" download="cartel-voces-de-la-plaza.pdf" hidden>Descargar cartel PDF</a>
-            <p id="campaign-format" class="small-note" hidden>PDF · Una página · Tamaño Carta (21.59 × 27.94 cm)</p>
-            <p>Te llevas tres herramientas: leer lo que sabemos, reconocer lo que falta y preguntar qué sigue después de decidir.</p>
-            <p>En otra reunión podemos revisar el presupuesto, los avances y las necesidades pendientes. Todas son preguntas válidas.</p>
-            <p class="small-note">Conservamos que terminaste el recorrido, sin guardar tu elección ni su resultado. Terminar con apoyo no demuestra comprensión independiente. Esta experiencia no mide efectos en la participación electoral real.</p>
-            <button type="button" class="quiet" id="repeat-consultation">Explorar otra decisión ficticia</button>
-          </section>
         </section>
         <div id="houses"></div>
       </main>
@@ -101,6 +90,35 @@
       <p id="classroom-resource"><a id="classroom-link" href="./classroom.html">Guía de clase y ficha para imprimir</a></p>
     </footer>
   </div>
+  <dialog id="ending" class="ending" aria-labelledby="ending-title">
+    <div id="print-reveal" hidden>
+      <h2 id="print-reveal-title">Tu cartel sale de la prensa</h2>
+      <div class="print-slot" aria-hidden="true"><div class="print-sheet"><strong>Tu voto cuenta.<br>Infórmate y participa.</strong><span></span><span></span><p>Una pregunta para conversar.</p></div></div>
+      <button type="button" id="skip-print">Saltar animación</button>
+      <p class="small-note">También puedes pulsar E o Enter.</p>
+    </div>
+    <div id="ending-finished">
+      <div class="ending-controls">
+        <h2 id="ending-title" tabindex="-1"></h2>
+        <div class="ending-actions">
+          <a id="download-campaign" class="download-link" download="cartel-ciudadano.pdf" hidden>Descargar cartel PDF</a>
+          <button type="button" id="enlarge-campaign" class="quiet" aria-expanded="false" aria-controls="ending-poster" hidden>Ampliar cartel</button>
+          <button type="button" id="explore-after-ending" class="quiet">Seguir explorando</button>
+        </div>
+      </div>
+      <div id="ending-details" class="ending-details">
+        <div id="ending-summary">
+          <p id="ending-message"></p>
+          <p id="campaign-reload-note" class="finding" hidden></p>
+          <p id="campaign-format" class="small-note" hidden>PDF · Una página · Tamaño Carta (21.59 × 27.94 cm)</p>
+          <p>Te llevas tres herramientas: leer lo que sabemos, reconocer lo que falta y preguntar qué sigue después de decidir.</p>
+          <p class="small-note">Conservamos que terminaste el recorrido, sin guardar tu elección ni su resultado. Terminar con apoyo no demuestra comprensión independiente. Esta experiencia no mide efectos en la participación electoral real.</p>
+          <button type="button" class="quiet" id="repeat-consultation">Explorar otra decisión ficticia</button>
+        </div>
+        <div id="ending-poster" hidden></div>
+      </div>
+    </div>
+  </dialog>
   <template id="consultation-template">
     <p id="consultation-bridge" class="finding"></p>
     <div class="synthetic-notice"><strong>Consulta ficticia · Datos inventados</strong><p id="consultation-label"></p></div>

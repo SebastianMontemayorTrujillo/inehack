@@ -11,7 +11,7 @@ static func build(app: Node, root: Control) -> void:
 	var hud: Control = app.world_controls
 	var title := label(app, hud, "VOCES DE LA PLAZA", Rect2(40, 16, 590, 40), 32, InterfaceStyle.CREAM, true)
 	title.name = "GameTitle"
-	label(app, hud, "VILLA BRISA · INFORMAR PARA PARTICIPAR", Rect2(40, 62, 600, 28), 17, MUTED)
+	app.location_label = label(app, hud, "VILLA BRISA · Plaza", Rect2(40, 62, 600, 28), 17, MUTED)
 	for i in 4:
 		var badge := PanelContainer.new()
 		badge.position = Vector2(644 + i * 151, 20)
@@ -32,7 +32,7 @@ static func build(app: Node, root: Control) -> void:
 	app.status.position = Vector2(40, 102)
 	app.status.size = Vector2(1200, 50)
 	app.status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	app.status.add_theme_font_size_override("font_size", 19)
+	app.status.add_theme_font_size_override("font_size", 24)
 	app.status.add_theme_color_override("font_color", InterfaceStyle.GOLD)
 	hud.add_child(app.status)
 	rule(hud, Rect2(40, 679, 1200, 2), Color("526e5d"))
@@ -56,6 +56,31 @@ static func build(app: Node, root: Control) -> void:
 	label(app, hud, "E / ENTER", Rect2(510, 733, 140, 30), 20, InterfaceStyle.GOLD, true)
 	label(app, hud, "Hablar o examinar de cerca", Rect2(660, 735, 580, 28), 20, InterfaceStyle.CREAM)
 	label(app, hud, "Tab: controles   ·   J: diario   ·   Esc: cerrar panel", Rect2(510, 770, 730, 24), 16, MUTED)
+	app.interaction_prompt.name = "InteractionPrompt"
+	app.interaction_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	app.interaction_prompt.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED
+	var prompt_style := InterfaceStyle.panel(InterfaceStyle.PAPER, InterfaceStyle.INK, 2, 6)
+	prompt_style.set_content_margin_all(8)
+	app.interaction_prompt.add_theme_stylebox_override("panel", prompt_style)
+	hud.add_child(app.interaction_prompt)
+	var prompt_row := HBoxContainer.new()
+	prompt_row.add_theme_constant_override("separation", 10)
+	app.interaction_prompt.add_child(prompt_row)
+	var key_box := PanelContainer.new()
+	var key_style := InterfaceStyle.panel(InterfaceStyle.INK, InterfaceStyle.INK, 1, 3)
+	key_style.content_margin_left = 8
+	key_style.content_margin_right = 8
+	key_box.add_theme_stylebox_override("panel", key_style)
+	prompt_row.add_child(key_box)
+	var key_label := Label.new()
+	key_label.text = "E"
+	key_label.add_theme_font_size_override("font_size", 20)
+	key_label.add_theme_color_override("font_color", InterfaceStyle.CREAM)
+	key_box.add_child(key_label)
+	app.interaction_caption.add_theme_color_override("font_color", InterfaceStyle.INK)
+	app.interaction_caption.add_theme_font_size_override("font_size", 18)
+	prompt_row.add_child(app.interaction_caption)
+	app.interaction_prompt.hide()
 	app.backdrop.name = "DialogBackdrop"
 	app.backdrop.color = Color(0.025, 0.07, 0.065, 0.66)
 	app.backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -73,7 +98,7 @@ static func refresh(app: Node, missing: int) -> void:
 		text.text = "%d · %s\n%s" % [i + 1, names[i], state]
 		text.add_theme_color_override("font_color", InterfaceStyle.GOLD if complete or i == missing else MUTED)
 		text.add_theme_font_size_override("font_size", 20 if app.progress.settings.large_text else 17)
-	app.status.add_theme_font_size_override("font_size", 22 if app.progress.settings.large_text else 19)
+	app.status.add_theme_font_size_override("font_size", 28 if app.progress.settings.large_text else 24)
 	for node in app.hud_labels:
 		node.add_theme_font_size_override("font_size", int(node.get_meta("base_font_size")) + (2 if app.progress.settings.large_text else 0))
 

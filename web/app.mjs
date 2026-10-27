@@ -1,6 +1,6 @@
 import {
   loadDataset, loadStory, assessActivity, resolveConsultation,
-  readProgress, writeProgress, sanitizeProgress, gameHref, creditsHref, musicHref,
+  readProgress, writeProgress, sanitizeProgress, gameHref, creditsHref, musicHref, contentPaths,
 } from './logic.mjs';
 import { element, table, renderEvidence, artifact, percent } from './views.mjs';
 import { createPosterWorkshop, renderPoster } from './poster-workshop.mjs';
@@ -34,10 +34,13 @@ try { storage = window.localStorage; } catch { storage = null; }
 let progress = readProgress(storage);
 let story;
 let dataset;
+let campaignLayout;
 let posterWorkshop;
 let campaign;
 let downloadURL;
 let campaignAttempt = 0;
+let printTimer;
+let endingReturn;
 let locationId = 'plaza';
 let openTask = null;
 let hasResult = false;
@@ -47,6 +50,15 @@ const current = { printing: 0, comparison: 0 };
 const done = chapter => progress.completedChapters.includes(chapter);
 const activities = chapter => story.activities.filter(activity => activity.chapter === chapter);
 const unlocked = chapter => chapter === 'printing' || (chapter === 'comparison' ? done('printing') : done('printing') && done('comparison'));
+
+function nextDirection() {
+  if (!done('printing')) return 'Primero habla con Luz en la imprenta, la casa de la izquierda. Elige «Entrar a Imprenta de Luz» en la navegación de casas.';
+  if (!done('comparison')) return 'Ya ayudaste a Luz. Ahora habla con Mateo en el archivo, la casa del centro. Elige «Entrar a Archivo de Mateo» en la navegación de casas.';
+  if (!done('consultation')) return 'Ahora habla con Inés en la casa de la derecha. Entra a su casa de reunión desde la navegación.';
+  if (progress.campaign_printed) return 'La campaña está terminada. Puedes volver a ver FIN o seguir explorando las casas.';
+  if (campaign?.ready) return 'El diseño está listo. Entra a la imprenta de Luz y usa «Imprimir cartel» en la prensa.';
+  return 'Habla con Inés en la casa de la derecha para enviar tu diseño a la imprenta de Luz.';
+}
 
 function save() {
   setStatusText('#storage-status', writeProgress(storage, progress)
@@ -86,6 +98,7 @@ function updateNavigation() {
   $('#legacy-notice').hidden = !progress.legacyCompleted.length;
   $('#legacy-notice').textContent = 'Conservamos tu avance anterior. Ese guardado no evaluó estas actividades nuevas; no demuestra comprensión independiente en esta revisión.';
   updateDialogue();
+  $('#reopen-ending').hidden = !progress.campaign_printed;
 }
 
 function updateDialogue() {
@@ -93,12 +106,19 @@ function updateDialogue() {
     const chapter = story.chapters.find(item => item.id === house.chapter);
     let message = chapter.intro;
     if (!unlocked(house.chapter)) {
-      const needsLuz = !done('printing');
-      message = `${(needsLuz ? story.dialogue.before_luz : story.dialogue.before_mateo).split('. ')[0]}. Entra a ${needsLuz ? 'la Imprenta de Luz' : 'el Archivo de Mateo'} desde la navegación de casas.`;
-    } else if (house.id === 'printshop' && campaign?.ready) message = story.campaign.press_intro;
+      message = nextDirection();
+    } else if (house.id === 'printshop' && campaign?.ready) message = progress.campaign_printed ?
+      'Tu cartel ya está impreso. Puedes volver a ver FIN en la prensa o revisar el boletín conmigo.' :
+      'Inés me envió tu cartel. Usa «Imprimir cartel» en la prensa para terminar la campaña. También podemos revisar el boletín.';
     else if (house.id === 'hall' && done('consultation')) message = progress.campaign_printed ? story.campaign.ending : story.campaign.intro;
-    else if (done(house.chapter)) message = `${story.dialogue.revisit} ${chapter.reflection}`;
+    else if (done(house.chapter)) message = `${story.dialogue.revisit} ${nextDirection()}`;
     $(`#speech-${house.id}`).textContent = message;
+    $(`#speech-preview-${house.id}`).hidden = !unlocked(house.chapter);
+    const start = $(`[data-start="${house.chapter}"]`);
+    start.classList.toggle('quiet', done(house.chapter));
+    start.textContent = house.chapter === 'consultation' ? done('consultation') ? 'Explorar otra decisión ficticia' : 'Comenzar la consulta con Inés' :
+      done(house.chapter) ? `Repasar la actividad con ${chapter.npc}` : house.chapter === 'printing' ? 'Revisar el boletín con Luz' : 'Revisar el cartel con Mateo';
+    $(`#house-${house.id} > .finding`).textContent = done(house.chapter) ? nextDirection() : house.objective;
   }
 }
 
@@ -149,6 +169,47 @@ function clearDownload() {
   downloadURL = null;
   $('#download-campaign').removeAttribute('href');
   $('#download-campaign').hidden = true;
+  $('#ending-poster').replaceChildren();
+}
+
+function finishPrintReveal() {
+  clearTimeout(printTimer); printTimer = undefined;
+  $('#print-reveal').hidden = true; $('#ending-finished').hidden = false;
+  $('#ending').setAttribute('aria-labelledby', 'ending-title');
+  $('#ending-title').focus();
+  announce(story.campaign.ending_title);
+}
+
+function closeEnding(focus = true) {
+  clearTimeout(printTimer); printTimer = undefined;
+  if (!$('#ending').open) return;
+  $('#ending').close();
+  document.body.classList.remove('ending-open');
+  clearAnnouncement();
+  if (focus) {
+    const target = endingReturn?.matches('button, a[href], [tabindex]') && endingReturn.checkVisibility() ? endingReturn :
+      locationId === 'printshop' ? $('#reopen-press-ending') : $('#reopen-ending');
+    target?.focus();
+  }
+}
+
+function openEnding(reveal = false) {
+  if (!progress.campaign_printed) return;
+  clearTimeout(printTimer);
+  endingReturn = document.activeElement;
+  $('#ending-poster').hidden = true; $('#ending-summary').hidden = false;
+  $('#enlarge-campaign').setAttribute('aria-expanded', 'false');
+  $('#enlarge-campaign').textContent = 'Ampliar cartel';
+  $('#enlarge-campaign').hidden = !downloadURL;
+  $('#ending-details').scrollTop = 0;
+  if (!$('#ending').open) $('#ending').showModal();
+  document.body.classList.add('ending-open');
+  if (reveal && !progress.settings.reducedMotion && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    $('#print-reveal').hidden = false; $('#ending-finished').hidden = true;
+    $('#ending').setAttribute('aria-labelledby', 'print-reveal-title');
+    $('#skip-print').focus();
+    printTimer = setTimeout(finishPrintReveal, 2000);
+  } else finishPrintReveal();
 }
 
 function renderCampaign() {
@@ -158,12 +219,11 @@ function renderCampaign() {
   panel.hidden = !done('consultation') || progress.campaign_printed;
   if (!panel.hidden) {
     const selected = posterWorkshop.selection || { first: 'state_01', second: 'state_02', metric: 'rate', question: 'missing' };
-    renderPoster($('#campaign-preview'), composePoster(dataset, story, selected), dataset, story, 4);
-    $('#campaign-preview .eyebrow').textContent = posterWorkshop.selection ? 'Tu cartel actual · Para enviar a Luz' : 'Cartel de ejemplo · Para enviar a Luz';
+    renderPoster($('#campaign-preview'), composePoster(dataset, story, selected), dataset, story, 4, campaignLayout);
+    $('#campaign-design-note').textContent = posterWorkshop.selection ? 'Tu cartel actual · Para enviar a Luz' : 'Cartel de ejemplo · Para enviar a Luz';
     $('#campaign-queued').hidden = !campaign.ready;
     if (campaign.ready) {
-      renderPoster($('#campaign-queued-preview'), composePoster(dataset, story, campaign.selection), dataset, story, 4);
-      $('#campaign-queued-preview .eyebrow').textContent = 'Diseño enviado · Se conserva hasta reemplazarlo';
+      renderPoster($('#campaign-queued-preview'), campaign.poster, dataset, story, 4, campaignLayout);
     } else $('#campaign-queued-preview').replaceChildren();
     $('#campaign-status').textContent = campaign.ready ?
       'Inés: El diseño está listo en la imprenta de Luz. Entra a su casa desde la navegación y usa «Imprimir cartel».' : copy.reload_note;
@@ -172,10 +232,13 @@ function renderCampaign() {
     $('#campaign-cancel').hidden = !campaign.busy;
     $('#campaign-dispatch').setAttribute('aria-busy', String(campaign.busy));
   }
-  $('#campaign-press').hidden = !campaign.ready || progress.campaign_printed;
-  $('#ending').hidden = !progress.campaign_printed;
+  $('#campaign-print').hidden = !campaign.ready || progress.campaign_printed;
+  $('#reopen-press-ending').hidden = !progress.campaign_printed;
+  $('#campaign-press-status').textContent = progress.campaign_printed ? 'El cartel ya está impreso. Puedes volver a ver el final.' :
+    campaign.ready ? copy.press_intro : `Esta prensa solo imprime el cartel final. ${nextDirection()}`;
   $('#campaign-reload-note').hidden = !progress.campaign_printed || Boolean(downloadURL);
   $('#campaign-reload-note').textContent = copy.completed_reload;
+  $('#ending-message').textContent = progress.campaign_printed && !downloadURL ? 'Tu recorrido anterior está completo.' : copy.ending;
   $('#campaign-format').hidden = !downloadURL;
   updateDialogue();
 }
@@ -186,6 +249,7 @@ function setupCampaign() {
   dispatch.setAttribute('aria-labelledby', 'campaign-title');
   const title = element('h3', 'Tu campaña ciudadana'); title.id = 'campaign-title'; title.tabIndex = -1;
   const preview = element('div'); preview.id = 'campaign-preview';
+  const designNote = element('p', undefined, 'small-note'); designNote.id = 'campaign-design-note';
   const queued = element('details'); queued.id = 'campaign-queued'; queued.hidden = true;
   const queuedPreview = element('div'); queuedPreview.id = 'campaign-queued-preview';
   queued.append(element('summary', 'Ver el diseño ya enviado a Luz'), queuedPreview);
@@ -194,13 +258,16 @@ function setupCampaign() {
   const send = element('button', copy.send_label); send.id = 'campaign-send'; send.type = 'button';
   const cancel = element('button', 'Cancelar preparación y conservar el envío anterior', 'quiet'); cancel.id = 'campaign-cancel'; cancel.type = 'button'; cancel.hidden = true;
   speech.append(element('p', 'Inés', 'speaker'), status, send, cancel);
-  dispatch.append(title, element('p', copy.review), preview, queued, speech);
+  dispatch.append(title, element('p', copy.review), designNote, preview, queued, speech);
   $('#house-hall').append(dispatch);
-  const press = element('section', undefined, 'campaign-panel'); press.id = 'campaign-press'; press.hidden = true;
+  const press = element('section', undefined, 'campaign-panel'); press.id = 'campaign-press';
   press.setAttribute('aria-labelledby', 'campaign-press-title');
   const pressTitle = element('h3', 'La prensa de Luz'); pressTitle.id = 'campaign-press-title';
   const print = element('button', copy.print_label); print.id = 'campaign-print'; print.type = 'button';
-  press.append(pressTitle, print); $('#house-printshop').append(press);
+  const pressStatus = element('p'); pressStatus.id = 'campaign-press-status';
+  const reopen = element('button', 'Ver FIN', 'quiet'); reopen.id = 'reopen-press-ending'; reopen.type = 'button'; reopen.hidden = true;
+  reopen.addEventListener('click', () => openEnding());
+  press.append(pressTitle, pressStatus, print, reopen); $('#house-printshop').append(press);
   send.addEventListener('click', async () => {
     if (locationId !== 'hall' || !done('consultation') || progress.campaign_printed || campaign.busy) return;
     const attempt = ++campaignAttempt;
@@ -219,12 +286,11 @@ function setupCampaign() {
   });
   cancel.addEventListener('click', () => { cancelDispatch(); renderCampaign(); send.focus(); announce('Preparación cancelada. El envío anterior se conserva.'); });
   print.addEventListener('click', () => {
-    if (locationId !== 'printshop' || !campaign.print(progress)) return;
+    if (locationId !== 'printshop' || progress.campaign_printed || !campaign.print(progress)) return;
     clearDownload();
     downloadURL = URL.createObjectURL(new Blob([campaign.download()], { type: 'application/pdf' }));
     $('#download-campaign').href = downloadURL; $('#download-campaign').hidden = false;
-    save(); renderArtifacts(); showLocation('plaza', false); $('#ending-title').focus();
-    announce(copy.ending_title);
+    save(); renderArtifacts(); updateNavigation(); openEnding(true);
   });
 }
 
@@ -386,7 +452,8 @@ function renderHouses() {
       element('p', house.objective, 'finding'));
     const speech = element('div', undefined, 'speech-card');
     const message = element('p'); message.id = `speech-${house.id}`;
-    speech.append(element('p', chapter.npc, 'speaker'), element('p', house.preview), message);
+    const preview = element('p', house.preview); preview.id = `speech-preview-${house.id}`;
+    speech.append(element('p', chapter.npc, 'speaker'), preview, message);
     if (house.chapter === 'consultation') {
       section.append($('#consultation-template').content.cloneNode(true));
     } else {
@@ -415,17 +482,14 @@ function renderHouses() {
       task.append(title, slot, completion); section.append(task);
     }
     if (house.chapter === 'consultation') speech.append(section.querySelector('[data-start="consultation"]'));
-    section.append(speech); $('#houses').append(section);
+    section.querySelector(':scope > .finding').after(speech); $('#houses').append(section);
   }
   $$('[data-start]').forEach(button => button.addEventListener('click', () => startTask(button.dataset.start)));
   $$('[data-close-task]').forEach(button => button.addEventListener('click', () => closeTask()));
-  posterWorkshop = createPosterWorkshop({ data: dataset, story, archive: $('#house-archive'), meeting: $('#house-hall'), exhibit: $('#exhibit-content'),
+  posterWorkshop = createPosterWorkshop({ data: dataset, story, layout: campaignLayout, archive: $('#house-archive'), meeting: $('#house-hall'), exhibit: $('#exhibit-content'),
     onOpen: () => { clearAnnouncement(); closeTask(false); },
     onCarry: () => { showLocation('hall', false); $('#poster-meeting-title').focus(); }, announce });
   setupCampaign();
-  for (const house of story.houses) {
-    const section = $(`#house-${house.id}`); section.append(section.querySelector(':scope > .speech-card'));
-  }
   setupConsultation(); renderArtifacts(); updateNavigation();
 }
 
@@ -473,7 +537,7 @@ function setupConsultation() {
     if (!hasResult || !unlocked('consultation')) return;
     if (!done('consultation')) progress.completedChapters.push('consultation');
     event.currentTarget.reset(); save(); closeTask(false); renderArtifacts(); updateNavigation();
-    if (progress.campaign_printed) { showLocation('plaza', false); $('#ending-title').focus(); }
+    if (progress.campaign_printed) openEnding();
     else $('#campaign-title').focus();
     announce($('#progress-summary').textContent);
   });
@@ -484,6 +548,26 @@ async function initialize() {
   $('#data-status').textContent = 'Cargando los datos y la historia compartida…'; $('#data-status').className = '';
   try {
     [dataset, story] = await Promise.all([loadDataset(), loadStory()]);
+    // Reuse the exact locally bundled Atkinson fonts used by both PDF writers;
+    // this resource is already included in source and exported HTML routes.
+    const [response, layoutResponse] = await Promise.all(['campaign_font.json', 'campaign_layout.json'].map(name => fetch(contentPaths(name)[0])));
+    if (!response.ok) throw new Error('No se pudieron cargar las fuentes locales. Reintenta la carga.');
+    if (!layoutResponse.ok) throw new Error('No se pudo cargar el diseño del cartel. Reintenta la carga.');
+    campaignLayout = await layoutResponse.json();
+    for (const name of ['pink', 'white', 'ink', 'pale']) {
+      if (!/^[0-9a-f]{6}$/i.test(campaignLayout.colors?.[name])) throw new Error('El diseño del cartel no es válido. Reintenta la carga.');
+      document.documentElement.style.setProperty(`--campaign-${name}`, `#${campaignLayout.colors[name]}`);
+    }
+    if (!['headline', 'citizen', 'classification', 'source_label'].every(key => typeof campaignLayout.copy?.[key] === 'string' && campaignLayout.copy[key])) {
+      throw new Error('Falta el texto compartido del cartel. Reintenta la carga.');
+    }
+    $('.print-sheet strong').textContent = campaignLayout.copy.headline;
+    const fontData = await response.json();
+    await Promise.all(fontData.fonts.map(async (font, index) => {
+      const bytes = Uint8Array.from(atob(font.ttf_base64), character => character.charCodeAt(0));
+      const face = new FontFace('Atkinson Hyperlegible', bytes, { weight: index ? '700' : '400' });
+      document.fonts.add(await face.load());
+    }));
     campaign = createCampaignSession({ data: dataset, story,
       createPDF: async (...args) => (await import('./campaign-pdf.mjs')).createCampaignPDF(...args) });
     document.title = `${story.title} · Cuaderno de campo`;
@@ -493,6 +577,7 @@ async function initialize() {
     $('#ending-message').textContent = story.campaign.ending;
     $('#download-campaign').textContent = story.campaign.download_label;
     renderHouses(); showLocation('plaza', false);
+    if (progress.campaign_printed) openEnding();
     $('#data-status').textContent = 'Archivo CCPC 2024 e historia compartida cargados.'; $('#data-status').className = 'small-note';
   } catch (error) {
     story = undefined; dataset = undefined;
@@ -532,19 +617,40 @@ for (const type of ['click', 'keydown']) document.addEventListener(type, event =
 });
 $('#reset-progress').addEventListener('click', () => {
   stopMusic();
+  closeEnding(false);
   cancelDispatch(); campaign?.clear(); clearDownload(); posterWorkshop?.clear();
   progress = sanitizeProgress(null); answered.clear(); attempts.clear(); current.printing = 0; current.comparison = 0;
   openTask = null; clearDecision(); applySettings(); save();
   if (story) { renderHouses(); showLocation('plaza', false); $('#plaza-title').focus(); }
 });
-$('#repeat-consultation').addEventListener('click', () => { showLocation('hall', false); startTask('consultation'); });
+$('#repeat-consultation').addEventListener('click', () => { closeEnding(false); showLocation('hall', false); startTask('consultation'); });
+$('#reopen-ending').addEventListener('click', () => openEnding());
+$('#skip-print').addEventListener('click', finishPrintReveal);
+$('#explore-after-ending').addEventListener('click', () => closeEnding());
+$('#ending').addEventListener('cancel', event => { event.preventDefault(); closeEnding(); });
+$('#ending').addEventListener('keydown', event => {
+  if (!$('#print-reveal').hidden && !event.repeat && ['e', 'enter'].includes(event.key.toLowerCase())) {
+    event.preventDefault(); finishPrintReveal();
+  }
+});
+$('#enlarge-campaign').addEventListener('click', () => {
+  const poster = campaign?.poster;
+  if (!downloadURL || !poster) return;
+  const expanded = $('#ending-poster').hidden;
+  if (expanded) renderPoster($('#ending-poster'), poster, dataset, story, 3, campaignLayout);
+  $('#ending-poster').hidden = !expanded; $('#ending-summary').hidden = expanded;
+  $('#enlarge-campaign').setAttribute('aria-expanded', String(expanded));
+  $('#enlarge-campaign').textContent = expanded ? 'Volver al resumen' : 'Ampliar cartel';
+  $('#ending-details').scrollTop = 0;
+  if (expanded) $('#ending-poster-title').focus();
+});
 document.addEventListener('keydown', event => {
-  if (event.key !== 'Escape') return;
+  if (event.key !== 'Escape' || $('#ending').open) return;
   if (posterWorkshop?.close()) { event.preventDefault(); clearAnnouncement(); }
   else if (openTask) { event.preventDefault(); closeTask(); }
   else if (locationId !== 'plaza') { event.preventDefault(); showLocation('plaza'); }
 });
-window.addEventListener('pagehide', () => { clearDecision(); cancelDispatch(); campaign?.clear(); clearDownload(); posterWorkshop?.clear(); stopMusic(); });
+window.addEventListener('pagehide', () => { closeEnding(false); clearDecision(); cancelDispatch(); campaign?.clear(); clearDownload(); posterWorkshop?.clear(); stopMusic(); });
 window.addEventListener('pageshow', () => { clearDecision(); renderCampaign(); });
 $('#game-link').href = gameHref(window.location.pathname);
 $('#credits-link').href = creditsHref(window.location.pathname);

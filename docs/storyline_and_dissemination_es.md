@@ -2,11 +2,11 @@
 
 ## Narrativa y plan de difusión · Reto 3
 
-**Equipo Latas · Cierre de campaña · 27 de octubre de 2026.** Narrativa de cuatro páginas con una propuesta de difusión para bachillerato y personas adultas principiantes. [PDF de narrativa y difusión](../submission/voces_narrativa_y_difusion.pdf), [materiales docentes](../submission/classroom.html) y [registro de verificación](verification.md).
+**Equipo Latas · Secuencia guiada y campaña rosa · 27 de octubre de 2026.** Narrativa de cuatro páginas con una propuesta de difusión para bachillerato y personas adultas principiantes. [PDF de narrativa y difusión](../submission/voces_narrativa_y_difusion.pdf), [materiales docentes](../submission/classroom.html) y [registro de verificación](verification.md).
 
 Los cuatro bloques conservan el formato de `tools/render_submission.mjs`. La [revisión editorial contra la rúbrica local](deck_outline_es.md#revisión-editorial-contra-la-rúbrica-local) distingue calidad del contenido, comprobaciones técnicas y evaluación educativa.
 
-El [contrato de campaña](campaign_finale.md) define la secuencia nueva. Los recibos y capturas de ediciones anteriores son evidencia histórica hasta que se regeneren los recorridos y medios de esta revisión. El [recorrido nativo](../build/evidence/native-window.json) y el [registro de verificación](verification.md) delimitan comprobaciones técnicas; no constituyen una evaluación de aprendizaje.
+El [contrato de secuencia y diseño](sequential_campaign_design.md) actualiza el [final de campaña](campaign_finale.md). La [edición anterior archivada](../build/media-review-sequential-2026-10-27/history-campaign/manifest.json) conserva fuentes, salidas y recibos históricos; no verifica las nuevas pantallas. Los recibos de cada edición y el [registro de verificación](verification.md) delimitan comprobaciones técnicas, sin constituir una evaluación de aprendizaje.
 
 <!-- INICIO DEL CONTENIDO PARA PDF: PÁGINA 1 -->
 
@@ -16,9 +16,9 @@ El [contrato de campaña](campaign_finale.md) define la secuencia nueva. Los rec
 
 En la Villa Brisa ficticia hay recursos para empezar una mejora de la plaza y tres propuestas distintas. Antes de la reunión, la persona jugadora prepara **Las voces que construyen la plaza**, una exhibición con un boletín y un cartel. El recorrido conserva un pueblo, tres casas, tres personajes, dos misiones CCPC y una consulta ficticia; termina al imprimir un cartel ciudadano en la primera casa.
 
-**Imprenta de Luz:** preparar un boletín honesto sobre la participación nacional de 2024, sin borrar la información desconocida. **Archivo de Mateo:** corregir un cartel que confunde cantidad con proporción al comparar Aguascalientes y Baja California. **Casa de reunión de Inés:** escuchar necesidades distintas, conocer una regla de decisión inventada y pensar cómo dar seguimiento.
+**Luz, en la casa izquierda:** preparar un boletín honesto sobre la participación nacional de 2024, sin borrar la información desconocida. **Mateo, en el centro:** corregir un cartel que confunde cantidad con proporción al comparar Aguascalientes y Baja California. **Inés, a la derecha:** escuchar necesidades distintas, conocer una regla de decisión inventada y pensar cómo dar seguimiento.
 
-Las tres casas se pueden visitar desde el principio. Las conversaciones siguen el orden Luz, Mateo e Inés; las visitas tempranas reciben indicaciones sobre la actividad pendiente. El diálogo aparece en una franja inferior oscura y translúcida, con retrato y texto inmediato. La consulta requiere los dos objetos de evidencia y es el paso tres de cuatro. Después, Inés encarga un diseño a Luz dentro de la ficción; la persona vuelve caminando a su prensa para completar el paso final.
+Las casas abren desde el principio; el aprendizaje sigue a Luz, Mateo e Inés. Una visita temprana dirige a la primera tarea pendiente e indica la casa. Los personajes comienzan las actividades; el tablón permite revisar la comparación y la prensa se reserva para el final. El diálogo ocupa una franja inferior translúcida. El encabezado orienta, el suelo queda sin prosa y una indicación [E] aparece cerca del objetivo. La consulta es el paso tres de cuatro; después, Inés encarga el cartel y se vuelve caminando a la prensa de Luz.
 
 La aventura tiene una duración objetivo de 10–15 minutos. La guía docente propone una clase de 20 minutos: dos de introducción, trece de actividad y cinco de conversación opcional. Son tiempos por comprobar con participantes. Se ofrecen formatos individual, por parejas o con proyector, y una hoja de trabajo para usar sin computadora.
 
@@ -34,9 +34,9 @@ El resultado educativo buscado es explicar un hallazgo real, reconocer algo que 
 
 **Fuente real:** INE, Conteos Censales de Participación Ciudadana, elección federal de 2024; conjunto local `ccpc-2024-v1`. Los conteos reproducidos del ZIP oficial son el sustento de los hallazgos. No representan preferencias partidistas ni describen al alumnado de 15–18 años.
 
-**La prensa de las voces.** En el agregado nacional hay 54,899,228 registros con marca de voto (SV), 37,105,466 sin marca (NV) y 6,325,654 sin clasificación (NS); el total analizado (LN) es 98,330,348. Entre los 92,004,694 con información conocida, cerca de 60 de cada 100 tienen marca: **59.67%**, redondeado. Por separado, NS representa **6.43% del total analizado**, redondeado. No comparten base y no deben sumarse en una sola composición del 100%.
+**El boletín de Luz.** En el agregado nacional hay 54,899,228 registros con marca de voto (SV), 37,105,466 sin marca (NV) y 6,325,654 sin clasificación (NS); el total analizado (LN) es 98,330,348. Entre los 92,004,694 con información conocida, cerca de 60 de cada 100 tienen marca: **59.67%**, redondeado. Por separado, NS representa **6.43% del total analizado**, redondeado. No comparten base y no deben sumarse en una sola composición del 100%.
 
-Luz propone tres decisiones: reconocer qué categoría clasificada tiene más registros; explicar que, cuando falta información, no sabemos si la persona participó; y colocar diez registros desconocidos en «No sabemos» dentro de un ejemplo nuevo inventado de 60 con participación, 30 sin participación y 10 desconocidos. Sin clasificación no significa abstención ni voto nulo.
+Luz explica que un registro reúne información de una persona. Sus preguntas piden reconocer la barra con más registros, decir si sabemos que alguien votó cuando falta información y ubicar diez desconocidos en «No sabemos» en un ejemplo inventado de 60 con participación, 30 sin participación y 10 desconocidos. Sin clasificación no significa abstención ni voto nulo.
 
 **El mapa que no lo dice todo.** Mateo presenta las cantidades exactas y las tasas, redondeadas a dos decimales:
 
@@ -47,13 +47,13 @@ Luz propone tres decisiones: reconocer qué categoría clasificada tiene más re
 
 Las otras tres decisiones son identificar dónde hay más registros con marca, dónde hay mayor proporción y resolver un caso nuevo **inventado**: A tiene 20 participantes de 40 (50%); B, 60 de 200 (30%). Más participantes no siempre significa mayor porcentaje. BC tiene más registros; AGS, cerca de 59 de cada 100 clasificados frente a 47 en BC.
 
-Las seis actividades exigen leer e interpretar, con reintentos y apoyo. Los casos nuevos permiten intentar aplicar la idea en otro ejemplo; no constituyen una medida validada de comprensión. Completar con ayuda no demuestra dominio independiente. Las fórmulas quedan opcionales: `100 × SV / (SV + NV)` y `100 × NS / LN`. Al reunir entidades se suman primero conteos: 2,022,419 entre 4,035,317, aproximadamente 50.12%. Sin base válida no se inventa un 0%.
+Un porcentaje expresa cuántos de cada 100. Las seis preguntas breves permiten reintentos y apoyo; aplicar una idea en los ejemplos nuevos no es una medida validada de comprensión. Completar con ayuda no demuestra dominio independiente. Fórmulas opcionales: `100 × SV / (SV + NV)` y `100 × NS / LN`. Al reunir entidades se suman primero conteos: 2,022,419 entre 4,035,317, aproximadamente 50.12%. Sin base válida no se inventa un 0%.
 
 El archivo documenta exclusiones de casillas especiales y voto desde el extranjero. Un agregado no revela motivos individuales ni permite juzgar el valor cívico de una comunidad. La hoja conserva valores exactos, lecturas sencillas, año, base, fuente y estos límites.
 
 **Crea tu cartel para la reunión (opcional).** Tras las seis actividades, el taller permite elegir dos de las 32 entidades, cantidad o proporción y una pregunta neutral. La vista previa cambia con los datos elegidos y conserva conteos, bases, NS, año, fuente y límites. Se puede revisar y llevar a Inés durante la sesión. No añade una prueba, operaciones obligatorias ni preferencias políticas; tampoco cambia resultados de consulta o reconocimiento.
 
-**Procedencia:** el reporte local documenta 32 CSV, 9,773,730 filas y 33 agregados, con el SHA-256 del ZIP reproducido. Filas no equivalen a personas; consistencia aritmética no demuestra unicidad o exhaustividad.
+**Procedencia:** la reproducción previa documenta 32 CSV, 9,773,730 filas y 33 agregados, con SHA-256 del ZIP. Esta revisión no la presenta como una adquisición nueva. Filas no equivalen a personas; consistencia aritmética no demuestra unicidad o exhaustividad.
 
 <div style="page-break-after: always;"></div>
 
@@ -71,9 +71,9 @@ Los escenarios son inventados: conteos A/B/C de 8/5/3, 11/8/6 y 8/10/7. Los últ
 
 Las tres preguntas de seguimiento son válidas: recursos, avances o necesidades pendientes. Ninguna preferencia ni voluntad de votar se califica. La clase no recoge nombres ni datos políticos; la hoja permanece con quien la usa. En proyector se demuestra una acción anunciada, sin votar ni contar preferencias del grupo.
 
-**La misión final.** Tras la consulta y el seguimiento, Inés revisa el cartel personal. Si no se creó uno, ofrece AGS/BC con la pregunta sobre información faltante. Confirmar el encargo prepara el PDF y congela el diseño en la sesión; no envía nada fuera del juego. Se camina a la primera casa y, cerca de la prensa, se elige **Imprimir cartel**. Aparece **FIN · La campaña comienza contigo**. El pueblo sigue abierto y el diario permite releer el final.
+**La misión final.** Tras el seguimiento, Inés revisa el cartel personal o el guiado AGS/BC. El encargo prepara el PDF en la sesión, sin envío externo. Se camina a la casa izquierda y, cerca de su prensa, se elige **Imprimir cartel**. La impresión dura hasta 2.5 segundos; E, Enter o un botón la omiten, y movimiento reducido la salta. **FIN · La campaña comienza contigo** mantiene visibles Descargar, Ampliar y Explorar. Reabrir no repite la animación; cerrar conserva el lugar.
 
-El PDF descargable es una página Carta vertical: **«Tu voto cuenta. Infórmate y participa.»** Campaña ciudadana no partidista, sin Latas, INEhack, sello oficial ni resultado ficticio. Cita INE/CCPC como fuente histórica y muestra año, conteos exactos, bases, NS, barras en una escala común, pregunta y límites. Descargar es una acción aparte: cancelar el guardado en Linux o bloquear la descarga web no deshace el final.
+El cartel rosa y blanco es una composición ciudadana original: **«Tu voto cuenta. Infórmate y participa.»** El PDF Carta vertical conserva texto seleccionable, conteos, bases, NS, barras comparables, pregunta, límites y fuente histórica INE/CCPC. No lleva Latas, INEhack, sello oficial ni resultado ficticio. Descargar es opcional y cancelar no deshace FIN. Ampliar permite leer el cartel en su zona desplazable, con las acciones finales a la vista.
 
 La ruta HTML conserva contenido y final con navegación propia. Godot usa WASD para cruzar puertas y E/Enter cerca para interactuar. Ofrece texto ampliable, foco, silencio y movimiento reducido; Linux es la alternativa local. La música tranquila «Sunset Walk», de KiluaBoy, es CC0, con volumen y silencio: no es música original del equipo ni es necesaria para avanzar.
 

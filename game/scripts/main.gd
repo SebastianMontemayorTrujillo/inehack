@@ -46,6 +46,9 @@ var location_id := "plaza"
 var house_index := -1
 var transitioning := false
 var action_button := Button.new()
+var interaction_prompt := PanelContainer.new()
+var interaction_caption := Label.new()
+var location_label: Label
 var awaiting_answer := false
 var poster_selection := {"first": "state_01", "second": "state_02", "metric": "count", "question": "missing"}
 var meeting_poster: Dictionary = {}
@@ -145,7 +148,7 @@ func _show_location(index: int, spawn: Vector2) -> void:
 	player.position = spawn
 	player.velocity = Vector2.ZERO
 	facing = "down"
-	room.update_artifacts(progress.completed, bundle, meeting_poster, 2 if progress.campaign_printed else 1 if not campaign_job.is_empty() else 0)
+	interaction_prompt.hide()
 
 func _enter_house(index: int) -> void:
 	if not valid or transitioning or index < 0 or index >= 3:
@@ -172,15 +175,62 @@ func _exit_house() -> void:
 func _interact() -> void:
 	if transitioning or overlay.visible or not valid:
 		return
-	var target: Dictionary = room.nearest_target(player)
+	var target := _nearby_interaction()
 	if target.is_empty():
 		return
 	match target.kind:
 		"host": _start_chapter(target.index)
-		"artifact":
-			if target.index == 0 and "consultation" in progress.completed: CampaignView.press(self)
-			elif target.index == 1 and not meeting_poster.is_empty(): _published_poster()
-			else: _start_chapter(target.index)
+		"artifact": _inspect_artifact(target.index)
+
+func _nearby_interaction() -> Dictionary:
+	if not valid or room == null or transitioning or overlay.visible: return {}
+	var target: Dictionary = room.nearest_target(player)
+	if target.is_empty() or target.kind not in ["host", "artifact"]: return {}
+	var resolved := target.duplicate()
+	resolved.label = "Hablar con " + story.chapters[target.index].npc if target.kind == "host" else ["Usar prensa", "Revisar cartel", "Ver urna"][target.index]
+	return resolved
+
+func _refresh_interaction() -> void:
+	var target := _nearby_interaction()
+	action_button.disabled = target.is_empty()
+	interaction_prompt.visible = not target.is_empty()
+	if target.is_empty():
+		action_button.text = "Acércate a una persona u objeto"
+		return
+	action_button.text = target.label + " · E"
+	interaction_caption.text = target.label
+	interaction_caption.add_theme_font_size_override("font_size", 22 if progress.settings.large_text else 18)
+	interaction_prompt.reset_size()
+	var point: Vector2 = world.to_global(target.point)
+	interaction_prompt.position = Vector2(clampf(point.x - interaction_prompt.size.x / 2, 48, 1232 - interaction_prompt.size.x), point.y - 114)
+
+func _inspect_artifact(index: int) -> void:
+	if index == 0:
+		CampaignView.press(self)
+	elif index == 1:
+		if not meeting_poster.is_empty():
+			_published_poster()
+			return
+		_panel("Cartel de comparación")
+		_text("Antes: «" + story.comparison_artifact.before + "»")
+		if "comparison" in progress.completed:
+			_text("Después de revisar la fuente:")
+			_text(Rules.comparison_caption(_record("state_01"), _record("state_02"), story.comparison_artifact))
+			_text("Fuente: INE / CCPC 2024. Cantidad y porcentaje cuentan cosas distintas.")
+			_poster_controls()
+		else:
+			_text("Este titular necesita una revisión. " + (story.dialogue.before_luz if "printing" not in progress.completed else "Habla con Mateo, a la izquierda del cartel, para compararlo con los datos."))
+		_button("Ver datos y fuente", _journal)
+	else:
+		if Rules.first_missing(progress.completed, 2) >= 0:
+			_project_preview()
+			_text(story.dialogue.before_luz if "printing" not in progress.completed else story.dialogue.before_mateo)
+		elif "consultation" in progress.completed:
+			_panel("La consulta terminó")
+			_text("La urna ya recibió las voces de esta historia. Habla con Inés para revisar tu campaña y enviarla a la imprenta.")
+			_button("Explorar otra decisión ficticia", _consultation)
+		else:
+			_consultation()
 
 func _accessible_action() -> void:
 	_interact()
@@ -200,6 +250,9 @@ func _close_panel() -> void:
 	dialogue_active = false
 	overlay.hide()
 	backdrop.hide()
+	# Completion can update the HUD while the modal disables its nearby action.
+	# Resolve again after hiding, before choosing a usable focus return target.
+	_refresh_interaction()
 	world_controls.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
 	world_controls.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_INHERITED
 	for child in body.get_children():
@@ -249,8 +302,7 @@ func _physics_process(delta: float) -> void:
 		player.position.y = clampf(player.position.y, limits.position.y, limits.end.y)
 		var target: Dictionary = room.nearest_target(player)
 		if _walk_through_door(movement, target): return
-		action_button.disabled = target.is_empty() or target.kind not in ["host", "artifact"]
-		action_button.text = "Acércate para conversar" if action_button.disabled else "Hablar con " + story.chapters[house_index].npc if target.kind == "host" else "Examinar · E"
+		_refresh_interaction()
 		anim_time += delta
 		if movement != Vector2.ZERO:
 			facing = ("right" if movement.x > 0 else "left") if abs(movement.x) > abs(movement.y) else ("down" if movement.y > 0 else "up")
@@ -272,6 +324,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 func _panel(title: String, spacious: bool = false, conversation: bool = false) -> void:
 	awaiting_answer = false
+	interaction_prompt.hide()
 	dialogue_active = conversation
 	if not overlay.visible:
 		var focused := get_viewport().gui_get_focus_owner()
@@ -397,13 +450,19 @@ func _start_chapter(index: int) -> void:
 		return
 	if index == 2 and "consultation" in progress.completed:
 		CampaignView.talk_to_ines(self)
+		_button("Repasar la reunión", _consultation)
 		return
 	if index == 0 and "consultation" in progress.completed:
 		Dialogue.show(self, 0, story.campaign.ending if progress.campaign_printed else story.dialogue.luz_queued if not campaign_job.is_empty() else story.campaign.reload_note)
+		_button("Repasar la actividad", _question)
 		return
 	var message: String = story.chapters[index].intro
-	if Rules.CHAPTERS[index] in progress.completed: message = story.dialogue.revisit
-	Dialogue.show(self, index, message, [{"text": "Comenzar la actividad", "action": _question}])
+	if Rules.CHAPTERS[index] in progress.completed:
+		var next := "Ahora habla con Mateo en la casa del centro." if "comparison" not in progress.completed else "Ahora habla con Inés en la casa de la derecha."
+		Dialogue.show(self, index, story.dialogue.revisit + " " + next)
+		_button("Repasar la actividad", _question)
+	else:
+		Dialogue.show(self, index, message, [{"text": "Comenzar la actividad", "action": _question}])
 	if index == 1: _poster_controls()
 	if index == 2 and not meeting_poster.is_empty():
 		var poster: Dictionary = preload("res://scripts/poster_workshop.gd").compose(bundle, story, meeting_poster)
@@ -620,12 +679,14 @@ func _complete() -> void:
 	_text(story.chapters[chapter].reflection)
 	if chapter == 0:
 		var record := _record("national")
-		_text("Boletín construido: participación nacional entre registros clasificados de 2024: %s. La clasificación desconocida se presenta por separado." % _percentage(record.participation_pct))
+		_text("Nuestro boletín: falta información para calcular la participación." if record.participation_pct == null else "Nuestro boletín: cerca de %d de cada 100 registros con información muestran participación en 2024. Los casos sin información van aparte." % roundi(record.participation_pct))
+		_text("Ahora sal por la puerta de abajo y habla con Mateo en la casa del centro.")
 	elif chapter == 1:
 		var a := _record("state_01")
 		var b := _record("state_02")
 		_text("Titular corregido:\n" + Rules.comparison_caption(a, b, story.comparison_artifact))
-		_text("Cartel corregido: %s tiene %s SV y una tasa de %s; %s tiene %s SV y una tasa de %s. Las cifras no explican los motivos individuales." % [a.geography_name, _number(a.sv), _percentage(a.participation_pct), b.geography_name, _number(b.sv), _percentage(b.participation_pct)])
+		_text("Comparamos la cantidad y luego la parte de cada 100. Las cifras no nos dicen por qué cada persona participó o no. Puedes revisar los valores exactos y la fuente en tu diario.")
+		_text("Ahora visita a Inés en la casa de la derecha. También puedes crear tu propio cartel antes de ir.")
 	else:
 		_text("La reunión terminó. Habla con Inés para enviar el cartel a la imprenta y completar tu campaña.")
 	_button("Ver mi exposición y las fuentes", _journal, true)
@@ -797,17 +858,15 @@ func _save() -> void:
 
 func _update_status() -> void:
 	var place: String = "Plaza" if house_index < 0 else story.houses[house_index].title
-	var next := "Habla con Luz"
+	var next := "Habla con Luz · Casa de la izquierda"
 	var missing := Rules.first_missing(progress.completed, 3)
 	if missing == 1:
-		next = "Revisa el cartel con Mateo"
+		next = "Habla con Mateo · Casa del centro"
 	if missing == 2:
-		next = "Visita a Inés"
+		next = "Habla con Inés · Casa de la derecha"
 	if missing == -1:
-		next = "FIN · Campaña impresa" if progress.campaign_printed else story.campaign.objective if not campaign_job.is_empty() else "Habla con Inés para enviar tu cartel"
-	status.text = "%s  ·  %d/4 pasos  ·  %s" % [place, progress.completed.size() + (1 if progress.campaign_printed else 0), next]
+		next = "FIN · Campaña impresa" if progress.campaign_printed else "Usa la prensa de Luz · Casa de la izquierda" if not campaign_job.is_empty() else "Envía tu cartel con Inés · Casa de la derecha"
+	location_label.text = "VILLA BRISA · " + place
+	status.text = next
 	InterfaceShell.refresh(self, missing)
-	action_button.text = "Acércate para conversar"
-	action_button.disabled = true
-	if room != null:
-		room.update_artifacts(progress.completed, bundle, meeting_poster, 2 if progress.campaign_printed else 1 if not campaign_job.is_empty() else 0)
+	_refresh_interaction()

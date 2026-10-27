@@ -61,33 +61,34 @@ export function makePlan(data) {
   const rate = national.participation_pct;
   assert.ok(rate !== null, 'The final recording needs the verified national finding');
   return [
-    ['opening', 5, 'Equipo Latas presenta Voces de la Plaza, una aventura cívica para bachillerato y personas adultas.'],
-    ['plaza', 3.5, 'Villa Brisa prepara una reunión. Luz, Mateo e Inés nos reciben en tres casas.'],
-    ['door', 4, 'WASD nos lleva al archivo. Las tareas siguen el orden Luz, Mateo e Inés.'],
-    ['html', 4, 'HTML ofrece la misma historia con navegación propia, texto ampliable y teclado.'],
-    ['printshop', 3, 'Primera misión: preparar un boletín que diga qué sabemos.'],
+    ['opening', 4, 'Latas presenta Voces de la Plaza: aventura cívica para bachillerato y personas adultas.'],
+    ['plaza', 3.5, 'Vamos a Luz, a la izquierda. Después hablaremos con Mateo e Inés.'],
+    ['door', 4, 'WASD permite caminar. E habla con Luz; la prensa se usa al final.'],
+    ['html', 3.5, 'HTML conserva la historia con navegación propia, texto ampliable y teclado.'],
+    ['printshop', 3, 'Luz inicia las preguntas; la prensa queda para el cierre.'],
     ['participation-reading', 5.5, `INE, CCPC federal 2024: cerca de ${Math.round(rate)} de cada 100 registros con información conocida muestran participación.`],
     ['reading-feedback', 3, 'Leemos las barras. No necesitamos hacer divisiones para avanzar.'],
     ['source', 4.5, 'El boletín conserva conteos, fuente y año. Los registros sin información se muestran aparte.'],
-    ['unknown', 4.5, 'Si falta información, no afirmamos que alguien no participó. Podemos completar con apoyo.'],
-    ['unknown-transfer', 4, 'Otro caso: 60 participaron, 30 no y 10 no se sabe. Este ejemplo es inventado.'],
-    ['bulletin', 3.5, 'Publicamos el boletín con su fuente. Podemos volver a leerlo.'],
-    ['archive', 3.5, 'Mateo muestra un cartel que confunde cantidades y porcentajes.'],
-    ['more-count', 4, 'Baja California tiene más registros con participación. Corregimos el cartel.'],
+    ['unknown', 4, 'Si falta información, no sabemos si participó. Podemos completar con apoyo.'],
+    ['unknown-transfer', 3.5, 'Otro caso: 60 participaron, 30 no y 10 no se sabe. Este ejemplo es inventado.'],
+    ['bulletin', 3, 'Publicamos el boletín con su fuente. Podemos volver a leerlo.'],
+    ['archive', 3.5, 'Mateo inicia la comparación. El tablón sirve para revisar el cartel.'],
+    ['more-count', 3.5, 'Baja California tiene más registros con participación. Corregimos el cartel.'],
     ['higher-rate', 4.5, 'Aguascalientes tiene mayor proporción entre registros con información. Las bases son distintas.'],
     ['comparison-transfer', 4, 'En este ejemplo inventado, más participantes no significa un porcentaje mayor.'],
     ['poster', 4, 'Cantidad y proporción son comparaciones diferentes. El cartel conserva la fuente.'],
     ['workshop', 4.5, 'Personalizar es opcional: dos de 32 entidades, cantidad o proporción y una pregunta neutral.'],
-    ['authored-poster', 5, 'El cartel cambia con los datos elegidos. Revisamos fuente, bases, desconocidos y límites.'],
+    ['authored-poster', 4.5, 'El cartel cambia con los datos elegidos. Revisamos fuente, bases, desconocidos y límites.'],
     ['poster-meeting', 4, 'Guardamos el cartel y abrimos la casa de Inés. La evidencia no decide por quién votar.'],
     ['hall', 4.5, 'Inés presenta tres proyectos. La consulta y sus cifras son inventadas, separadas del CCPC.'],
     ['ballot', 4.5, 'A, B, C, sin marcar o no participar: todas habilitan la campaña. No se califica la elección.'],
     ['result', 3.5, 'Resultado inventado: las necesidades pendientes siguen mereciendo atención.'],
-    ['followup', 4, 'Elegimos una pregunta de seguimiento: recursos, avances o necesidades pendientes.'],
+    ['followup', 3.5, 'Elegimos qué preguntar: recursos, avances o necesidades pendientes.'],
     ['campaign-review', 4.5, 'Inés revisa nuestro cartel. Si no lo personalizamos, ofrece el ejemplo guiado AGS/BC.'],
     ['campaign-send', 4, 'Enviar a Luz prepara el PDF dentro de la ficción; no manda un mensaje externo.'],
-    ['campaign-press', 4, 'Volvemos a la imprenta: Imprimir cartel. En Godot caminamos hasta la prensa.'],
-    ['ending', 4, 'FIN: La campaña comienza contigo. Descargar el cartel es una acción aparte.'],
+    ['campaign-press', 4, 'Volvemos a la prensa de Luz: Imprimir cartel. La animación se puede omitir.'],
+    ['ending', 3.5, 'FIN. La campaña comienza contigo. Descargar el cartel es opcional.'],
+    ['enlarged-poster', 4, 'Ampliamos el cartel rosa. FIN y sus acciones quedan visibles al desplazar los datos.'],
     ['download', 4, 'PDF Carta ciudadano: fuente INE/CCPC, sin marcas de equipo ni sello oficial.'],
     ['classroom', 4, 'Guía para uso individual, parejas o proyector. El tiempo aún no tiene pilotaje.'],
     ['handout', 4, 'La hoja reúne datos y reflexión sin recoger preferencias. Podemos trabajar en papel.'],
@@ -128,14 +129,14 @@ async function preflight() {
     assert.equal(sha(actual), sha(expected), `Stale final export: ${served}. Wait for main to export.`);
     receipts.push({ source, url: new URL(served, webURL).href, sha256: sha(actual), bytes: actual.length });
   }
-  for (const file of ['content/story.json', 'content/campaign_font.json', 'content/campaign_layout.json', 'scripts/main.gd', 'scripts/interface_theme.gd', 'scripts/interface_shell.gd', 'scripts/civic_rules.gd', 'scripts/room.gd', 'scripts/poster_view.gd', 'scripts/poster_card.gd', 'scripts/poster_workshop.gd', 'scripts/dialogue_view.gd', 'scripts/campaign_view.gd', 'scripts/campaign_pdf.gd', 'scenes/room.tscn']) {
+  for (const file of ['content/story.json', 'content/campaign_font.json', 'content/campaign_layout.json', 'scripts/main.gd', 'scripts/interface_theme.gd', 'scripts/interface_shell.gd', 'scripts/civic_rules.gd', 'scripts/room.gd', 'scripts/poster_view.gd', 'scripts/poster_card.gd', 'scripts/poster_workshop.gd', 'scripts/dialogue_view.gd', 'scripts/campaign_view.gd', 'scripts/campaign_pdf.gd', 'scripts/ending_view.gd', 'scenes/room.tscn']) {
     assert.equal(sha(await readFile(path.join(root, 'build/staging-web', file))), sha(await readFile(path.join(root, 'game', file))), `Stale Godot staging: ${file}`);
   }
   const pack = path.join(root, 'build/web/game/index.pck');
   const manifest = JSON.parse(await readFile(path.join(root, 'build/staging-web/assets/export_manifest.json'), 'utf8'));
   assert.equal(manifest.asset_set, 'original', 'Record the final original asset set');
   const packTime = (await stat(pack)).mtimeMs;
-  for (const file of ['scripts/main.gd', 'scripts/interface_theme.gd', 'scripts/interface_shell.gd', 'scripts/civic_rules.gd', 'scripts/room.gd', 'scripts/poster_view.gd', 'scripts/poster_card.gd', 'scripts/poster_workshop.gd', 'content/story.json']) {
+  for (const file of ['scripts/main.gd', 'scripts/interface_theme.gd', 'scripts/interface_shell.gd', 'scripts/civic_rules.gd', 'scripts/room.gd', 'scripts/poster_view.gd', 'scripts/poster_card.gd', 'scripts/poster_workshop.gd', 'scripts/ending_view.gd', 'content/story.json']) {
     assert.ok(packTime >= (await stat(path.join(root, 'game', file))).mtimeMs, `Godot PCK predates ${file}`);
   }
   receipts.push({ source: relative(pack), sha256: sha(await readFile(pack)), bytes: (await stat(pack)).size });
@@ -180,25 +181,31 @@ async function record(data, story, plan, receipts, rehearsal = false) {
     (defaultIconWarning(detail.message, detail.url) ? warnings : errors).push(detail);
   });
   const cues = [];
+  const endingChecks = [];
   let doorProbe;
   let campaignDownload;
   const elapsed = () => (performance.now() - origin) / 1000;
-  const hold = async (id, showQuestion, during) => {
+  const hold = async (id, showSecondView, during, secondView = 'question') => {
     const scene = plan.find(item => item.id === id);
     assert.ok(scene, `Unknown scene ${id}`);
     const start = elapsed();
     console.log(`${rehearsal ? 'Rehearsing' : 'Recording'} ${String(cues.length + 1).padStart(2, '0')}/${plan.length}: ${id} (${rehearsal ? 'no video' : `${scene.seconds}s`})`);
     await page.screenshot({ path: path.join(run, `${String(cues.length + 1).padStart(2, '0')}-${id}.png`) });
-    if (during) await during();
-    if (showQuestion) {
+    if (during) {
+      await during();
+      await page.screenshot({ path: path.join(run, `${String(cues.length + 1).padStart(2, '0')}-${id}-after-action.png`) });
+    }
+    if (showSecondView) {
       const firstHalf = (rehearsal ? 0.1 : scene.seconds / 2) - (elapsed() - start);
       if (firstHalf > 0) await page.waitForTimeout(firstHalf * 1000);
-      await showQuestion();
-      await page.screenshot({ path: path.join(run, `${String(cues.length + 1).padStart(2, '0')}-${id}-question.png`) });
+      await showSecondView();
+      await page.screenshot({ path: path.join(run, `${String(cues.length + 1).padStart(2, '0')}-${id}-${secondView}.png`) });
     }
     const remaining = (rehearsal ? 0.15 : scene.seconds) - (elapsed() - start);
     if (remaining > 0) await page.waitForTimeout(remaining * 1000);
-    cues.push({ id, text: scene.text, start, end: elapsed(), question_preview: Boolean(showQuestion) });
+    cues.push({ id, text: scene.text, start, end: elapsed(),
+      question_preview: Boolean(showSecondView) && secondView === 'question',
+      secondary_preview: showSecondView ? secondView : null });
   };
   const focusView = async selector => {
     const node = page.locator(selector).first();
@@ -232,6 +239,19 @@ async function record(data, story, plan, receipts, rehearsal = false) {
     finally { await page.keyboard.up(key); }
     await page.waitForTimeout(120);
   };
+  const checkEndingControls = async label => {
+    const controls = await page.locator('#ending').evaluate(dialog => {
+      const ids = ['ending-title', 'download-campaign', 'enlarge-campaign', 'explore-after-ending'];
+      return ids.map(id => {
+        const node = dialog.querySelector('#' + id);
+        const box = node.getBoundingClientRect();
+        return { id, text: node.textContent.trim(), visible: !node.hidden && box.width > 0 && box.height > 0,
+          inside_viewport: box.left >= 0 && box.top >= 0 && box.right <= innerWidth && box.bottom <= innerHeight };
+      });
+    });
+    assert.ok(controls.every(control => control.visible && control.inside_viewport), label + ': ending title/actions must stay visible');
+    endingChecks.push({ label, controls });
+  };
   try {
     await page.goto(new URL('game/index.html', webURL).href);
     await page.locator('#status').waitFor({ state: 'hidden', timeout: 90000 });
@@ -240,17 +260,18 @@ async function record(data, story, plan, receipts, rehearsal = false) {
     await page.keyboard.press('Escape');
     const exterior = await page.screenshot({ clip: { x: 48, y: 158, width: 8, height: 8 } });
     await hold('plaza', null, async () => {
-      // The fresh plaza spawn faces Mateo's doorway. Show that short actual
-      // walk during the plaza caption and observe the visible room transition.
-      for (let attempt = 0; attempt < 12; attempt++) {
-        await walk('w', 350);
-        if (sha(await page.screenshot({ clip: { x: 48, y: 158, width: 8, height: 8 } })) !== sha(exterior)) break;
-      }
+      // Walk from the central spawn to the left-hand house. Only real input;
+      // the native journey independently authenticates the location/host map.
+      await walk('w', 1380);
+      await walk('a', 6150);
+      await walk('w', 1800);
     });
     const interior = await page.screenshot({ clip: { x: 48, y: 158, width: 8, height: 8 } });
     assert.notEqual(sha(interior), sha(exterior), 'Walking through the doorway must visibly change the plaza into a room');
-    doorProbe = { exterior_sha256: sha(exterior), interior_sha256: sha(interior), input: 'W from the fresh plaza spawn through Mateo’s doorway, with visible room feedback; no teleport controls' };
-    await hold('door');
+    doorProbe = { exterior_sha256: sha(exterior), interior_sha256: sha(interior), input: 'W, A, W from the fresh plaza spawn into Luz’s left-hand house; A/W approach the host and E speaks. No teleport controls.' };
+    await hold('door', null, async () => {
+      await walk('a', 2300); await walk('w', 800); await page.keyboard.press('e');
+    });
     await page.keyboard.press('Escape');
     await page.goto(webURL.href);
     await page.locator('#data-status').filter({ hasText: 'Archivo CCPC 2024 e historia compartida cargados' }).waitFor();
@@ -313,10 +334,46 @@ async function record(data, story, plan, receipts, rehearsal = false) {
       await page.locator('#campaign-status').filter({ hasText: 'El diseño está listo' }).waitFor();
       assert.equal(await page.locator('#house-hall').isVisible(), true, 'Dispatch must stay with Inés');
     });
-    await enter('printshop'); await focusView('#campaign-press'); await hold('campaign-press');
-    await page.locator('#campaign-print').click();
+    await enter('printshop'); await focusView('#campaign-press');
+    await hold('campaign-press', null, async () => {
+      await page.waitForTimeout(rehearsal ? 100 : 800);
+      const start = performance.now();
+      // Observe the actual visibility interval. Playwright's polling delay and
+      // PDF preparation are separately recorded, not counted as reveal time.
+      const revealTiming = page.evaluate(() => new Promise((resolve, reject) => {
+        const dialog = document.querySelector('#ending');
+        const reveal = document.querySelector('#print-reveal');
+        const finished = document.querySelector('#ending-finished');
+        let revealedAt;
+        const observer = new MutationObserver(() => {
+          if (dialog.open && !reveal.hidden && revealedAt === undefined) revealedAt = performance.now();
+          if (revealedAt !== undefined && reveal.hidden && !finished.hidden) {
+            const milliseconds = performance.now() - revealedAt;
+            observer.disconnect(); clearTimeout(deadline); resolve(milliseconds);
+          }
+        });
+        const deadline = setTimeout(() => { observer.disconnect(); reject(new Error('Print reveal did not finish')); }, 7500);
+        observer.observe(dialog, { subtree: true, attributes: true, attributeFilter: ['open', 'hidden'] });
+      }));
+      await page.locator('#campaign-print').click();
+      await page.locator('#print-reveal').waitFor({ state: 'visible' });
+      await page.screenshot({ path: path.join(run, 'campaign-reveal.png') });
+      await page.locator('#ending-finished').waitFor({ state: 'visible' });
+      const milliseconds = await revealTiming;
+      assert.ok(milliseconds <= 2500, `Print reveal exceeded 2.5 seconds: ${milliseconds}`);
+      endingChecks.push({ label: 'actual first-print reveal', milliseconds,
+        click_to_finished_poll_ms: performance.now() - start, measurement: 'DOM visibility changes observed in the recording browser', skipped: false });
+    });
     assert.equal(await page.locator('#ending-title').innerText(), story.campaign.ending_title);
-    await focusView('#ending'); await hold('ending');
+    await focusView('#ending'); await checkEndingControls('FIN summary'); await hold('ending');
+    await page.locator('#enlarge-campaign').click();
+    assert.equal(await page.locator('#enlarge-campaign').getAttribute('aria-expanded'), 'true');
+    await checkEndingControls('enlarged poster top');
+    await hold('enlarged-poster', async () => {
+      await page.locator('#ending-details').evaluate(element => { element.scrollTop = element.scrollHeight; });
+      await page.waitForTimeout(120);
+      await checkEndingControls('enlarged poster footer');
+    }, null, 'footer');
     await focusView('#download-campaign');
     await hold('download', null, async () => {
       const downloading = page.waitForEvent('download');
@@ -335,7 +392,15 @@ async function record(data, story, plan, receipts, rehearsal = false) {
       campaignDownload = { path: relative(filename), sha256: sha(bytes), bytes: bytes.length,
         suggested_filename: file.suggestedFilename(), page_count: 1, page_size_points: [612, 792],
         method: 'Actual HTML download button after dispatch and print; download saved by the recording browser' };
+      assert.equal(campaignDownload.suggested_filename, 'cartel-ciudadano.pdf');
     });
+    await page.locator('#explore-after-ending').click();
+    assert.equal(await page.locator('#ending').isVisible(), false);
+    assert.equal(await page.locator('#house-printshop').isVisible(), true, 'Explore must keep the current house');
+    await page.locator('#reopen-press-ending').click();
+    assert.equal(await page.locator('#print-reveal').isVisible(), false, 'Reopening must not replay the reveal');
+    assert.equal(await page.locator('#ending-finished').isVisible(), true);
+    endingChecks.push({ label: 'explore and reopen', same_house: 'printshop', reveal_replayed: false });
     const saved = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), PROGRESS_KEY);
     assert.deepEqual(saved.completedChapters, ['printing', 'comparison', 'consultation']);
     assert.deepEqual(Object.keys(saved).sort(), ['assisted', 'campaign_printed', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
@@ -345,6 +410,7 @@ async function record(data, story, plan, receipts, rehearsal = false) {
     await page.goto(new URL('classroom-handout.html', webURL).href); await hold('handout');
     // PDF was required and hashed by preflight; capture the actual HTML handout for reliable readable video.
     await page.goto(webURL.href); await page.locator('#ending').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#download-campaign').isVisible(), false, 'Reload must not invent a personal PDF');
     await focusView('#ending'); await hold('closing');
     assert.deepEqual(errors, []);
     // Chromium starts its video clock after page creation. Keep the final real
@@ -360,7 +426,7 @@ async function record(data, story, plan, receipts, rehearsal = false) {
   }
   if (rehearsal) {
     await writeFile(path.join(run, 'rehearsal.json'), JSON.stringify({ mode: 'control rehearsal; no video or final outputs',
-      phases: cues.map(cue => cue.id), physical_door_probe: doorProbe, campaign_download: campaignDownload, errors, warnings }, null, 2));
+      phases: cues.map(cue => cue.id), physical_door_probe: doorProbe, campaign_download: campaignDownload, ending_checks: endingChecks, errors, warnings }, null, 2));
     console.log(`Control rehearsal passed. Screenshots: ${relative(run)}. Final export fingerprint check remains mandatory for --record.`);
     return;
   }
@@ -375,7 +441,7 @@ async function record(data, story, plan, receipts, rehearsal = false) {
     status: 'captured; encoding validation pending', captured_at_utc: new Date().toISOString(),
     source_video: relative(source), source_video_sha256: sourceHash, trimmed_loading_seconds: trimStart,
     duration_seconds: duration, cues: timeline, inputs: receipts, campaign_download: campaignDownload,
-    physical_door_probe: doorProbe, errors, warnings,
+    physical_door_probe: doorProbe, ending_checks: endingChecks, errors, warnings,
   }, null, 2) + '\n');
   assert.deepEqual(await preflight(), receipts, 'The final export changed during recording; record one stable candidate');
   validateTimeline(timeline, duration);
@@ -383,7 +449,7 @@ async function record(data, story, plan, receipts, rehearsal = false) {
   const subtitles = path.join(run, 'pitch_subtitulos.srt');
   await writeFile(subtitles, timeline.map((cue, i) => `${i + 1}\n${subtitleStamp(cue.start)} --> ${subtitleStamp(cue.end)}\n${captionLines(cue.text).join('\n')}\n`).join('\n'));
   const transcript = path.join(run, 'pitch_transcripcion.txt');
-  await writeFile(transcript, 'Voces de la Plaza · Equipo Latas · Cierre de campaña\nDemostración automatizada, silenciosa y subtitulada. No contiene narración ni grabación de estudiantes. El juego incluye música CC0 opcional; este video no permite evaluar su audibilidad.\n\n' +
+  await writeFile(transcript, 'Voces de la Plaza · Equipo Latas · Secuencia guiada y campaña rosa\nDemostración automatizada, silenciosa y subtitulada. No contiene narración ni grabación de estudiantes. El juego incluye música CC0 opcional; este video no permite evaluar su audibilidad.\n\n' +
     timeline.map(cue => `${subtitleStamp(cue.start)} — ${subtitleStamp(cue.end)}\n${cue.text}`).join('\n\n') +
     '\n\nFuente: INE, CCPC federal 2024. Conteos exactos y bases en el boletín y el cartel. Villa Brisa, los casos de transferencia y la consulta son ficción educativa.\nEl pilotaje con docentes y estudiantes no se ha realizado. Esta demostración no prueba aprendizaje ni efectos electorales.\n');
   const ass = path.join(run, 'captions.ass'); await writeFile(ass, assDocument(timeline, duration));
@@ -403,14 +469,14 @@ async function record(data, story, plan, receipts, rehearsal = false) {
   encode(['-v', 'error', '-i', output, '-f', 'null', '-']);
   for (const [index, cue] of timeline.entries()) {
     const image = path.join(run, `encoded-${String(index + 1).padStart(2, '0')}-${cue.id}.png`);
-    encode(['-y', '-ss', String(cue.start + (cue.end - cue.start) * (cue.question_preview ? 0.25 : 0.5)), '-i', output, '-frames:v', '1', image]);
-    if (cue.question_preview) encode(['-y', '-ss', String(cue.start + (cue.end - cue.start) * 0.75), '-i', output, '-frames:v', '1', image.replace('.png', '-question.png')]);
+    encode(['-y', '-ss', String(cue.start + (cue.end - cue.start) * (cue.secondary_preview ? 0.25 : 0.5)), '-i', output, '-frames:v', '1', image]);
+    if (cue.secondary_preview) encode(['-y', '-ss', String(cue.start + (cue.end - cue.start) * 0.75), '-i', output, '-frames:v', '1', image.replace('.png', `-${cue.secondary_preview}.png`)]);
   }
   const evidence = { recorded_at_utc: new Date().toISOString(), team: 'Latas', product: 'Voces de la Plaza', browser: browser.version(), url: webURL.href,
     automated_operator: true, audio: 'none; silent captioned demonstration', participant_pilot: 'not performed',
     duration_seconds: measured, width: 1920, height: 1080, codec: 'H.264', pixel_format: 'yuv420p', fps: 30,
     source_video: relative(source), source_video_sha256: sourceHash, trimmed_loading_seconds: trimStart, raw_capture_size: dimensions, cues: timeline,
-    campaign_download: campaignDownload,
+    campaign_download: campaignDownload, ending_checks: endingChecks,
     inputs: receipts, physical_door_probe: doorProbe, output_sha256: sha(await readFile(output)), visual_frames: relative(run),
     subtitle_sha256: sha(await readFile(subtitles)), transcript_sha256: sha(await readFile(transcript)),
     limitations: ['Human visual review of extracted frames required', 'Automated recording is not a classroom or accessibility evaluation'], errors, warnings };
@@ -420,7 +486,7 @@ async function record(data, story, plan, receipts, rehearsal = false) {
   for (const filename of ['voces_pitch_borrador.mp4', 'pitch_subtitulos.srt', 'pitch_transcripcion.txt']) {
     await rename(path.join(run, filename), path.join(root, 'submission', filename));
   }
-  console.log(`Recorded and encoded ${measured.toFixed(2)}s. Review all ${timeline.length} encoded frames in ${relative(run)}.`);
+  console.log(`Recorded and encoded ${measured.toFixed(2)}s. Review all ${timeline.length + timeline.filter(cue => cue.secondary_preview).length} encoded samples in ${relative(run)}.`);
 }
 
 function selfTest(plan, story) {

@@ -1,5 +1,7 @@
 # SPEC: play-session
 
+**Sequential interaction amendment · 27 October 2026:** Follow the [approved contract](docs/sequential_campaign_design.md). Remove floor prose, show location/one directed objective in the HUD and one nearby `[E]` target box. One resolver serves prompt/button/input. Hosts begin activities; artifacts inspect/operate their own content. The press only prints the final dispatched campaign. A ≤2.5-second skippable reveal leads to FIN; reduced-motion and repeat openings are immediate. Preserve enterable houses, WASD travel and existing save formats.
+
 **Campaign amendment · 27 October 2026:** Approved [campaign finale](docs/campaign_finale.md) supersedes the three-step ending: NPC speech uses translucent bottom panels; a bundled CC0 music loop has mute/volume controls; the fourth objective finishes only at Luz's nearby press after Inés dispatches the poster. WASD-only travel and all enterable houses remain. Save schema 2 adds only non-sensitive completion/audio fields.
 
 **Interface amendment · 27 October 2026:** Show bounded location/objective text and three noninteractive progress indicators. Open paper panels dim the world and contain keyboard/mouse interaction; closing restores a usable world control without changing location. Keep controls and content readable at enlarged text, with equal presentation of answer and consultation choices. See `docs/interface_polish.md` and RV17.

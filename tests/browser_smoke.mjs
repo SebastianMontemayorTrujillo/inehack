@@ -153,6 +153,8 @@ async function independentQuest(page, chapter, house) {
   await activate(page, `#complete-${chapter}`);
   await assertFocus(page, `#artifact-title-${chapter}`);
   assert.equal(await page.locator(`#artifact-${chapter}`).isVisible(), true);
+  assert.match(await page.locator(`#speech-${house}`).innerText(), chapter === 'printing' ? /Ahora habla con Mateo/ : /Ahora habla con Inés/);
+  assert.equal(await page.locator(`[data-start="${chapter}"]`).evaluate(node => node.classList.contains('quiet')), true, 'Review is secondary after completion');
   if (chapter === 'comparison') {
     const poster = await page.locator('#artifact-comparison').innerText();
     assert.match(poster, /Antes: «Más registros = mayor proporción/);
@@ -189,7 +191,19 @@ try {
   assert.equal(await page.locator('#open-poster-workshop').isVisible(), false, 'Workshop is optional after the comparison mission');
   await activate(page, '#house-archive [data-leave]'); await assertFocus(page, '[data-house="archive"]');
 
+  await enter(page, 'printshop');
+  assert.equal(await page.locator('#campaign-press').isVisible(), true, 'The press is a distinct object');
+  assert.equal(await page.locator('#campaign-print').isVisible(), false, 'The press cannot start or finish the first lesson');
+  assert.equal(await page.locator('#campaign-press [data-start]').count(), 0, 'Only the host offers lessons');
+  assert.equal(await page.locator('#house-printshop > .speech-card [data-start="printing"]').count(), 1);
+  assert.equal((await storage(page)).campaign_printed, false);
+  await activate(page, '#house-printshop [data-leave]');
+
   await independentQuest(page, 'printing', 'printshop');
+  await enter(page, 'hall');
+  assert.match(await page.locator('#speech-hall').innerText(), /Ya ayudaste a Luz.*Mateo.*casa del centro/);
+  assert.equal(await page.locator('[data-start="consultation"]').isVisible(), false);
+  await page.keyboard.press('Escape');
   await independentQuest(page, 'comparison', 'archive');
   assert.deepEqual((await storage(page)).hints, []);
   assert.deepEqual((await storage(page)).assisted, []);
@@ -261,6 +275,7 @@ try {
   assert.equal(new URL(page.url()).search, ''); assert.equal(new URL(page.url()).hash, '');
 
   for (const choice of ['A', 'B', 'C', 'unmarked', 'decline']) {
+    if (await page.locator('#ending').isVisible()) await activate(page, '#explore-after-ending');
     await enter(page, 'hall'); await activate(page, '[data-start="consultation"]');
     await choose(page, 'decision', choice); await activate(page, '#ballot button[type="submit"]');
     await assertFocus(page, '#consultation-result');
@@ -276,12 +291,17 @@ try {
       await activate(page, '#campaign-send');
       await page.locator('#campaign-status').filter({ hasText: 'El diseño está listo' }).waitFor();
       await enter(page, 'printshop'); await activate(page, '#campaign-print');
+      await assertFocus(page, '#skip-print'); await page.keyboard.press('e');
       await assertFocus(page, '#ending-title');
       const file = page.waitForEvent('download'); await activate(page, '#download-campaign');
       const download = await file; await download.saveAs(join(evidence, 'html-campaign.pdf'));
       assert.equal((await readFile(join(evidence, 'html-campaign.pdf'))).subarray(0, 5).toString(), '%PDF-');
     }
-    if (choice !== 'A') await assertFocus(page, '#ending-title');
+    if (choice !== 'A') {
+      await assertFocus(page, '#ending-title');
+      assert.equal(await page.locator('#print-reveal').isVisible(), false, 'Replaying the consultation returns to FIN immediately');
+      assert.equal(await page.locator('#house-hall').isVisible(), true, 'Ending does not travel');
+    }
     const saved = await storage(page);
     assert.deepEqual(saved.completedChapters, ['printing', 'comparison', 'consultation']);
     assert.deepEqual(Object.keys(saved).sort(), ['assisted', 'campaign_printed', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
@@ -302,6 +322,7 @@ try {
   assert.equal(await page.locator('#campaign-reload-note').innerText(), story.campaign.completed_reload);
   assert.match(await page.locator('#progress-summary').innerText(), /3 de 3/);
   assert.equal(await page.locator('#result-content').innerText(), '');
+  await activate(page, '#explore-after-ending');
   for (const width of [320, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 1000 }); await noOverflow(page, `Plaza at ${width}px`);
     for (const house of ['printshop', 'archive', 'hall']) {
@@ -321,13 +342,16 @@ try {
   await tabTo(page, '#text-size'); await page.keyboard.press('End'); await page.keyboard.press('Tab');
   await tabTo(page, '#reduced-motion'); await page.keyboard.press('Space');
   assert.equal(await page.locator('body.large-text.reduced-motion').count(), 1);
-  await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+  await page.addStyleTag({ content: ':root { font-size: 200%; }' });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).fontSize), '32px');
+  assert.equal(await page.evaluate(() => getComputedStyle(document.body).fontSize), '40px');
   await page.setViewportSize({ width: 768, height: 1000 });
   await noOverflow(page, '200% text enlargement and large setting');
   await enter(page, 'printshop'); await activate(page, '[data-start="printing"]');
   await noOverflow(page, '200% text in active task');
   await screenshot(page, 'html-responsive.png');
   await page.reload(); await loaded(page);
+  await activate(page, '#explore-after-ending');
 
   // An existing local axe installation is optional; never fetch a remote script.
   let axePath = process.env.AXE_PATH;

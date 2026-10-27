@@ -22,11 +22,11 @@ func _initialize() -> void:
 			printerr("PDF failed or non-deterministic: ", fixture.name)
 			quit(1)
 			return
-		var output := FileAccess.open(root.path_join("build/evidence/campaign-native-" + fixture.name + ".pdf"), FileAccess.WRITE)
+		var output := FileAccess.open(root.path_join("build/evidence/pink-poster-native-" + fixture.name + ".pdf"), FileAccess.WRITE)
 		if output == null:
 			quit(1)
 			return
 		output.store_buffer(bytes)
 		output.close()
-	print("CAMPAIGN_NATIVE_SAMPLES_OK ", cases.size())
+	print("PINK_POSTER_NATIVE_SAMPLES_OK ", cases.size())
 	quit(0)

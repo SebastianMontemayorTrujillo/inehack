@@ -34,7 +34,7 @@ test('Carta vector PDF embeds both fonts, Spanish text and official link; bytes 
   assert.deepEqual(bytes, await create());
   const pdf = inspect(bytes);
   assert.equal(pdf.fonts.length, 2);
-  for (const text of ['Tu voto cuenta. Infórmate y participa.', 'Campaña ciudadana por el voto informado.',
+  for (const text of ['Tu voto cuenta. Infórmate y participa.', 'Campaña ciudadana · Material educativo',
     'Más registros: BAJA CALIFORNIA.', '¿Cómo escuchamos a quienes todavía no han hablado?', '2024', 'SV + NV', 'NS']) {
     assert.ok(pdf.text.includes(text), text);
   }
@@ -49,6 +49,29 @@ test('Carta vector PDF embeds both fonts, Spanish text and official link; bytes 
   const a = BigInt(data.records[1].sv), b = BigInt(data.records[2].sv);
   const expectedWidth = Number((5400000n * a + b / 2n) / b) / 10000;
   assert.deepEqual(bars.map(([, , width]) => width), [540, expectedWidth, 540, 540], 'Exact count geometry on a common scale');
+});
+
+test('a two-line official URL stays readable above the Carta bottom margin', async () => {
+  const bundle = structuredClone(data);
+  bundle.source.portal_url += '?consulta=' + 'a'.repeat(55);
+  const pdf = inspect(await create(bundle));
+  assert.deepEqual(pdf.links, [bundle.source.portal_url]);
+  assert.ok(pdf.text.replace(/\s/g, '').includes(bundle.source.portal_url), 'The entire address remains printed');
+});
+
+test('pink citizen hierarchy keeps all evidence at a readable print size', async () => {
+  const pdf = inspect(await create());
+  const palette = ['B41476', 'FFFFFF', '242124', 'FBEAF3'].map(hex =>
+    hex.match(/../g).map(value => Math.round(parseInt(value, 16) / 255 * 10000) / 10000));
+  for (const color of palette) assert.ok(pdf.colors.some(value => JSON.stringify(value) === JSON.stringify(color)), `Uses ${color}`);
+  assert.ok(pdf.colors.every(color => palette.some(value => JSON.stringify(value) === JSON.stringify(color))), 'Only the approved palette');
+  assert.ok(Math.min(...pdf.font_sizes) >= 10.5, 'Sources and counts stay at least 10.5 pt');
+  assert.ok(Math.max(...pdf.font_sizes) >= 36, 'The civic invitation is the first visual read');
+  assert.ok(pdf.text.indexOf('Tu voto cuenta.') < pdf.text.indexOf('Más registros:'), 'Invitation precedes finding');
+  for (const phrase of ['SV: con participación', 'NV: sin participación', 'NS: sin información',
+    'clasificación desconocida', 'no se suma a NV', 'Límite:', data.source.portal_url]) {
+    assert.ok(pdf.text.includes(phrase), phrase);
+  }
 });
 
 test('rate uses exact bases, two decimal places and exact fraction comparison', async () => {

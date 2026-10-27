@@ -30,7 +30,7 @@ async function localResource(name) {
 function modelFor(poster, data, story, layout) {
   const rates = poster.metric === 'rate';
   const maximum = Math.max(...poster.records.map(record => record.sv));
-  const model = { finding: poster.finding, question: poster.question, limit: story.poster_workshop.limit,
+  const model = { ...layout.copy, finding: poster.finding, question: poster.question, limit: story.poster_workshop.limit,
     source_url: data.source.portal_url, year: String(poster.records[0].year),
     measure: story.poster_workshop[rates ? 'rate_label' : 'count_label'],
     scale: rates ? layout.copy.rate_scale : maximum ? template(layout.copy.count_scale, { maximum: integer(maximum) }) : layout.copy.zero_scale };
@@ -114,8 +114,8 @@ function documentBytes(model, layout, fonts) {
     else if (block.type === 'bar') {
       const ratio = model[block.value];
       if (ratio !== null) {
-        commands += rectangle(block, block.w, 'track');
-        if (ratio > 0) commands += rectangle(block, block.w * ratio, 'teal');
+        commands += rectangle(block, block.w, 'pale');
+        if (ratio > 0) commands += rectangle(block, block.w * ratio, 'pink');
       }
     } else if (block.type === 'link') {
       annotation = `<< /Type /Annot /Subtype /Link /Rect [${number(block.x)} ${number(792 - block.y - block.h)} ${number(block.x + block.w)} ${number(792 - block.y)}] /Border [0 0 0] /A << /S /URI /URI <${hex(encode(model[block.value]))}> >> >>`;

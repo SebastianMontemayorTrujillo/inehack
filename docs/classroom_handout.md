@@ -4,9 +4,9 @@
 
 **Cara 1 de 2 · Datos y seis actividades**
 
-Villa Brisa quiere mejorar su plaza. Prepara información para la reunión y un cartel ciudadano. Puedes pedir apoyo; no necesitas divisiones. Esta hoja es para ti: no escribas tu nombre ni preferencias políticas.
+Villa Brisa prepara una reunión y un cartel ciudadano. Puedes pedir apoyo; no necesitas divisiones. Un registro reúne información de una persona. Esta hoja es para ti: no escribas tu nombre ni preferencias políticas.
 
-## Casa 1 · La imprenta de Luz
+## Casa 1 · Luz, a la izquierda
 
 **Datos reales: INE, CCPC federal 2024, agregado nacional.** Son registros del archivo analizado; no son datos de este salón ni de jóvenes de 15–18 años.
 
@@ -19,13 +19,13 @@ Villa Brisa quiere mejorar su plaza. Prepara información para la reunión y un 
 
 **Entre 92,004,694 registros con información conocida (SV + NV), cerca de 60 de cada 100 tienen marca: 59.67%.** Por separado, NS representa cerca de 6 de cada 100 del total (LN): 6.43%. Porcentajes redondeados con bases distintas; no sumarlos para formar un 100%.
 
-**1.** En los registros con información, ¿hay más con participación o sin participación? Con participación / Sin participación / Hay la misma cantidad.
+**1.** En la tabla, ¿qué grupo tiene más registros? Con participación / Sin participación / Hay la misma cantidad.
 
-**2.** Aquí falta información. ¿Podemos decir que esa persona no participó? No, no lo sabemos / Sí, seguro que no participó.
+**2.** Si falta información, ¿sabemos si esa persona votó? No, falta información / Sí, podemos decir que no votó.
 
-**3. Ejemplo inventado, no es del INE:** 60 registros con participación, 30 sin participación y 10 sin información. ¿Dónde ponemos los registros que no tienen información? En «No sabemos» / En «No participaron» / En «Participaron».
+**3. Ejemplo inventado, no es del INE:** 60 registros con participación, 30 sin participación y 10 sin información. ¿Dónde van los registros sin información? En «No sabemos» / En «No participaron» / En «Participaron».
 
-## Casa 2 · El archivo de Mateo
+## Casa 2 · Mateo, en el centro
 
 **Datos reales: INE, CCPC federal 2024.** «Con información» incluye con y sin marca; excluye los desconocidos.
 
@@ -36,11 +36,11 @@ Villa Brisa quiere mejorar su plaza. Prepara información para la reunión y un 
 
 Sin clasificación, por separado: Aguascalientes, 29,865 de 1,097,171 totales; Baja California, 229,806 de 3,197,817. Tasas redondeadas a dos decimales.
 
-**4.** ¿Dónde hay más registros de participación? Aguascalientes / Baja California / Hay la misma cantidad.
+**4.** ¿En qué estado hay más registros de personas que votaron? Aguascalientes / Baja California / Hay la misma cantidad.
 
-**5.** De cada 100 registros con información, ¿dónde participaron más? Aguascalientes / Baja California / La proporción es la misma.
+**5.** De cada 100 registros con información, ¿en qué estado votaron más? Aguascalientes / Baja California / Hay la misma parte de cada 100.
 
-**6. Ejemplo inventado, no es del INE:** A tiene 20 participantes de 40 (50%); B tiene 60 de 200 (30%). ¿Tener más participantes siempre significa tener un porcentaje mayor? No, también importa el tamaño del grupo / Sí, cantidad y porcentaje siempre crecen juntos.
+**6. Ejemplo inventado, no es del INE:** A tiene 20 participantes de 40 (50%); B tiene 60 de 200 (30%). Un grupo tiene más participantes. ¿Siempre tiene un porcentaje mayor? No, también importa el tamaño del grupo / Sí, siempre.
 
 **Límite:** no sabemos por quién votó alguien ni sus motivos; no juzgamos a las comunidades. Sin clasificación no significa abstención ni voto nulo.
 
@@ -48,7 +48,7 @@ Fuente: INE, ZIP 2024; copia local `ccpc-2024-v1`, registros `national`, `state_
 
 <div style="page-break-after: always;"></div>
 
-## Casa 3 · La reunión con Inés
+## Casa 3 · Inés, a la derecha
 
 **Cara 2 de 2 · Consulta, campaña y reflexión**
 
@@ -64,7 +64,7 @@ Fuente: INE, ZIP 2024; copia local `ccpc-2024-v1`, registros `national`, `state_
 
 Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar conserva los conteos. Un empate exige otra decisión. Las necesidades pendientes siguen siendo legítimas. Es una regla didáctica.
 
-**Escenarios inventados antes de tu acción.** 30 personajes; quien juega es adicional. Fuente: `game/content/story.json`.
+**Escenarios inventados, antes de tu acción:** 30 personajes más quien juega. Fuente: `game/content/story.json`.
 
 | Escenario ficticio | A | B | C | Participantes | Encabeza |
 | --- | ---: | ---: | ---: | ---: | --- |
@@ -76,9 +76,9 @@ Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar
 
 ## Misión final · Volver a la imprenta
 
-Tras la consulta y el seguimiento, Inés encarga a Luz tu cartel o el guiado AGS/BC. Vuelve a la primera casa y usa la prensa: **Imprimir cartel → FIN · La campaña comienza contigo**. Godot: camina con WASD. HTML: navega a la imprenta. La descarga PDF Carta es opcional; no necesitas impresora.
+Habla con Luz, Mateo e Inés en orden; la prensa solo imprime al final. Tras el seguimiento, Inés envía tu cartel o el guiado AGS/BC. Vuelve a la casa izquierda: **Imprimir cartel → FIN**. Godot: WASD y E cerca; HTML: navegación propia. Puedes omitir la breve impresión.
 
-**«Tu voto cuenta. Infórmate y participa.»** Campaña ciudadana con fuente INE/CCPC, año, conteos, bases, NS, pregunta y límite. Sin marcas de equipo, sello oficial ni resultado ficticio.
+**FIN · La campaña comienza contigo:** descargar, ampliar o explorar. PDF Carta rosa y blanco opcional; no hace falta impresora. **«Tu voto cuenta. Infórmate y participa.»** Fuente INE/CCPC, año, datos, bases, NS y límites; sin marcas de equipo, sello oficial ni resultado ficticio.
 
 **Mi mensaje con datos.** Puedes escribir, hablar o reflexionar en silencio; compartir es voluntario.
 
@@ -94,7 +94,7 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-**Cartel opcional:** compara las entidades de la primera cara por cantidad o proporción y pregunta «¿Qué información nos falta antes de decidir?». El juego ofrece 32 entidades. Descarga antes de cerrar: el diseño no se guarda con el progreso.
+**Cartel opcional:** compara las dos entidades por cantidad o proporción y pregunta «¿Qué información nos falta?». El juego ofrece 32 entidades. Descarga antes de cerrar: el diseño no se guarda con el progreso.
 
 **Fuentes: INE, CCPC federal 2024.** [Portal CCPC](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/) y [ZIP oficial con diccionario](https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip): `01_descripcioncampos_conteoscensales2024.txt`.
 

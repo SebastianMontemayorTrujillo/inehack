@@ -53,11 +53,14 @@ def main():
                 if path.is_symlink():
                     raise ValueError(f"Unexpected symlink: {path}")
                 files.add(path)
-    for pattern in ["README.md", "AGENTS.md", "CAPABILITY_MAP.md", "SPEC-*.md", ".gitignore", "data/*.json",
+    for pattern in ["README.md", "AGENTS.md", "CAPABILITY_MAP.md", "SPEC-*.md", ".gitignore", ".gitattributes", "data/*.json",
                     "submission/*.pdf", "submission/*.mp4", "submission/*.html", "submission/*.srt", "submission/*.txt",
-                    "build/evidence/*.json", "build/evidence/*.log", "build/evidence/*review*.md", "build/evidence/godot-*.png", "build/evidence/native-*.png", "build/evidence/html-overview.png", "build/evidence/html-desktop.png",
+                    "build/evidence/*.json", "build/evidence/*.log", "build/evidence/*review*.md", "build/evidence/godot-*.png", "build/evidence/native-*.png", "build/evidence/html-*.png", "build/evidence/pink-poster-*.png", "build/evidence/pink-poster-*.pdf",
+                    "build/evidence/native-campaign*.pdf", "build/evidence/native-campaign*.txt", "build/evidence/godot-web-campaign.pdf", "build/evidence/godot-web-campaign.txt",
                     "build/evidence/assistive-workshop-final/*", "build/evidence/assistive-*/assistive-run.json",
-                    "build/pdf-review-*/review.md", "build/pitch-recording/*/*review.md"]:
+                    "build/pdf-review-*/review.md", "build/pitch-recording/*/*review.md", "build/media-review-sequential-*/*review.json",
+                    "build/evidence/sequential-*-attempt-*/*.json", "build/evidence/sequential-*-attempt-*/*.log",
+                    "build/evidence/sequential-*-attempt-*/native-ending*.png"]:
         files.update(p for p in ROOT.glob(pattern) if p.is_file())
     # Preserve the small research originals required by the recorded references.
     for pattern in ["INEhack_*.md", "INEhack_*.docx", "INEhack_Research_Annex.zip", "Rúbrica*.pdf"]:

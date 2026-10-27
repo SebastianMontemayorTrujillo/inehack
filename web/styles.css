@@ -10,7 +10,11 @@
   --line: #c6c4b1;
   --soft: #e6e9db;
   --focus: #174ead;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --campaign-pink: #B41476;
+  --campaign-white: #FFFFFF;
+  --campaign-ink: #242124;
+  --campaign-pale: #FBEAF3;
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
   font-size: 100%;
 }
 * { box-sizing: border-box; }
@@ -120,7 +124,6 @@ legend { font-weight: 700; padding: 0; margin-bottom: .75rem; }
 .house { display: flex; flex-direction: column; }
 .house > button { align-self: flex-start; }
 .speech-card { background: rgba(255, 253, 247, .92); border: 1px solid var(--line); border-left: 4px solid var(--green); padding: 1rem 1.25rem; margin-top: 1.5rem; }
-.house > .speech-card { order: 1; }
 .speech-card .speaker { font-weight: 750; margin: 0 0 .5rem; }
 .speech-card p:last-child { margin-bottom: 0; }
 .speech-card button { margin: .5rem .5rem 0 0; }
@@ -154,8 +157,49 @@ button, summary, legend, h2, h3, h4, .bar-value { overflow-wrap: anywhere; }
 .tradeoff { color: var(--muted); }
 #ballot, #reflection-form { margin: 1.5rem 0; }
 #consultation-result { border-top: 2px solid var(--green); margin-top: 2rem; }
-.ending { background: var(--soft); padding: 1.5rem; margin-top: 2rem; }
-.ending h3 { font-size: 2em; margin-top: .5rem; }
+.composed-poster, .ending {
+  --ink: var(--campaign-ink); --muted: var(--campaign-ink);
+  --green: var(--campaign-pink); --rust: var(--campaign-pink); --ochre: var(--campaign-ink);
+  --sheet: var(--campaign-white); --soft: var(--campaign-pale); --focus: var(--campaign-pink);
+  --line: var(--campaign-ink);
+  color: var(--campaign-ink); background: var(--campaign-white);
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+}
+.composed-poster { border: 1px solid var(--campaign-ink); padding: clamp(1rem, 3vw, 2rem); }
+.composed-poster > .finding { font-family: inherit; font-weight: 700; letter-spacing: 0; }
+.citizen-poster-header { background: var(--campaign-pink); color: var(--campaign-white); padding: 1.25rem; margin-bottom: 1.5rem; }
+.citizen-poster-title { font-size: clamp(1.65em, 3vw, 2.5em); font-weight: 700; line-height: 1.1; white-space: pre-line; margin: 0 0 1rem; }
+.citizen-poster-header p:last-child { margin-bottom: 0; }
+.poster-counts { font-size: .85em; margin: .25rem 0 0; }
+.composed-poster .finding { background: var(--campaign-pale); }
+.composed-poster > .finding:not(.poster-question) { background: transparent; border: 0; padding: 0; font-size: 1.4em; }
+.composed-poster .evidence-label { text-transform: none; letter-spacing: 0; }
+.composed-poster .bar-track { background: var(--campaign-pale); border-color: var(--campaign-ink); height: 1rem; }
+.composed-poster .bar-fill { background: var(--campaign-pink); }
+.composed-poster .bar-row:nth-child(2) .bar-fill { background: var(--campaign-pink); }
+body.ending-open { overflow: hidden; }
+dialog.ending { width: min(64rem, calc(100% - 2rem)); height: min(36rem, calc(100dvh - 2rem)); max-width: none; max-height: none; margin: auto; padding: 0; border: 2px solid var(--campaign-pink); overflow: hidden; }
+dialog.ending:has(#ending-poster:not([hidden])) { height: min(52rem, calc(100dvh - 2rem)); }
+.ending::backdrop { background: rgb(36 33 36 / .8); }
+#ending-finished { display: flex; flex-direction: column; height: 100%; }
+.ending-controls { flex: 0 0 auto; padding: clamp(.75rem, 2vw, 1.5rem); border-bottom: 2px solid var(--campaign-pink); }
+.ending h2 { font: 700 clamp(1.35em, 3vw, 2em)/1.15 "Atkinson Hyperlegible", system-ui, sans-serif; letter-spacing: 0; margin: 0 0 1rem; }
+.ending-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; }
+.ending button, .ending .download-link { min-height: 44px; line-height: 1.25; padding: .65em .85em; border-radius: .25rem; font-size: 1em; }
+.ending .download-link { background: var(--campaign-pink); color: var(--campaign-white); text-decoration: none; font-weight: 700; }
+.ending button.quiet { border-color: var(--campaign-pink); }
+.ending button:hover, .ending .download-link:hover { background: var(--campaign-ink); color: var(--campaign-white); }
+.ending-details { overflow: auto; min-height: 0; padding: 1rem clamp(.75rem, 2vw, 1.5rem); overscroll-behavior: contain; }
+.ending-details > :first-child > :first-child { margin-top: 0; }
+.ending-details .composed-poster { margin: 0; }
+#print-reveal { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; text-align: center; }
+.print-slot { overflow: hidden; width: min(18rem, 65vw); height: min(22rem, 42dvh); border-top: .5rem solid var(--campaign-ink); margin: .5rem 0 1rem; }
+.print-sheet { background: var(--campaign-white); border: 1px solid var(--campaign-ink); padding: 1rem; text-align: left; height: 100%; animation: print-sheet 1.8s ease-out both; }
+.print-sheet strong { display: block; background: var(--campaign-pink); color: var(--campaign-white); padding: .5rem; font-size: 1.5em; line-height: 1.1; white-space: pre-line; }
+.print-sheet span { display: block; height: .6rem; width: 80%; background: var(--campaign-pink); margin-top: 1.5rem; }
+.print-sheet span + span { width: 62%; background: var(--campaign-ink); margin-top: .75rem; }
+@keyframes print-sheet { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+@media (max-height: 600px) { .ending-controls { padding: .65rem; } .ending h2 { font-size: 1.35em; margin-bottom: .5rem; } .ending-actions { gap: .4rem; } }
 .error { color: #822f20; border-left: 3px solid #822f20; padding: 1rem; background: #faeddf; }
 footer { border-top: 1px solid var(--line); padding: 1.5rem 0; font-size: .75em; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 1rem; }
 @media (max-width: 900px) {
@@ -164,6 +208,9 @@ footer { border-top: 1px solid var(--line); padding: 1.5rem 0; font-size: .75em;
   .itinerary { padding-right: 1rem; }
   .projects { grid-template-columns: 1fr; }
   .projects article + article { border-left: 0; border-top: 1px solid var(--line); }
+  .large-text .notebook, .large-text .introduction { grid-template-columns: 1fr; }
+  .large-text .itinerary { padding: 1.25rem 0; }
+  .large-text main { border-left: 0; border-top: 1px solid var(--line); }
 }
 @media (max-width: 650px) {
   .masthead { align-items: flex-start; padding: 1rem; gap: 1rem; flex-wrap: wrap; }

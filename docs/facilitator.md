@@ -11,7 +11,7 @@ El taller opcional de carteles requiere prever tiempo adicional. Si se omite, In
 ## Preparar la sesión
 
 1. Tener la [hoja de trabajo](classroom_handout.md) y un lápiz. Se imprime en dos caras, en blanco y negro, y también permite realizar la actividad sin computadora. La hoja queda con quien la usa.
-2. Abrir la copia disponible y recorrer las tres casas, las actividades, el encargo de Inés y la impresión final en el equipo del aula. Elegir la aventura, la ruta HTML independiente o la copia Linux disponible. Si el equipo no permite completar el recorrido, usar la hoja.
+2. Recorrer en el equipo del aula a Luz (casa izquierda), Mateo (centro), Inés (derecha) y la prensa de Luz. Probar las actividades, el encargo y los controles del final. Elegir la aventura, la ruta HTML independiente o la copia Linux disponible. Si el equipo no permite completar el recorrido, usar la hoja.
 3. Comprobar tamaño del texto, teclado, foco visible, zoom, silencio, volumen de música y movimiento reducido. La música tranquila CC0 es opcional y la información esencial aparece escrita. Ofrecer lectura acompañada o papel con letra ampliada según las necesidades. El [registro de verificación](verification.md) detalla el alcance de las comprobaciones técnicas.
 4. Explicar que los datos del INE describen participación federal de 2024, no a este salón. Villa Brisa y su consulta son ficticias; ninguna preferencia se califica.
 
@@ -28,22 +28,24 @@ El taller opcional de carteles requiere prever tiempo adicional. Si se omite, In
 | Minutos | Acción y producto |
 | --- | --- |
 | 0–2 · Invitación | «Villa Brisa quiere mejorar su plaza. Hay tres propuestas y recursos para empezar una. Ayudemos a preparar información clara, comparar sin confundir y escuchar necesidades distintas». |
-| 2–6 · Imprenta de Luz | Leer la ficha nacional y resolver actividades 1–3. Preparar un boletín que conserve tanto el hallazgo como la información desconocida. |
-| 6–10 · Archivo de Mateo | Comparar cantidades y proporciones de Aguascalientes y Baja California; resolver 4–6. Corregir el cartel: más registros y mayor proporción son comparaciones diferentes. |
+| 2–6 · Luz, a la izquierda | Hablar con Luz para comenzar. Leer la ficha nacional y resolver 1–3. Preparar un boletín que conserve el hallazgo y la información desconocida. |
+| 6–10 · Mateo, en el centro | Hablar con Mateo, comparar cantidades y proporciones de AGS/BC y resolver 4–6. Corregir el cartel: más registros y mayor proporción son comparaciones diferentes. |
 | 10–13 · Casa de reunión de Inés | «Los datos del INE nos hablan de la participación en 2024. Esta consulta es inventada para practicar cómo escuchar y tomar decisiones». Leer los tres proyectos con igual atención y explicar las cinco acciones. |
-| 13–15 · Inés y regreso a Luz | Tras la pregunta de seguimiento, revisar con Inés el cartel personal o el guiado. Confirmar el encargo ficticio, volver a la primera casa y usar la prensa: «Imprimir cartel». Aparece «FIN · La campaña comienza contigo». Descargar el PDF es opcional. |
+| 13–15 · Inés y regreso a Luz | Revisar con Inés el cartel personal o guiado después del seguimiento. Confirmar el encargo ficticio, volver a la casa izquierda y usar la prensa: «Imprimir cartel». Se puede omitir la breve impresión. FIN ofrece descargar, ampliar el cartel o explorar. |
 | 15–20 · Conversación opcional | Usar las tres frases de reflexión de la hoja: un hallazgo, un límite y una pregunta de seguimiento. Compartir es voluntario. |
 
-Se puede entrar y salir de las tres casas desde el inicio. Las conversaciones siguen el orden Luz, Mateo e Inés; una visita temprana indica la actividad pendiente. La consulta comienza cuando están preparados el boletín y el cartel y es el paso tres de cuatro. En Godot se camina con WASD a través de puertas y salidas; E/Enter o el botón contextual interactúan solo cerca. El diálogo aparece en una franja inferior translúcida; cerrar un panel conserva el lugar. HTML y la hoja siguen el mismo orden con navegación propia, sin exigir recorrer un mapa.
+Las tres casas permiten entrar desde el inicio. Una visita temprana a Mateo o Inés indica cómo llegar a Luz, a la izquierda; después de Luz, Inés dirige al archivo central. Cada personaje inicia sus actividades. El tablón permite revisar el cartel y la urna presenta los proyectos; la prensa se reserva para el cartel final. Las seis actividades preparan el boletín y la comparación antes de la consulta, paso tres de cuatro.
+
+En Godot, WASD cruza puertas y salidas. El encabezado indica el lugar y la siguiente tarea; el suelo queda sin instrucciones escritas. Cerca de una persona u objeto aparece una indicación [E], igual a la acción del botón contextual. E/Enter o ese botón actúan solo allí. El diálogo ocupa una franja inferior translúcida; cerrar un panel conserva el lugar. HTML y la hoja mantienen el orden con navegación propia.
 
 ## Clave de las seis actividades
 
-Las respuestas corresponden al conjunto CCPC federal 2024 incluido con la actividad. Los ejemplos de las actividades 3 y 6 son inventados.
+Las preguntas son breves y corresponden al conjunto CCPC federal 2024 incluido. Un registro reúne información de una persona; un porcentaje expresa cuántos de cada 100. Las barras, etiquetas y tablas ayudan a comparar sin exigir operaciones. Los ejemplos de 3 y 6 son inventados; la hoja adapta la lectura de barras a sus tablas.
 
 | Actividad | Qué observar | Respuesta y apoyo |
 | --- | --- | --- |
 | 1 · Leer el boletín | Comparar registros con y sin participación conocida. | Hay más con participación: 54,899,228 frente a 37,105,466. Señalar las dos categorías y dejar NS aparte. |
-| 2 · Lo desconocido | Distinguir falta de información de falta de participación. | «No, no lo sabemos». Falta información; por eso no podemos afirmar que esa persona no participó. |
+| 2 · Lo desconocido | «Si falta información, ¿sabemos si esa persona votó?». | «No, falta información». No contar esos registros como personas que no votaron. |
 | 3 · Otro caso | Clasificar 10 desconocidos en el ejemplo 60/30/10. | Van en «No sabemos». No pedir un porcentaje. |
 | 4 · Cantidades | Comparar los conteos estatales. | Baja California: 1,396,335 frente a 626,084 en Aguascalientes. No hace falta dividir. |
 | 5 · De cada 100 | Comparar la proporción entre registros clasificados. | Aguascalientes: cerca de 59 de cada 100; Baja California, cerca de 47. Tasas redondeadas: 58.66% y 47.05%. |
@@ -78,9 +80,11 @@ No pedir nombres, edades individuales, afiliaciones, intención de voto ni opini
 
 Después de la consulta y una pregunta de seguimiento, hablar con Inés. Revisar el cartel publicado o la comparación guiada AGS/BC por proporción, con «¿Qué información nos falta antes de decidir?». Inés envía el diseño a Luz solo dentro de la ficción: no se manda un mensaje externo. Cancelar la revisión conserva un encargo anterior; reemplazarlo requiere confirmar una nueva versión antes de imprimir.
 
-En Godot, caminar de vuelta a la primera casa, acercarse a su prensa y elegir **Imprimir cartel**. En HTML, abrir la imprenta con sus controles y usar la misma acción. Ese paso completa la aventura: **FIN · La campaña comienza contigo**. Se puede seguir explorando y reabrir el final desde el diario.
+En Godot, caminar a la casa izquierda y acercarse a la prensa, a la derecha de Luz. Elegir **Imprimir cartel**; esa máquina no inicia las primeras actividades. En HTML, abrir la imprenta y usar su control de impresión. Ese paso completa la aventura una sola vez. La hoja aparece en una animación de hasta 2.5 segundos: E, Enter o el botón para omitirla llevan al final inmediatamente; movimiento reducido la omite.
 
-El cartel dice **«Tu voto cuenta. Infórmate y participa.»** Es una campaña ciudadana y no partidista: no lleva Latas, INEhack ni sello oficial. Cita INE/CCPC como fuente histórica y conserva año, conteos, bases, NS, barras comparables, pregunta y límites; no incorpora los resultados inventados de la consulta.
+**FIN · La campaña comienza contigo** mantiene el título y las acciones a la vista. **Descargar cartel PDF** es la acción principal; **Ampliar cartel** permite leer el contenido en su zona desplazable y **Seguir explorando** vuelve al mismo lugar. Reabrir el final no repite la animación.
+
+El cartel rosa y blanco dice **«Tu voto cuenta. Infórmate y participa.»** Es una composición ciudadana original, no partidista y sin Latas, INEhack ni sello oficial. El color no representa un aval institucional. Cita INE/CCPC como fuente histórica y conserva año, conteos, bases, NS, barras comparables, pregunta y límites; no incorpora resultados inventados de la consulta. Las cifras y etiquetas permiten leerlo también en blanco y negro.
 
 **Descargar cartel PDF** es una acción aparte: una página Carta vertical. Linux ofrece un diálogo para guardar; el navegador solicita una descarga. Cancelarla o bloquearla no deshace el final; no hace falta impresora. Descargar antes de cerrar si se quiere conservar el diseño: las selecciones y el PDF no se guardan con el progreso. Al recargar un encargo pendiente hay que recrearlo con Inés; un final completado no reconstruye el cartel personal. Reiniciar borra esos objetos de sesión.
 

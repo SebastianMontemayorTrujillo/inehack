@@ -13,6 +13,7 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const deckOnly = process.argv.includes('--deck-only');
 await mkdir(output, { recursive: true });
 const handoutOnly = process.argv.includes('--handout-only');
+const reviewDirectory = path.join(root, 'build/media-review-sequential-2026-10-27');
 if (process.argv.slice(2).some(arg => !['--deck-only', '--handout-only'].includes(arg))) throw new Error('Supported options: --deck-only or --handout-only');
 if (deckOnly && handoutOnly) throw new Error('Use either --deck-only or --handout-only');
 const browserExecutable = process.env.BROWSER_EXECUTABLE || '/home/seb/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome';
@@ -101,6 +102,11 @@ function verifyPdfPageCount(filename, expected) {
   if (pages !== expected) throw new Error(filename + ': expected ' + expected + ' PDF pages, found ' + pages);
 }
 async function buildClassroomResources() {
+  await mkdir(reviewDirectory, { recursive: true });
+  const sources = await Promise.all(['docs/facilitator.md', 'docs/classroom_handout.md', 'tools/render_submission.mjs', 'game/content/story.json', 'game/content/ccpc.json'].map(async filename => {
+    const bytes = await readFile(path.join(root, filename));
+    return { path: filename, sha256: sha(bytes), bytes: bytes.length };
+  }));
   const handout = await readFile(path.join(root, 'docs/classroom_handout.md'), 'utf8');
   const pages = handout.split('<div style="page-break-after: always;"></div>');
   if (pages.length !== 2) throw new Error('Expected two handout pages');
@@ -125,6 +131,18 @@ async function buildClassroomResources() {
     await page.pdf({ path: path.join(output, 'classroom-handout.pdf'), preferCSSPageSize: true, printBackground: true, tagged: true });
     verifyPdfPageCount('classroom-handout.pdf', 2);
   } finally { await browser.close(); }
+  for (const item of sources) assert.equal(sha(await readFile(path.join(root, item.path))), item.sha256, 'Classroom source changed during generation: ' + item.path);
+  // Preserve the exact generator used for these frozen resources even if later
+  // screenshot/capture integration requires further media-only script edits.
+  await writeFile(path.join(reviewDirectory, 'classroom-renderer-source.mjs'), await readFile(fileURLToPath(import.meta.url)));
+  const artifacts = await Promise.all(['classroom.html', 'classroom-handout.html', 'classroom-handout.pdf'].map(async name => {
+    const bytes = await readFile(path.join(output, name));
+    return { path: 'submission/' + name, sha256: sha(bytes), bytes: bytes.length };
+  }));
+  await writeFile(path.join(reviewDirectory, 'classroom-generation.json'), JSON.stringify({
+    status: 'generated; visual review pending', revision: 'sequential-pink', created_at_utc: new Date().toISOString(),
+    sources, artifacts, handout_pages: 2, generator_snapshot: 'build/media-review-sequential-2026-10-27/classroom-renderer-source.mjs',
+  }, null, 2) + '\n');
   console.log('Generated submission/classroom.html, classroom-handout.html and classroom-handout.pdf');
 }
 // Classroom resources are generated explicitly, then stay stable while exports use them.
@@ -132,7 +150,7 @@ if (handoutOnly) {
   await buildClassroomResources();
   process.exit(0);
 }
-// Final media may only use the current, completed campaign runtime. In particular,
+// Final media may only use the current, completed sequential/pink runtime. In particular,
 // an older successful receipt must not authenticate freshly overwritten captures.
 const renderInputs = [];
 async function input(filename) {
@@ -141,7 +159,7 @@ async function input(filename) {
   return bytes;
 }
 const native = JSON.parse(await input('build/evidence/native-window.json'));
-assert.equal(native.status, 'passed', 'Wait for the campaign native journey to pass');
+assert.equal(native.status, 'passed', 'Wait for the sequential/pink native journey to pass');
 assert.deepEqual(native.runtime_errors, [], 'Native runtime errors must remain fatal');
 assert.ok(native.finale_checks?.length && native.checkpoints?.length, 'The native receipt predates the campaign finale');
 assert.equal(sha(await input('build/linux/voces-de-la-plaza.pck')), native.pack_sha256, 'Native captures belong to a different PCK');
@@ -174,10 +192,10 @@ const sourceNote = 'Fuente: <a href="' + portal + '">INE · CCPC federal 2024</a
 const captures = {
   0: ['native-plaza.png', 'Villa Brisa · Captura real del recorrido Linux'],
   3: ['native-house-1-complete.png', 'Imprenta de Luz · Boletín terminado'],
-  4: ['native-poster-archive-before.png', 'Archivo de Mateo · Cartel corregido'],
+  4: ['native-comparison-artifact-after.png', 'Tablón de Mateo · Comparación corregida con fuente'],
   5: ['native-consultation-intro.png', 'Inés · Conversación antes de la consulta ficticia'],
   8: ['native-poster-preview.png', 'Archivo de Mateo · Vista previa del cartel opcional'],
-  9: ['native-ending.png', 'Prensa de Luz · FIN después de imprimir el cartel'],
+  9: ['native-ending.png', 'Prensa de Luz · FIN y acciones del cartel ciudadano'],
 };
 const figure = (data, caption) => '<figure><img src="data:image/png;base64,' + data.toString('base64') + '" alt="' + escape(caption) + '"><figcaption>' + escape(caption) + '</figcaption></figure>';
 const images = Object.fromEntries(await Promise.all(Object.entries(captures).map(async ([index, [filename, caption]]) => {
@@ -285,10 +303,16 @@ try {
   }
   for (const item of renderInputs) assert.equal(sha(await readFile(path.join(root, item.path))), item.sha256, 'Source changed during rendering: ' + item.path);
   const artifactPaths = targets.flatMap(([name, filename]) => ['submission/' + name + '.html', 'submission/' + filename]);
-  const artifacts = await Promise.all(artifactPaths.map(async filename => ({ path: filename, sha256: sha(await readFile(path.join(root, filename))) })));
-  await writeFile(path.join(root, 'build/evidence/document-render-inputs.json'), JSON.stringify({
-    status: 'rendered; visual review pending', created_at_utc: new Date().toISOString(), story_schema: canonicalStory.schema_version,
+  const artifacts = await Promise.all(artifactPaths.map(async filename => {
+    const bytes = await readFile(path.join(root, filename));
+    return { path: filename, sha256: sha(bytes), bytes: bytes.length };
+  }));
+  const receipt = JSON.stringify({
+    status: 'rendered; visual review pending', revision: 'sequential-pink', created_at_utc: new Date().toISOString(), story_schema: canonicalStory.schema_version,
     native_pack_sha256: native.pack_sha256, inputs: renderInputs, artifacts,
     limits: ['Rendering and hash checks do not establish a participant pilot or accessibility certification'],
-  }, null, 2) + '\n');
+  }, null, 2) + '\n';
+  await mkdir(reviewDirectory, { recursive: true });
+  await writeFile(path.join(reviewDirectory, 'document-generation.json'), receipt);
+  await writeFile(path.join(root, 'build/evidence/document-render-inputs.json'), receipt);
 } finally { await browser.close(); }

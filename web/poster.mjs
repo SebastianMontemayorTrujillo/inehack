@@ -35,11 +35,14 @@ export function createCampaignSession({ data, story, createPDF }) {
     get ready() { return queued !== null; },
     get busy() { return busy; },
     get selection() { return queued ? { ...queued.selection } : null; },
+    get poster() { return queued ? structuredClone(queued.poster) : null; },
     async queue(progress, published = null, replace = false) {
       if (!complete(progress) || progress.campaign_printed || busy || (queued && !replace)) return false;
       const source = published ?? { first: 'state_01', second: 'state_02', metric: 'rate', question: 'missing' };
       const selection = Object.freeze(Object.fromEntries(['first', 'second', 'metric', 'question'].map(key => [key, source[key]])));
-      if (!composePoster(data, story, selection)) throw new Error('No se pudo preparar el PDF con este cartel.');
+      const poster = composePoster(data, story, selection);
+      if (!poster) throw new Error('No se pudo preparar el PDF con este cartel.');
+      const snapshot = structuredClone(poster);
       const token = ++generation;
       busy = true;
       try {
@@ -48,7 +51,7 @@ export function createCampaignSession({ data, story, createPDF }) {
         if (!(bytes instanceof Uint8Array) || bytes.length < 5 || new TextDecoder().decode(bytes.subarray(0, 5)) !== '%PDF-') {
           throw new Error('No se pudo preparar el PDF.');
         }
-        queued = { selection, bytes: new Uint8Array(bytes) };
+        queued = { selection, poster: snapshot, bytes: new Uint8Array(bytes) };
         return true;
       } finally { if (token === generation) busy = false; }
     },

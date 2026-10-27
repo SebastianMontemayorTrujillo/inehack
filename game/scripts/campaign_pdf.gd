@@ -63,9 +63,10 @@ static func _template(value: String, model: Dictionary) -> String:
 func _model(poster: Dictionary, bundle: Dictionary, story: Dictionary) -> Dictionary:
 	var rates: bool = poster.metric == "rate"
 	var maximum: int = maxi(int(poster.records[0].sv), int(poster.records[1].sv))
-	var model := {"finding": poster.finding, "question": poster.question, "limit": story.poster_workshop.limit,
+	var model: Dictionary = layout.copy.duplicate()
+	model.merge({"finding": poster.finding, "question": poster.question, "limit": story.poster_workshop.limit,
 		"source_url": bundle.source.portal_url, "year": str(int(poster.records[0].year)),
-		"measure": story.poster_workshop.rate_label if rates else story.poster_workshop.count_label}
+		"measure": story.poster_workshop.rate_label if rates else story.poster_workshop.count_label}, true)
 	model.scale = layout.copy.rate_scale if rates else _template(layout.copy.count_scale, {"maximum": _integer(maximum)}) if maximum else layout.copy.zero_scale
 	for index in 2:
 		var record: Dictionary = poster.records[index]
@@ -171,8 +172,8 @@ func _document(model: Dictionary) -> PackedByteArray:
 			"bar":
 				var ratio: Variant = model[block.value]
 				if ratio != null:
-					commands += _rectangle(block, block.w, "track")
-					if ratio > 0: commands += _rectangle(block, block.w * ratio, "teal")
+					commands += _rectangle(block, block.w, "pale")
+					if ratio > 0: commands += _rectangle(block, block.w * ratio, "pink")
 			"link": annotation = "<< /Type /Annot /Subtype /Link /Rect [%s %s %s %s] /Border [0 0 0] /A << /S /URI /URI <%s> >> >>" % [_number(block.x), _number(792 - block.y - block.h), _number(block.x + block.w), _number(792 - block.y), str(model[block.value]).to_utf8_buffer().hex_encode()]
 			_: failed = true
 	if failed or annotation.is_empty(): return PackedByteArray()

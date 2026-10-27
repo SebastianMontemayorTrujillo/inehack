@@ -4,6 +4,7 @@ const PDF = preload("res://scripts/campaign_pdf.gd")
 const Poster = preload("res://scripts/poster_workshop.gd")
 const Card = preload("res://scripts/poster_card.gd")
 const Dialogue = preload("res://scripts/dialogue_view.gd")
+const Ending = preload("res://scripts/ending_view.gd")
 const DEFAULT := {"first": "state_01", "second": "state_02", "metric": "rate", "question": "missing"}
 const FILENAME := "campana-ciudadana-voto-informado.pdf"
 
@@ -48,8 +49,12 @@ static func press(app: Node) -> void:
 	if not near_press(app): return
 	if app.progress.campaign_printed:
 		ending(app)
+	elif app.Rules.first_missing(app.progress.completed, 3) >= 0:
+		app._panel("La prensa de Luz")
+		app._text(app.story.dialogue.luz_waiting)
 	elif app.campaign_job.is_empty():
-		Dialogue.show(app, 0, app.story.campaign.reload_note)
+		app._panel("La prensa de Luz")
+		app._text(app.story.campaign.reload_note)
 	else:
 		app._panel("La prensa de Luz · Último paso")
 		app._text(app.story.campaign.press_intro)
@@ -59,49 +64,66 @@ static func press(app: Node) -> void:
 
 static func print_job(app: Node) -> void:
 	if not near_press(app) or app.campaign_pdf.is_empty() or app.Rules.first_missing(app.progress.completed, 3) >= 0: return
-	if not app.progress.campaign_printed:
+	var first_print: bool = not app.progress.campaign_printed
+	if first_print:
 		app.progress.campaign_printed = true
 		app._save()
 		app._sound("sound.chapter")
 		app._update_status()
-	ending(app, true)
+	ending(app, first_print)
 
 static func ending(app: Node, reveal: bool = false) -> void:
+	if not app.progress.campaign_printed: return
 	app._panel(app.story.campaign.ending_title, true)
-	app._text(app.story.campaign.ending if not app.campaign_pdf.is_empty() else app.story.campaign.completed_reload)
-	if not app.storage_message.is_empty(): app._text(app.storage_message)
-	if not app.campaign_pdf.is_empty():
-		app._button(app.story.campaign.download_label, func(): download(app), true)
-	app._button("Seguir explorando", app._close_panel)
+	# The shell still owns focus containment, backdrop, movement lock and close.
+	# Replace its scrolling header with one bounded child; only its poster scrolls.
+	for child in app.body.get_children():
+		app.body.remove_child(child)
+		child.queue_free()
+	var shade: StyleBoxFlat = app.overlay.get_theme_stylebox("panel").duplicate()
+	shade.bg_color = Ending.PINK
+	shade.border_color = Ending.WHITE
+	app.overlay.add_theme_stylebox_override("panel", shade)
+	var card: Control
+	var make_poster := Callable()
 	if not app.campaign_job.is_empty():
-		app._text("Tu voto cuenta. Infórmate y participa.")
-		var card := Card.create(app, Poster.compose(app.bundle, app.story, app.campaign_job))
-		app.body.add_child(card)
-		if reveal and not app.progress.settings.reduced_motion:
-			card.modulate.a = 0.0
-			app.create_tween().tween_property(card, "modulate:a", 1.0, 0.6)
+		var result := Poster.compose(app.bundle, app.story, app.campaign_job)
+		card = Card.create(app, result, true)
+		make_poster = func(compact: bool): return Card.create(app, result, compact)
+	var view := Ending.new()
+	view.configure(app, card, reveal, make_poster)
+	view.download_requested.connect(func(): download(app))
+	view.explore_requested.connect(app._close_panel)
+	app.body.add_child(view)
 
 static func download(app: Node) -> void:
 	if app.campaign_pdf.is_empty() or not app.progress.campaign_printed: return
+	var view: Control = app.body.find_child("EndingView", true, false)
+	if view == null or not view.is_visible_in_tree(): return
+	# Each save uses the same frozen in-memory job, including while a native
+	# dialog is open. Its owning ending also owns dialog cancellation/teardown.
+	var bytes: PackedByteArray = app.campaign_pdf.duplicate()
 	if OS.has_feature("web"):
-		JavaScriptBridge.download_buffer(app.campaign_pdf, FILENAME, "application/pdf")
-		app._text("Descarga solicitada. Si tu navegador la bloquea, permite la descarga y pulsa de nuevo el botón.")
+		JavaScriptBridge.download_buffer(bytes, FILENAME, "application/pdf")
+		view.set_message("Descarga solicitada. Si tu navegador la bloquea, permite la descarga y pulsa de nuevo el botón.")
 		return
+	if view.find_child("CampaignDownloadDialog", false, false) != null: return
 	var dialog := FileDialog.new()
+	dialog.name = "CampaignDownloadDialog"
 	dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
 	dialog.access = FileDialog.ACCESS_FILESYSTEM
 	dialog.filters = PackedStringArray(["*.pdf ; Cartel PDF"])
 	dialog.current_file = FILENAME
 	dialog.force_native = OS.has_feature("linux")
-	app.add_child(dialog)
+	view.add_child(dialog)
 	dialog.file_selected.connect(func(path: String):
 		var file := FileAccess.open(path, FileAccess.WRITE)
 		if file == null:
-			app._text("No se pudo guardar el archivo. El cartel sigue listo: vuelve a descargarlo y elige otra carpeta.")
+			view.set_message("No se pudo guardar el archivo. El cartel sigue listo: vuelve a descargarlo y elige otra carpeta.")
 		else:
-			file.store_buffer(app.campaign_pdf)
+			file.store_buffer(bytes)
 			file.flush()
-			app._text("PDF guardado en: " + path if file.get_error() == OK else "No se pudo completar el archivo. Intenta guardarlo de nuevo.")
+			view.set_message("PDF guardado en: " + path if file.get_error() == OK else "No se pudo completar el archivo. Intenta guardarlo de nuevo.")
 			file.close()
 		dialog.queue_free())
 	dialog.canceled.connect(func(): dialog.queue_free())

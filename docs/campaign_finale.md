@@ -1,5 +1,7 @@
 # Citizen campaign finale · 27 October 2026
 
+**Later approved amendment:** [Sequential interaction and pink campaign](sequential_campaign_design.md) replaces floor prose and duplicate host/object actions, reserves the press for the final campaign, and replaces the simple paper fade with a skippable ≤2.5-second reveal/dedicated FIN screen. Its pink, white and dark-ink poster design supersedes the initial paper/green palette. The data, private-state and actual-PDF contracts below remain in force.
+
 Approved implementation: calm libre music, translucent bottom conversations,
 ordered learning, and an actual downloadable Carta portrait campaign poster.
 
@@ -19,10 +21,13 @@ comparison with the neutral missing-information question. Inés sends a frozen
 design to Luz **within the fiction**, with no external message or service.
 
 The player walks back to the first house and uses its press. Only that nearby
-interaction offers **Imprimir cartel** and completes the game. A brief optional
-paper fade gives way to **FIN · La campaña comienza contigo**. Downloading the
-PDF is a separate explicit action; physical printing is not required. The final
-town remains explorable, and the diary can reopen the ending.
+interaction offers **Imprimir cartel** and completes the game. A sheet reveal
+of at most 2.5 seconds gives way to **FIN · La campaña comienza contigo**.
+E, Enter or the visible skip control ends the reveal; reduced motion and
+reopening show FIN immediately. Download, Enlarge/Reduce and Explore remain
+visible while the poster scrolls. Downloading the PDF is a separate explicit
+action; physical printing is not required. The final town remains explorable,
+and the diary can reopen the ending.
 
 ## PDF and private state
 

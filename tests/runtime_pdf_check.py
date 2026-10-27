@@ -36,9 +36,9 @@ def verify_pdf(path, selection):
     text_path.write_text(text)
     normalized = ' '.join(text.split())
     question = next(item['text'] for item in story['poster_workshop']['questions'] if item['id'] == selection['question'])
-    required = ['Tu voto cuenta.', 'Infórmate y participa.', 'Campaña ciudadana por el voto informado.',
+    required = ['Tu voto cuenta.', 'Infórmate y participa.', 'Campaña ciudadana', 'Material educativo',
                 'INE / CCPC', '2024', question, story['poster_workshop']['limit'],
-                'SV + NV', 'NS indica clasificación desconocida', 'no se suma a NV']
+                'SV + NV', 'NS: sin información', 'clasificación desconocida', 'se muestra aparte', 'no se suma a NV']
     rates = []
     for record in records:
         required.append(record['geography_name'])

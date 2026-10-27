@@ -24,6 +24,22 @@ class CampaignFontTests(unittest.TestCase):
                 self.assertIn(character, font["characters"])
             self.assertEqual(len(base64.b64decode(font["cid_map_base64"])), len(font["widths"]) * 2)
 
+    def test_poster_contrast_in_color_and_grayscale(self):
+        colors = json.loads((ROOT / "game/content/campaign_layout.json").read_text())["colors"]
+
+        def luminance(hex_color):
+            channels = [int(hex_color[index:index + 2], 16) / 255 for index in (0, 2, 4)]
+            linear = [value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
+                      for value in channels]
+            return sum(value * weight for value, weight in zip(linear, (0.2126, 0.7152, 0.0722)))
+
+        for foreground, background in (("ink", "white"), ("ink", "pale"),
+                                       ("pink", "white"), ("white", "pink"), ("pink", "pale")):
+            with self.subTest(foreground=foreground, background=background):
+                # Luminance is also the contrast preserved by a linear grayscale conversion.
+                values = sorted((luminance(colors[foreground]), luminance(colors[background])))
+                self.assertGreaterEqual((values[1] + 0.05) / (values[0] + 0.05), 4.5)
+
 
 if __name__ == "__main__":
     unittest.main()

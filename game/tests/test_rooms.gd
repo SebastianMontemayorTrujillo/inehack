@@ -128,8 +128,17 @@ func test_preview_progress_revisit_and_escape_close_panel_first() -> void:
 	game._enter_house(0)
 	await wait_physics_frames(2)
 	assert_has(game.progress.completed, "printing")
-	assert_true(game.room.artifact_label.text.begins_with("BOLETÍN PUBLICADO · CON FUENTE"))
-	assert_true(game.room.artifact_label.text.contains("60 de cada 100"), "The room displays the sourced finding after re-entry")
+	game._journal()
+	var copy := panel_text(game)
+	assert_true(copy.contains("Listo: La prensa de las voces"))
+	assert_true(copy.contains(game._percentage(game._record("national").participation_pct)), "The diary retains the sourced finding after re-entry")
+	assert_true(copy.contains("CCPC 2024"))
+	await wait_process_frames(3)
+
+func panel_text(game: Node) -> String:
+	var copy := ""
+	for label in game.body.find_children("*", "Label", true, false): copy += label.text + "\n"
+	return copy
 
 func after_each() -> void:
 	if FileAccess.file_exists("user://rooms_test.json"):
@@ -139,9 +148,11 @@ func test_poster_changes_from_a_claim_to_a_sourced_correction() -> void:
 	var game := fresh_game()
 	game._enter_house(1)
 	await wait_physics_frames(2)
-	assert_true(game.room.artifact_label.text.contains("Más registros = mayor proporción"))
+	game._inspect_artifact(1)
+	assert_true(panel_text(game).contains("Más registros = mayor proporción"))
 	game.progress.completed = ["printing", "comparison"]
-	game.room.update_artifacts(game.progress.completed, game.bundle)
-	assert_true(game.room.artifact_label.text.contains("Más registros: BAJA CALIFORNIA"))
-	assert_true(game.room.artifact_label.text.contains("Mayor proporción: AGUASCALIENTES"))
-	assert_true(game.room.artifact_label.text.contains("CCPC 2024"))
+	game._inspect_artifact(1)
+	assert_true(panel_text(game).contains("Más registros: BAJA CALIFORNIA"))
+	assert_true(panel_text(game).contains("Mayor proporción: AGUASCALIENTES"))
+	assert_true(panel_text(game).contains("CCPC 2024"))
+	await wait_process_frames(3)

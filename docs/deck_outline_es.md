@@ -1,10 +1,10 @@
 # Voces de la Plaza · esquema de presentación
 
-**Equipo Latas · Cierre de campaña · 27 de octubre de 2026.** Diez diapositivas para presentar la aventura, sus datos y su uso docente. El generador lee el texto en pantalla y lo combina con capturas reales del recorrido Linux y del export HTML. [Presentación PDF](../submission/voces_presentacion.pdf) y [versión HTML](../submission/presentacion.html).
+**Equipo Latas · Secuencia guiada y campaña rosa · 27 de octubre de 2026.** Diez diapositivas para presentar la aventura, sus datos y su uso docente. El generador lee el texto en pantalla y lo combina con capturas reales del recorrido Linux y del export HTML. [Presentación PDF](../submission/voces_presentacion.pdf) y [versión HTML](../submission/presentacion.html).
 
 La diapositiva 9 presenta la personalización opcional; la 10, el encargo de Inés, regreso a Luz, impresión y FIN. Se conserva la comparación guiada AGS/BC en la 5. Las seis actividades siguen siendo obligatorias; el taller, los cálculos y descargar el PDF son opcionales. La misión final usa el cartel guiado si no se personaliza.
 
-**Estado de producción de campaña:** los registros históricos de este archivo describen ediciones anteriores. Las capturas y medios nuevos requieren recibos del runtime de esta revisión; no se atribuyen vistas nuevas a capturas antiguas. El [contrato](campaign_finale.md), [recorrido nativo](../build/evidence/native-window.json) y [verificación](verification.md) fijan contenido y alcance.
+**Producción por edición:** los registros históricos de este archivo describen ediciones anteriores. El [archivo de la campaña anterior](../build/media-review-sequential-2026-10-27/history-campaign/manifest.json) preserva los medios y recibos reemplazados. Las nuevas capturas requieren evidencia del runtime revisado. El [contrato de secuencia y diseño](sequential_campaign_design.md), [recorrido nativo](../build/evidence/native-window.json) y [verificación](verification.md) fijan contenido y alcance.
 
 ## Diapositiva 1 · Voces de la Plaza
 
@@ -16,11 +16,11 @@ La diapositiva 9 presenta la personalización opcional; la 10, el encargo de In�
 
 ## Diapositiva 2 · Tres casas, una reunión por preparar
 
-**Texto en pantalla:** «Villa Brisa quiere mejorar su plaza». «Luz: un boletín honesto». «Mateo: un cartel que compara con justicia». «Inés: escuchar necesidades y dar seguimiento».
+**Texto en pantalla:** «Villa Brisa quiere mejorar su plaza». «Luz, izquierda: un boletín honesto». «Mateo, centro: comparar con justicia». «Inés, derecha: escuchar y dar seguimiento».
 
 **Visual:** tres estaciones con anfitrión y propósito, dentro de un mismo pueblo.
 
-**Nota de exposición:** todas las casas abren desde el inicio, pero las conversaciones siguen el orden Luz, Mateo e Inés. Las visitas tempranas indican qué evidencia falta. Son dos misiones CCPC, consulta ficticia como paso tres de cuatro y regreso a la primera casa para imprimir. Las intervenciones aparecen abajo, con fondo oscuro translúcido y retrato; las actividades conservan paneles amplios. Objetivo de duración: 10–15 minutos, aún sin pilotaje.
+**Nota de exposición:** las casas abren desde el inicio, pero el aprendizaje sigue a Luz, Mateo e Inés. Las visitas tempranas indican la primera tarea pendiente y cómo llegar. Cada personaje inicia sus actividades; el tablón permite revisar el cartel y la prensa solo imprime al final. El encabezado da la dirección, el suelo queda sin prosa y la indicación [E] coincide con el objetivo cercano. Las conversaciones aparecen en una franja inferior translúcida. Dos misiones CCPC, consulta ficticia y regreso a la casa izquierda para imprimir. Meta: 10–15 minutos, aún sin pilotaje.
 
 ## Diapositiva 3 · Qué sabemos y qué falta
 
@@ -32,19 +32,19 @@ La diapositiva 9 presenta la personalización opcional; la 10, el encargo de In�
 
 ## Diapositiva 4 · Luz: publicar sin inventar
 
-**Texto en pantalla:** «1. Leer qué categoría tiene más registros». «2. Conservar lo desconocido». «3. Probar con un ejemplo nuevo». «Ejemplo inventado: 60 con participación, 30 sin participación, 10 sin información».
+**Texto en pantalla:** «1. Comparar las dos barras». «2. Reconocer la información que falta». «3. Probar con un ejemplo nuevo». «Ejemplo inventado: 60 con participación, 30 sin participación, 10 sin información».
 
 **Visual:** `native-house-1-complete.png`, con el boletín terminado. El ejemplo inventado se identifica por separado.
 
-**Nota de exposición:** el caso nuevo pide clasificar diez registros como «No sabemos»; no exige calcular un porcentaje. Ofrecer reintento y apoyo, distinguiendo ayuda de explicación independiente. Fuente: actividades de la Imprenta en el contenido compartido.
+**Nota de exposición:** Luz explica qué es un registro y comienza las actividades; la prensa no la sustituye. Las preguntas piden comparar barras y reconocer cuándo no sabemos si alguien votó. El caso nuevo clasifica diez registros como «No sabemos», sin calcular. Ofrecer reintento y apoyo, distinguiendo ayuda de explicación independiente. Fuente: seis actividades estables del contenido compartido.
 
 ## Diapositiva 5 · Mateo: cantidad y proporción
 
 **Texto en pantalla:** «INE · CCPC federal 2024». «Aguascalientes: 626,084 con marca; 58.66% de 1,067,306 clasificados». «Baja California: 1,396,335 con marca; 47.05% de 2,968,011 clasificados». «BC tiene más registros; AGS, mayor proporción».
 
-**Visual:** `native-poster-archive-before.png`, con la comparación guiada AGS/BC corregida antes de publicar un cartel propio; cantidades y bases visibles en texto.
+**Visual:** `native-comparison-artifact-after.png`, panel real del tablón con la comparación guiada AGS/BC corregida antes de publicar un cartel propio. Las cantidades y bases exactas acompañan la captura en el texto de la diapositiva.
 
-**Nota de exposición:** el caso nuevo inventado es A:20/40 (50%), B:60/200 (30%). Leer porcentajes ya mostrados basta. Las tasas reales no explican motivos ni valor cívico. Cálculo opcional: reunir conteos antes de obtener 50.12%. Fuente: agregados `state_01` y `state_02`.
+**Nota de exposición:** Mateo explica que porcentaje significa cuántos de cada 100. El caso nuevo inventado es A:20/40 (50%), B:60/200 (30%). Leer los valores ya mostrados basta. Las tasas reales no explican motivos ni valor cívico. Cálculo opcional: reunir conteos antes de obtener 50.12%. Fuente: agregados `state_01` y `state_02`.
 
 ## Diapositiva 6 · Inés: una consulta ficticia
 
@@ -74,17 +74,17 @@ La diapositiva 9 presenta la personalización opcional; la 10, el encargo de In�
 
 **Texto en pantalla:** «Opcional: dos de 32 entidades». «Cantidad o proporción; una pregunta neutral». «Revisa datos, bases, NS, fuente y límite». «Revisa tu cartel y llévalo a Inés».
 
-**Visual:** captura nativa real `native-poster-preview.png`, con Nuevo León y Baja California, titular del hallazgo, proporciones en una misma escala, bases y registros sin clasificación. La pregunta neutral ocupa un panel destacado. El botón de datos y fuente abre los conteos completos; el texto ampliado permite desplazarse dentro de la vista previa del juego.
+**Visual:** captura nativa real `native-poster-preview.png`, con el diseño rosa de Nuevo León y Baja California, titular del hallazgo, proporciones en una misma escala, bases y registros sin clasificación. La pregunta neutral ocupa un panel destacado. El botón de datos y fuente abre los conteos completos; el texto ampliado permite desplazarse dentro de la vista previa del juego.
 
 **Nota de exposición:** taller disponible después de las seis actividades. Elegir dos entidades, cantidad o proporción y una pregunta sobre información faltante, voces por escuchar o seguimiento de acuerdos. La vista previa muestra hallazgo, valores, bases, NS, año, fuente y límites. Guardar conserva la posición; en Godot se camina a Inés. Borrador y publicación están separados: cancelar conserva lo publicado. Después de la consulta, Inés ofrece el diseño personal o el guiado AGS/BC por proporción. Se conserva en memoria; no cambia la consulta, no añade una pregunta calificada ni exige calcular.
 
 ## Diapositiva 10 · FIN · La campaña comienza contigo
 
-**Texto en pantalla:** «Inés encarga el diseño a Luz». «Vuelve a la primera casa y usa la prensa». «Imprimir cartel completa la aventura». «Descarga opcional: PDF Carta ciudadano».
+**Texto en pantalla:** «Inés encarga el diseño a Luz». «Vuelve a la casa izquierda y usa la prensa». «Imprimir cartel completa la aventura». «Descargar PDF, ampliar o explorar».
 
-**Visual:** `native-ending.png`, captura nueva del final después de usar la prensa, con «FIN · La campaña comienza contigo» y la acción separada para descargar. No reutilizar el cierre anterior como evidencia de impresión.
+**Visual:** `native-ending.png`, captura nueva del final dedicado, con cartel rosa, FIN y acciones visibles de descarga, ampliación y exploración. El recibo debe corresponder al nuevo export; el panel genérico anterior es evidencia histórica.
 
-**Nota de exposición:** Inés prepara y congela el diseño dentro de la ficción; no envía un mensaje externo. Se camina a la primera casa y se interactúa cerca de la prensa. «Imprimir cartel» completa el juego; descargar o imprimir físicamente no es requisito. La página Carta dice «Tu voto cuenta. Infórmate y participa.», sin Latas, INEhack, sello oficial ni resultados ficticios. Cita INE/CCPC histórico con conteos, bases, NS, barras, pregunta y límites. Cancelar el guardado no deshace FIN. Se puede explorar y reabrir el final; recargar no reconstruye el cartel personal. La entrega sigue acreditada a Latas. Para reutilizarla: Latas prepara una versión; la persona facilitadora prueba equipo y recorrido, devuelve observaciones voluntarias y sin datos personales, y Latas revisa. No hay adopción confirmada, pilotaje ni efectos educativos demostrados.
+**Nota de exposición:** Inés congela el diseño dentro de la ficción, sin envío externo. Se camina a la casa izquierda y se activa la prensa cercana, reservada para el final. La impresión tarda hasta 2.5 segundos y se puede omitir con E, Enter o botón; movimiento reducido la omite. FIN mantiene Descargar, Ampliar y Explorar visibles; el cartel ampliado tiene desplazamiento propio. Reabrir salta la animación y cerrar conserva el lugar. La página Carta rosa y blanca es ciudadana y original: «Tu voto cuenta. Infórmate y participa.», sin Latas, INEhack, sello oficial ni resultados ficticios. Conserva fuente histórica, conteos, bases, NS, pregunta y límites. Descargar es opcional; cancelar no deshace FIN y recargar no reconstruye el diseño. La entrega sigue acreditada a Latas. La reutilización propone una versión, revisión docente del equipo/recorrido y devolución voluntaria sin datos personales. No hay adopción confirmada, pilotaje ni eficacia demostrada.
 
 ## Revisión editorial contra la rúbrica local
 
@@ -92,14 +92,14 @@ Fuente: **Rúbrica de evaluación_Hackaton -1.pdf**, tres páginas leídas e ins
 
 | Criterio / peso | Aporte del material | Límite para la evaluación |
 | --- | --- | --- |
-| Apego a la temática · 35 | CCPC sostiene boletín y comparación; fuente, año, bases y límites visibles. Cifras cotejadas con el archivo compartido y capturas finales incrustadas. La consulta se distingue de los datos históricos. | Los registros federales de 2024 no describen al salón ni permiten inferir preferencias o efectos del juego. |
+| Apego a la temática · 35 | CCPC sostiene boletín y comparación; fuente, año, bases y límites visibles. Cifras del archivo compartido y capturas identificadas por edición. La consulta se distingue de los datos históricos. | Los registros federales de 2024 no describen al salón ni permiten inferir preferencias o efectos del juego. |
 | Claridad y solidez · 30 | Seis actividades conceptuales, cifras exactas y sencillas, cálculos opcionales y guía de uso. La hoja incluye los tres escenarios canónicos de consulta y permite comparar ganadores con el mismo total. | Los casos nuevos permiten intentar aplicar una idea; no son una medida validada de comprensión. La duración con participantes aún no se ha observado. |
 | Originalidad y creatividad · 20 | Una reunión da sentido a tres interiores, un boletín, una comparación y una consulta plural. El taller permite revisar un mensaje con dos entidades; Inés lo encarga y la prensa de Luz cierra la aventura con un PDF ciudadano descargable. | Las interacciones requieren evidencia del runtime de esta edición; no demuestran por sí solas aprendizaje o eficacia cívica. |
 | Viabilidad para el aprovechamiento institucional · 15 | Guía HTML, hoja HTML/PDF de dos caras, modalidades individual/parejas/proyector, respaldo Linux y secuencia propuesta de preparación, devolución y revisión por versión entre Latas y la persona facilitadora. | Revisar acceso en el entorno de destino y adecuación docente. No existe acuerdo de adopción acreditado. |
 
 Temática y claridad son los criterios de desempate. La revisión identifica sustento y límites de uso; no transforma objetivos numéricos del plan en resultados.
 
-La revisión de contenido coteja los documentos con la rúbrica local, los archivos canónicos y el alcance técnico documentado en [verificación](verification.md) y el [recorrido nativo](../build/evidence/native-window.json). La narrativa distingue aplicación de una idea de medición validada, la hoja incluye escenarios ficticios comparables y la difusión propone responsables y pasos concretos entre Latas y la persona facilitadora. El taller implementado añade composición y revisión de un mensaje propio, conservando fuente y límites. Los materiales y las comprobaciones técnicas están producidos; la observación educativa y la adopción institucional siguen siendo futuras. Esta revisión editorial no asigna un puntaje ni anticipa el dictamen.
+La revisión de contenido coteja los documentos con la rúbrica local, los archivos canónicos y el alcance técnico documentado en [verificación](verification.md) y el [recorrido nativo](../build/evidence/native-window.json). La narrativa distingue aplicación de una idea de medición validada, la hoja incluye escenarios ficticios comparables y la difusión propone responsables y pasos concretos entre Latas y la persona facilitadora. El taller implementado añade composición y revisión de un mensaje propio, conservando fuente y límites. Los recibos de cada edición identifican los materiales y las comprobaciones producidos; la observación educativa y la adopción institucional siguen siendo futuras. Esta revisión editorial no asigna un puntaje ni anticipa el dictamen.
 
 ## Fuentes y producción
 

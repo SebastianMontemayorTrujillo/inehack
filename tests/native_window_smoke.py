@@ -16,7 +16,13 @@ X11 = ROOT / '.tools/x11/root/usr'
 BODY = (184, 264, 1080, 664)
 POSTER = (124, 210, 1140, 650)
 WORLD = (40, 156, 1240, 676)
-HOUSE = (116, 248, 800, 294)
+# Desk/bookshelf/chairs identify each physical room after floor labels were removed.
+HOUSE = (180, 375, 350, 470)
+PINK, WHITE, POSTER_INK, PALE = (180, 20, 118), (255, 255, 255), (36, 33, 36), (251, 234, 243)
+FIN_HEADING = (124, 60, 1156, 145)
+FIN_ACTIONS = (124, 145, 1156, 220)  # Includes all controls; the independent poster starts at y220.
+PAPER_SCANS = {'poster-count', 'poster-rate', 'poster-saved', 'poster-published',
+               'poster-unpublished-draft', 'poster-after-cancel', 'poster-from-journal'}
 # CharacterBody2D velocity is global pixels/s; its parent world is scaled 2.5.
 SPEED = 65 / 2.5
 SETTINGS = (205, 711)
@@ -34,20 +40,85 @@ def dialogue_bounds(image):
 
 
 def poster_bounds(image):
-    """Find the complete paper border, independent of toolbar height/reflow."""
+    """Visible portion of the real pink card; full coverage uses stitch_poster."""
+    pixels = image.load()
+    runs, start = [], None
+    for y in range(60, 741):
+        border = y < 740 and pixels[124, y] == PINK and pixels[125, y] == PINK
+        if border and start is None:
+            start = y
+        elif not border and start is not None:
+            if y - start >= 100: runs.append((start, y))
+            start = None
+    if not runs: return None
+    top, bottom = max(runs, key=lambda run: run[1] - run[0])
+    rows = range(top + 5, bottom - 5, 17)
+    rights = [x + 2 for x in range(1074, 1155)
+              if all(pixels[x, y] == PINK and pixels[x + 1, y] == PINK
+                     and pixels[x + 2, y] != PINK for y in rows)]
+    assert len(rights) == 1, ('Expected the visible card right border', rights, top, bottom)
+    return (124, top, rights[0], bottom)
+
+
+def poster_edge(image, bounds, edge):
+    if bounds is None: return False
+    left, top, right, bottom = bounds
+    y = top if edge == 'top' else bottom - 1
+    return all(image.getpixel((x, y)) == PINK for x in range(left, right))
+
+
+def stitch_poster(pictures):
+    """Join only exact, overlapping screenshot rows; reject gaps or fake edges."""
+    bounds = [poster_bounds(picture) for picture in pictures]
+    assert all(bounds) and poster_edge(pictures[0], bounds[0], 'top'), 'Paper must start at its real top border'
+    assert poster_edge(pictures[-1], bounds[-1], 'bottom'), 'Paper must include its real bottom border'
+    parts = [picture.crop(region) for picture, region in zip(pictures, bounds)]
+    assembled = parts[0]
+    for part in parts[1:]:
+        assert assembled.width == part.width, 'Paper width changed while scrolling'
+        width = assembled.width * 3
+        previous, current = assembled.tobytes(), part.tobytes()
+        overlaps = [n for n in range(64, min(assembled.height, part.height) + 1)
+                    if previous[-n * width:] == current[:n * width]]
+        assert overlaps, 'Scrolled paper has no exact 64-row overlap; full content is not proven'
+        overlap = max(overlaps)
+        assert overlap < part.height, 'Scroll must expose new poster content'
+        combined = Image.new('RGB', (part.width, assembled.height + part.height - overlap))
+        combined.paste(assembled)
+        combined.paste(part.crop((0, overlap, part.width, part.height)), (0, assembled.height))
+        assembled = combined
+    counts = Counter(assembled.getdata())
+    assert counts[PINK] > 2000 and counts[WHITE] > 10000 and counts[POSTER_INK] > 500 and counts[PALE] > 1000, 'Shared pink/white/ink/pale design must be visible'
+    return assembled
+
+
+def prompt_bounds(image):
+    """Recognize the complete nearby prompt border, not a room title or HUD."""
     ink, paper = (23, 59, 57), (255, 248, 231)
     pixels = image.load()
-    for top in range(160, 350):
-        if pixels[124, top] != ink or pixels[127, top] != ink or pixels[127, top + 3] != paper:
-            continue
-        right = next((x for x in range(124, 1170) if pixels[x, top] != ink), None)
-        if right is None or right - 124 < 950:
-            continue
-        bottom = next((y for y in range(top + 350, 738)
-                       if pixels[127, y] == ink and pixels[127, y + 2] == (246, 240, 218)), None)
-        if bottom is not None:
-            return (124, top, right, bottom + 2)
-    return None  # Enlarged paper can require scrolling; do not invent hidden pixels.
+    for y in range(316, 327):
+        xs = [x for x in range(48, 1232) if pixels[x, y] == ink and pixels[x, y + 3] == paper]
+        if len(xs) < 90: continue
+        left, right = min(xs) - 6, max(xs) + 7
+        # Rounded corners shorten the top edge. The straight side edges, E key
+        # box and caption remain fully present between the four rounded corners.
+        for x in range(max(48, left - 3), left + 4):
+            for end in range(right - 3, min(1232, right + 4)):
+                for bottom in range(y + 35, y + 65):
+                    if (all(pixels[col, row] == ink for col in (x, end - 1) for row in (y + 10, bottom - 10))
+                            and all(pixels[col, bottom - 1] == ink for col in (x + 12, (x + end) // 2, end - 12))
+                            and pixels[x + 4, y + 10] == paper):
+                        return (x, y, end, bottom)
+    return None
+
+
+def ending_visible(image):
+    """Dedicated pink FIN shell plus all three white fixed action controls."""
+    if image.getpixel((110, 120)) != PINK: return False
+    heading = image.crop(FIN_HEADING)
+    # Reveal has only two bottom actions; FIN has three white buttons here.
+    return sum(pixel == WHITE for pixel in heading.getdata()) > 1000 and all(
+        image.getpixel((x, 160)) in (WHITE, PALE, POSTER_INK) for x in (140, 500, 850))
 
 
 def avatar_position(image):
@@ -73,7 +144,21 @@ def avatar_position(image):
 def focus_bounds(image):
     # Full edges of the actual #9b4d2d focus outline must be visible. The new
     # poster toolbar has narrow buttons; its red paper rules are not focus.
-    spacious = image.getpixel((110, 120)) == (246, 240, 218)
+    ending = image.getpixel((110, 120)) == PINK
+    if ending:
+        outlines = []
+        for left, width, top in [(124, 336, 154), (472, 336, 154), (820, 336, 154), (124, 509, 688), (647, 509, 688)]:
+            color = WHITE if left == 124 and top == 154 else POSTER_INK
+            for height in (52, 57):
+                if all(image.getpixel((x, y)) == color for inset in range(3)
+                       for x, y in [(left + 12, top + inset), (left + width - 12, top + inset),
+                                    (left + 12, top + height - 1 - inset), (left + width - 12, top + height - 1 - inset),
+                                    (left + inset, top + 12), (left + inset, top + height - 12),
+                                    (left + width - 1 - inset, top + 12), (left + width - 1 - inset, top + height - 12)]):
+                    outlines.append([top, top + height - 1])
+        assert len(outlines) == 1, f'Expected one complete three-pixel FIN focus outline, found {outlines}'
+        return outlines[0]
+    spacious = image.getpixel((110, 120)) == (246, 240, 218) or ending
     dialogue = dialogue_bounds(image)
     if not spacious and not dialogue:
         rows = [y for y in range(160, 667) if sum(image.getpixel((x, y)) == (155, 77, 45)
@@ -82,7 +167,7 @@ def focus_bounds(image):
         return [rows[0], rows[-1]]
     pixels = image.load()
     region = (64, dialogue[1] + 24, 1216, 752) if dialogue else (124, 60, 1156, 740)
-    colors = {(155, 77, 45), (228, 186, 92)} if dialogue else {(155, 77, 45)}
+    colors = {POSTER_INK} if ending else {(155, 77, 45), (228, 186, 92)} if dialogue else {(155, 77, 45)}
     points = {(x, y) for y in range(region[1], region[3]) for x in range(region[0], region[2]) if pixels[x, y] in colors}
     outlines = []
     while points:
@@ -128,6 +213,8 @@ def main():
     movement_checks = []
     dialogue_checks = []
     finale_checks = []
+    prompt_checks = []
+    poster_papers = {}
     checkpoints = []
     executable = ROOT/'build/linux/voces-de-la-plaza.x86_64'
     sources = sorted((ROOT/'game/scripts').glob('*.gd')) + [ROOT/'game/project.godot'] + sorted((ROOT/'game/content').glob('*.json'))
@@ -243,6 +330,37 @@ def main():
         picture.save(path)
         checkpoints.append({'name': name, 'elapsed_seconds': round(time.monotonic() - started, 3),
                             'path': str(path.relative_to(ROOT)), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+        if name in PAPER_SCANS:
+            pictures = [picture]
+            for part in range(12):
+                if poster_edge(pictures[-1], poster_bounds(pictures[-1]), 'bottom'): break
+                tool('mousemove', '1000', '620', 'click', '--repeat', '3', '--delay', '30', '5')
+                time.sleep(.15)
+                pictures.append(capture(f'{name}-scroll-{part + 1}'))
+            else:
+                raise AssertionError(f'{name}: poster bottom not reached with bounded real scrolling')
+            paper = stitch_poster(pictures)
+            poster_papers[id(picture)] = paper
+            paper_path = EVIDENCE/f'native-{name}-paper.png'
+            paper.save(paper_path)
+            poster_checks.append({'check': name + ' full card via exact overlapping scroll captures',
+                                  'size': paper.size, 'frames': len(pictures), 'path': str(paper_path.relative_to(ROOT)),
+                                  'sha256': hashlib.sha256(paper_path.read_bytes()).hexdigest()})
+            tool('mousemove', '1000', '620', 'click', '--repeat', '24', '--delay', '20', '4')
+            time.sleep(.15)
+            restored = screen()
+            assert poster_bounds(restored) == poster_bounds(picture), 'Restoring the top must preserve card geometry'
+            assert ImageChops.difference(restored.crop(poster_bounds(restored)), picture.crop(poster_bounds(picture))).getbbox() is None, 'Restoring the top must preserve all card pixels'
+        return picture
+
+    def prompt(name, kind, visible=True):
+        picture = capture(name)
+        bounds = prompt_bounds(picture)
+        assert bool(bounds) is visible, (name, bounds)
+        if visible:
+            point = (477.5, 438.5) if kind == 'host' else (747.5, 431)
+            assert abs((bounds[0] + bounds[2]) / 2 - point[0]) <= 2 and abs(bounds[1] - (point[1] - 114)) <= 2, (name, bounds, point)
+        prompt_checks.append({'check': name, 'target': kind, 'bounds': bounds, 'visible': visible})
         return picture
 
     def dialogue(name, large=False, visible_focus=False):
@@ -259,8 +377,9 @@ def main():
     def dialogue_freezes_world(name, before, large=False):
         picture = dialogue(name, large)
         # The upper world remains visible and undimmed; the panel owns input.
-        upper = (40, 156, 1240, 350)
+        upper = (40, 156, 1240, 310)  # The nearby prompt intentionally disappears when dialogue opens.
         assert ImageChops.difference(before.crop(upper), picture.crop(upper)).getbbox() is None
+        assert prompt_bounds(picture) is None, 'Open dialogue hides the nearby prompt'
         hold('d', .3)
         click(45, 710)  # Panel padding covers Diario without activating a dialogue action.
         dialogue(name + '-input-contained', large)
@@ -271,10 +390,15 @@ def main():
 
     def compare(name, before, after, changed=False, crop=BODY):
         regions = [poster_bounds(item) for item in (before, after)] if crop == POSTER else [crop, crop]
-        assert all(regions), f'{name}: the complete poster paper must be visible'
-        images = [item.crop(region) for item, region in zip((before, after), regions)]
+        assert all(regions), f'{name}: the paper must be visible'
+        images = [poster_papers[id(item)] for item in (before, after)] if crop == POSTER else [item.crop(region) for item, region in zip((before, after), regions)]
         if not changed:
             assert images[0].size == images[1].size, (name, [item.size for item in images])
+        if changed and images[0].size != images[1].size:
+            size = tuple(max(a, b) for a, b in zip(images[0].size, images[1].size))
+            padded = [Image.new('RGB', size, WHITE), Image.new('RGB', size, WHITE)]
+            for target, source in zip(padded, images): target.paste(source)
+            images = padded
         difference = ImageChops.difference(*images).convert('L')
         changed_pixels = sum(difference.histogram()[13:])
         assert changed_pixels > 100 if changed else changed_pixels == 0, (name, changed_pixels)
@@ -308,12 +432,49 @@ def main():
         assert saved['settings'] == (DEFAULT_SETTINGS if settings is None else settings), saved
         return saved
 
+    def ending_controls(prefix):
+        initial = capture(prefix)
+        assert ending_visible(initial), f'{prefix}: fixed FIN controls must be visible'
+        focus_bounds(initial)
+        key('Tab'); key('Return')  # Enlarge; Download was initially focused.
+        key('Tab'); key('Tab')  # Explore, then the independent poster scroll.
+        expanded = capture(prefix + '-expanded')
+        key('End')
+        footer = capture(prefix + '-footer')
+        for region in (FIN_HEADING, FIN_ACTIONS):
+            assert ImageChops.difference(expanded.crop(region), footer.crop(region)).getbbox() is None, 'Scrolling must not move or clip FIN heading/actions'
+        compare('Expanded ending scroll exposes the evidence footer', expanded, footer, changed=True, crop=(124, 245, 1156, 740))
+        key('Home')
+        restored = capture(prefix + '-expanded-top')
+        assert ImageChops.difference(expanded, restored).getbbox() is None, 'Home restores the exact expanded top'
+        key('shift+Tab'); key('shift+Tab'); key('Return')  # Reduce without leaving FIN.
+        reduced = capture(prefix + '-compact-restored')
+        assert ending_visible(reduced)
+        key('shift+Tab')  # Restore initial Download focus for the next real action.
+        finale_checks.append({'check': prefix + ' fixed FIN heading/actions, keyboard Enlarge/End/Home/Reduce',
+                              'heading_crop': FIN_HEADING, 'actions_crop': FIN_ACTIONS})
+
     def workshop():
         key('Escape')
+        walk_to(x=283, y=130)
+        prompt('prompt-comparison-complete', 'artifact')
+        key('e')
+        after = capture('comparison-artifact-after')
+        assert dialogue_bounds(after) is None
+        compare('Actual inspected comparison exhibit changes after learning', comparison_before, after, changed=True)
+        key('Escape')
+        approach_host()
         archive_before = capture('poster-archive-before')
         click(140, 765)
         intro = dialogue('poster-intro')
-        choose(2)  # Archive intro: begin, then the appended workshop.
+        choose()  # Completed host's primary action is Seguir explorando.
+        stationary('Completed Mateo primary action only resumes exploration', archive_before, screen())
+        key('e'); dialogue('poster-revisit')
+        choose(2)  # Repasar la actividad still opens the first activity.
+        capture('comparison-replay')
+        private_progress(['printing', 'comparison'])
+        key('Escape'); key('e'); dialogue('poster-revisit-workshop')
+        choose(3)  # Seguir explorando, Repasar, then Crear mi propio cartel.
         capture('poster-defaults', changed_title_from=intro)
         key('Tab'); key('Tab'); option(0, 1)  # Duplicate pair must stay in the editor.
         choose(3)
@@ -358,8 +519,9 @@ def main():
         draft = capture('poster-unpublished-draft')
         compare('A revised unpublished draft differs', published, draft, changed=True, crop=POSTER)
         choose(); choose(6)  # Return to editing; Cancelar y conservar mi publicación.
-        compare('Published headline appears in the archive scene', archive_before, capture('poster-cancelled-room'),
-                changed=True, crop=(132, 536, 1080, 596))
+        cancelled = capture('poster-cancelled-room')
+        assert ImageChops.difference(archive_before.crop(HOUSE), cancelled.crop(HOUSE)).getbbox() is None
+        poster_checks.append({'check': 'Cancelled edit leaves physical archive unchanged; publication checked through the actual exhibit next'})
         key('e')
         compare('Cancel keeps the previous publication', published, capture('poster-after-cancel'), crop=POSTER)
         key('Escape'); key('j'); choose(2)
@@ -384,6 +546,7 @@ def main():
         key('Escape')
         plaza = capture('plaza')
         plaza_pixel = plaza.getpixel((50, 160))
+        assert prompt_bounds(plaza) is None, 'No nearby prompt at the plaza spawn'
         for index in range(4):
             left = 644 + index * 151
             assert all(plaza.getpixel(point) == (92, 124, 105) for point in [(left + 20, 20), (left, 40), (left + 142, 40)]), f'Badge {index + 1} bounds'
@@ -429,14 +592,28 @@ def main():
             for point in [(110, 711), (250, 711), (390, 711), (470, 765)]:
                 click(*point); key('Escape')
                 stationary(f'Old control {point} cannot leave house {index + 1}', before, screen())
+            walk_to(x=283, y=130)
+            artifact_position = prompt(f'prompt-artifact-{index + 1}', 'artifact')
+            key('e')
+            artifact = capture(f'early-artifact-{index + 1}')
+            assert dialogue_bounds(artifact) is None and prompt_bounds(artifact) is None, 'Objects open an exhibit/machine, never host speech'
+            if index == 1:
+                comparison_before = capture('comparison-artifact-before')
+            assert progress().get('completed', []) == [], 'Inspecting an object cannot complete/start a lesson'
+            key('Escape')
+            stationary(f'Inspecting object {index + 1} returns to its physical position', artifact_position, screen())
+            approach_host()
+            prompt(f'prompt-host-{index + 1}', 'host')
             if index > 0:
-                approach_host()
                 before = screen()
                 key('e'); dialogue(f'house-{index + 1}-prerequisite')
                 choose()  # Both early visits offer Seguir explorando.
                 key('Escape')
                 stationary(f'House {index + 1} prerequisite gives directions without travel', before, capture(f'house-{index + 1}-prerequisite-closed'))
                 assert progress().get('completed', []) == []
+            else:
+                key('e'); dialogue('fresh-luz-after-press')
+                key('Escape')
             leave_house(index)
         phases.append('WASD-only traversal of all three houses before learning; automatic upward entry/downward exit; arrows, Escape, removed controls and prerequisites never teleport')
         for chapter, answers in enumerate([[1, 1, 1], [2, 1, 1]]):
@@ -496,17 +673,26 @@ def main():
         stationary('Press cannot be activated remotely from the printshop entrance', before, screen())
         private_progress(['printing', 'comparison', 'consultation'])
         walk_to(x=283, y=110)
+        press_world = prompt('prompt-final-press', 'artifact')
         press_position = avatar_position(screen())
         key('e')
         capture('campaign-press')
-        choose()  # Imprimir cartel.
-        time.sleep(.7)  # Let the authored reveal finish before recording the ending.
-        ending = capture('ending')
-        assert ending.getpixel((110, 120)) == (246, 240, 218), 'FIN uses the large paper panel'
+        key('Tab')
+        reveal_started = time.monotonic()
+        key('Return')  # Imprimir cartel, normal reveal with no skip input.
+        reveal = capture('campaign-reveal')
+        assert reveal.getpixel((110, 120)) == PINK and not ending_visible(reveal), 'Normal first print must visibly reveal the sheet'
+        while not ending_visible(screen()):
+            assert time.monotonic() - reveal_started <= 2.5, 'Normal print reveal exceeded 2.5 seconds'
+            time.sleep(.03)
+        reveal_elapsed = time.monotonic() - reveal_started
+        assert reveal_elapsed <= 2.5, ('Normal reveal limit', reveal_elapsed)
+        finale_checks.append({'check': 'First print reveal automatically completes within 2.5 seconds', 'seconds': round(reveal_elapsed, 3)})
+        ending_controls('ending')
         private_progress(['printing', 'comparison', 'consultation'], printed=True)
         finale_checks.append({'check': 'Walked to Luz and pressed E at the local printer before Imprimir cartel', 'position': press_position})
         visible_before = set(tool('search', '--onlyvisible', '--pid', str(game.pid)).splitlines())
-        choose()  # Descargar cartel PDF.
+        key('Return')  # FIN directly focuses Descargar cartel PDF.
         deadline = time.monotonic() + 8
         while True:
             windows = set(tool('search', '--onlyvisible', '--pid', str(game.pid)).splitlines()) - visible_before
@@ -528,6 +714,7 @@ def main():
         finale_checks.append({'check': 'Cancelling PDF save preserves printed completion'})
         key('Escape')
         completed_hud = capture('campaign-complete-hud')
+        stationary('Closing FIN leaves the player at the same physical press', press_world, completed_hud)
         compare('Fourth badge changes only after printing', sent_room, completed_hud, changed=True, crop=(1097, 20, 1240, 80))
         phases.append('Inés review/send, physical return to Luz, nearby press, fourth completion step, FIN and native PDF save dialog cancellation')
         open_settings()
@@ -542,12 +729,15 @@ def main():
         private_progress(['printing', 'comparison', 'consultation'], printed=True, settings=large_settings)
         key('Escape')
         capture('house-large')
-        key('e'); capture('ending-large')
-        key('Tab'); capture('ending-large-download-focused')
+        reopened = time.monotonic()
+        key('e')
+        assert ending_visible(screen()) and time.monotonic() - reopened < 1, 'Reopened FIN has no reveal'
+        capture('ending-large-download-focused')
+        ending_controls('ending-large')
         key('Escape')
         phases.append('ending, private save, enlarged text, mute and reduced motion')
         leave_house(0); enter_house(1); approach_host()
-        click(140, 765); dialogue('poster-large-intro', large=True); choose(2)
+        click(140, 765); dialogue('poster-large-intro', large=True); choose(3)
         for control in ['first', 'second', 'metric', 'question']:
             key('Tab'); focused(f'poster-large-{control}')
         for control in ['metric', 'second', 'first']:
@@ -591,7 +781,7 @@ def main():
                   'test_sha256':fingerprints[str(Path(__file__).resolve())],
                   'poster_checks':poster_checks,
                   'movement_checks':movement_checks,
-                  'dialogue_checks':dialogue_checks, 'finale_checks':finale_checks, 'checkpoints':checkpoints,
+                  'dialogue_checks':dialogue_checks, 'prompt_checks':prompt_checks, 'finale_checks':finale_checks, 'checkpoints':checkpoints,
                   'runtime_errors':errors,
                   'poster_input':{'first':'state_19','second':'state_02','metric':'rate','question':'voices'},
                   'limits':['Automated operator, not a participant pilot', 'Screenshots require visual review; not formal accessibility certification']}
@@ -605,7 +795,7 @@ def main():
         (EVIDENCE/'native-window.json').write_text(json.dumps({'status':'failed', 'error':str(error),
             'elapsed_seconds':round(time.monotonic() - started, 3), 'source_sha256':source_hashes,
             'tested_files':fingerprints, 'phases':phases, 'poster_checks':poster_checks, 'movement_checks':movement_checks,
-            'dialogue_checks':dialogue_checks, 'finale_checks':finale_checks, 'checkpoints':checkpoints,
+            'dialogue_checks':dialogue_checks, 'prompt_checks':prompt_checks, 'finale_checks':finale_checks, 'checkpoints':checkpoints,
             'runtime_errors':runtime_errors(EVIDENCE/'native-window.log')}, indent=2)+'\n')
         raise
     finally:

@@ -133,7 +133,9 @@ def main():
             journeys = run([editor, "--headless", "--main-pack", unpacked / "build/linux/voces-de-la-plaza.pck",
                             "--script", ROOT / "tests/native_journey.gd"], unpacked, environment, report, log)
             require(not re.search(r"(?im)^\s*(?:SCRIPT ERROR|ERROR):|ObjectDB instances leaked|resources still in use", boot + journeys), "Godot runtime errors/leaks")
-            require("Compiled Linux journeys: 0 failures; five consultation paths exercised" in journeys, "Compiled-PCK journeys did not finish")
+            completion = ("Compiled Linux journeys: 0 failures; five consultation paths and "
+                          "normal/E/Enter/button/reduced ending modes exercised (code-call fixture, not GUI travel)")
+            require(completion in journeys.splitlines(), "Compiled-PCK journeys did not finish all paths and ending modes")
             report.update(native_clean_boot="passed", compiled_pck_paths=["A", "B", "C", "unmarked", "decline"])
             class Handler(SimpleHTTPRequestHandler):
                 def log_message(self, message, *args):

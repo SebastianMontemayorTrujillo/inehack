@@ -22,6 +22,7 @@ const mediaRangeCancellations = [];
 const requests = [];
 const hashes = [];
 const accessibility = [];
+const reveals = [];
 const loaded = page => page.locator('#data-status').filter({ hasText: 'Archivo CCPC 2024 e historia compartida cargados' }).waitFor();
 const enter = (page, id) => page.locator(`[data-house="${id}"]`).click();
 const saved = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)), PROGRESS_KEY);
@@ -34,8 +35,8 @@ async function close(context, page) {
   await page.waitForLoadState('networkidle'); await context.close();
 }
 
-async function session(chapters = ['printing', 'comparison'], settings = {}) {
-  const context = await browser.newContext({ acceptDownloads: true, viewport: { width: 1280, height: 900 } });
+async function session(chapters = ['printing', 'comparison'], settings = {}, reducedMotion = 'no-preference') {
+  const context = await browser.newContext({ acceptDownloads: true, reducedMotion, viewport: { width: 1280, height: 900 } });
   // Seed only neutral completion when there is no save; reloads exercise the
   // app's actual version-3 record in this isolated browser context.
   await context.addInitScript(({ key, chapters, settings }) => {
@@ -57,6 +58,8 @@ async function session(chapters = ['printing', 'comparison'], settings = {}) {
   page.on('request', request => requests.push({ url: request.url(), method: request.method() }));
   page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
   await page.goto(url.href); await loaded(page);
+  assert.equal(await page.evaluate(() => [...document.fonts].filter(font => font.family === 'Atkinson Hyperlegible' && font.status === 'loaded').length), 2,
+    'Regular and bold Atkinson are actually loaded from the shared local resource');
   return { context, page };
 }
 
@@ -78,8 +81,23 @@ async function send(page) {
   assert.equal(await page.locator('#download-campaign').isVisible(), false, 'No file before printing');
 }
 
-async function print(page) {
-  await enter(page, 'printshop'); await page.locator('#campaign-print').click();
+async function print(page, skip = 'Enter') {
+  await enter(page, 'printshop');
+  const started = Date.now();
+  await page.locator('#campaign-print').click();
+  assert.equal(await page.locator('#ending').evaluate(node => node.tagName), 'DIALOG', 'FIN is a dedicated screen');
+  assert.equal(await page.locator('#house-printshop').isVisible(), true, 'Printing does not travel');
+  const reduced = await page.evaluate(() => document.body.classList.contains('reduced-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (reduced) assert.equal(await page.locator('#print-reveal').isVisible(), false, 'Reduced motion skips the reveal immediately');
+  else if (skip) {
+    assert.equal(await page.locator('#print-reveal').isVisible(), true);
+    if (skip === 'button') await page.locator('#skip-print').click();
+    else await page.keyboard.press(skip);
+  }
+  await page.waitForFunction(() => document.querySelector('#ending').open && !document.querySelector('#ending-finished').hidden);
+  const duration = Date.now() - started;
+  assert.ok(duration <= 2500, `Print reveal completed within 2.5 seconds (${duration}ms)`);
+  reveals.push({ skip: reduced ? 'reduced motion' : skip || 'automatic', duration });
   assert.equal(await page.locator('#ending-title').innerText(), story.campaign.ending_title);
   assert.equal(await page.locator('#ending-title').evaluate(node => node === document.activeElement), true);
   assert.match(await page.locator('#campaign-format').innerText(), /Carta/);
@@ -89,7 +107,7 @@ async function download(page, name) {
   const downloading = page.waitForEvent('download');
   await page.locator('#download-campaign').click();
   const file = await downloading;
-  assert.equal(file.suggestedFilename(), 'cartel-voces-de-la-plaza.pdf');
+  assert.equal(file.suggestedFilename(), 'cartel-ciudadano.pdf');
   const path = join(evidence, name); await file.saveAs(path);
   assert.equal(await file.failure(), null);
   const bytes = await readFile(path);
@@ -117,16 +135,37 @@ async function checkFinaleLayout(page, phase) {
   assert.deepEqual(result.violations, [], `axe: ${phase}`);
   accessibility.push({ phase, violations: result.violations, incomplete: result.incomplete.map(item => item.id) });
   for (const width of [320, 768, 1440]) {
-    await page.setViewportSize({ width, height: 900 });
+    await page.setViewportSize({ width, height: width === 320 ? 568 : 900 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `${phase} at ${width}px`);
+    if (phase === 'ending') await visibleFinalActions(page, `${width}px`);
+    if (phase === 'ending') await page.screenshot({ path: join(evidence, `html-ending-${width}.png`) });
   }
+  if (phase === 'ending') await page.locator('#explore-after-ending').click();
   await page.locator('.settings summary').click(); await page.locator('#text-size').selectOption('large');
-  const style = await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+  const style = await page.addStyleTag({ content: ':root { font-size: 200%; }' });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).fontSize), '32px');
+  assert.equal(await page.evaluate(() => getComputedStyle(document.body).fontSize), '40px');
   await page.setViewportSize({ width: 768, height: 900 });
+  if (phase === 'ending') await page.locator('#reopen-ending').click();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `${phase} large setting and 200% CSS text`);
+  if (phase === 'ending') {
+    await visibleFinalActions(page, 'large / 200%');
+    await page.screenshot({ path: join(evidence, 'html-ending-large-200.png') });
+    await page.locator('#explore-after-ending').click();
+  }
   await style.evaluate(node => node.remove());
   await page.locator('#text-size').selectOption('normal'); await page.locator('.settings summary').click();
   await page.setViewportSize({ width: 1280, height: 900 });
+  if (phase === 'ending') await page.locator('#reopen-press-ending').click();
+}
+
+async function visibleFinalActions(page, label) {
+  for (const selector of ['#ending-title', '#download-campaign', '#enlarge-campaign', '#explore-after-ending']) {
+    const rect = await page.locator(selector).boundingBox();
+    const viewport = page.viewportSize();
+    assert.ok(rect && rect.y >= 0 && rect.x >= 0 && rect.y + rect.height <= viewport.height && rect.x + rect.width <= viewport.width,
+      `${selector} visible without scrolling: ${label}`);
+  }
 }
 
 try {
@@ -135,7 +174,7 @@ try {
   let defaultBytes;
   let index = 0;
   for (const choice of ['A', 'B', 'C', 'unmarked', 'decline']) {
-    const { context, page } = await session();
+    const { context, page } = await session(['printing', 'comparison'], { reducedMotion: index === 4 });
     assert.equal(await page.locator('#background-music').evaluate(node => node.paused), true);
     assert.equal(await page.locator('#background-music').evaluate(node => node.volume), 0.2);
     await finishConsultation(page, choice);
@@ -146,17 +185,33 @@ try {
     if (index === 0) {
       await checkFinaleLayout(page, 'dispatch');
       await reload(page);
-      await enter(page, 'printshop'); assert.equal(await page.locator('#campaign-press').isVisible(), false);
+      await enter(page, 'printshop'); assert.equal(await page.locator('#campaign-print').isVisible(), false);
       await enter(page, 'hall'); assert.equal(await page.locator('#campaign-status').innerText(), story.campaign.reload_note);
       await send(page);
     }
-    await print(page);
+    await print(page, ['button', 'e', 'Enter', null, null][index]);
     if (index === 0) await checkFinaleLayout(page, 'ending');
     const { bytes } = await download(page, `campaign-default-${index}.pdf`);
     if (defaultBytes) assert.deepEqual(bytes, defaultBytes, 'Ballot never changes PDF bytes');
     else defaultBytes = bytes;
     const again = await download(page, `campaign-repeat-${index}.pdf`);
     assert.deepEqual(again.bytes, bytes, 'Repeat download preserves the frozen PDF');
+    await page.locator('#enlarge-campaign').click();
+    assert.equal(await page.locator('#ending-poster').isVisible(), true);
+    assert.match(await page.locator('#ending-poster').innerText(), /AGUASCALIENTES/);
+    assert.equal(/Latas|INEhack|Voces de la Plaza/.test(await page.locator('#ending-poster .composed-poster').innerText()), false);
+    assert.deepEqual(await page.locator('#ending-poster .bar-fill').evaluateAll(nodes => nodes.map(node => getComputedStyle(node).backgroundColor)),
+      ['rgb(180, 20, 118)', 'rgb(180, 20, 118)'], 'Both states receive the shared pink bar treatment');
+    if (index === 0) await page.screenshot({ path: join(evidence, 'html-ending-enlarged-poster.png') });
+    await page.locator('#ending-details').evaluate(node => { node.scrollTop = node.scrollHeight; });
+    await visibleFinalActions(page, 'expanded poster scrolled');
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#ending').isVisible(), false);
+    assert.equal(await page.locator('#house-printshop').isVisible(), true, 'Closing FIN preserves location');
+    assert.equal(await page.locator('#reopen-press-ending').evaluate(node => node === document.activeElement), true);
+    await page.locator('#reopen-press-ending').click();
+    assert.equal(await page.locator('#print-reveal').isVisible(), false, 'Reopening never replays the reveal');
+    assert.equal(await page.locator('#ending-title').isVisible(), true);
     hashes.push(digest(bytes));
     const progress = await saved(page);
     assert.equal(progress.campaign_printed, true); assert.equal(progress.version, 3);
@@ -168,6 +223,9 @@ try {
     assert.equal(await page.locator('#ending').isVisible(), true);
     assert.equal(await page.locator('#download-campaign').isVisible(), false);
     assert.equal(await page.locator('#download-campaign').getAttribute('href'), null);
+    assert.equal(await page.locator('#enlarge-campaign').isVisible(), false, 'No fabricated preview after reload');
+    assert.equal(await page.locator('#campaign-reload-note').innerText(), story.campaign.completed_reload);
+    await page.locator('#explore-after-ending').click();
     await enter(page, 'hall'); assert.equal(await page.locator('#campaign-dispatch').isVisible(), false);
     await close(context, page); index++;
   }
@@ -186,7 +244,17 @@ try {
   await print(page);
   const custom = await download(page, 'campaign-custom-frozen.pdf');
   assert.match(custom.text, /NUEVO LEON/); assert.notDeepEqual(custom.bytes, defaultBytes);
-  await page.screenshot({ path: join(evidence, 'html-campaign-ending.png'), fullPage: true });
+  await page.screenshot({ path: join(evidence, 'html-campaign-ending.png') });
+  await page.locator('#explore-after-ending').click();
+  assert.equal(await page.locator('#reopen-press-ending').evaluate(node => node === document.activeElement), true, 'The visible Explore button restores a usable control');
+  await publish(page, 'rate');
+  await page.locator('#reopen-ending').click();
+  await page.locator('#enlarge-campaign').click();
+  assert.match(await page.locator('#ending-poster-title').innerText(), /Más registros: NUEVO LEON/,
+    'Editing the workshop after printing cannot change the frozen enlarged poster');
+  const afterPrintEdit = await download(page, 'campaign-after-print-edit.pdf');
+  assert.deepEqual(afterPrintEdit.bytes, custom.bytes);
+  await page.locator('#explore-after-ending').click();
   await page.locator('.settings summary').click();
   await page.locator('#music-muted').check();
   await page.locator('#music-volume').focus(); await page.keyboard.press('Home');
@@ -195,6 +263,7 @@ try {
   await reload(page);
   assert.equal(await page.locator('#background-music').evaluate(node => node.muted), true);
   assert.equal(await page.locator('#background-music').evaluate(node => node.volume), 0.35);
+  await page.locator('#explore-after-ending').click();
   await enter(page, 'printshop');
   assert.equal(await page.locator('#background-music').evaluate(node => node.paused), true, 'Mute survives first interaction after reload');
   await page.locator('.settings summary').click(); await page.locator('#music-muted').uncheck();
@@ -204,9 +273,11 @@ try {
   assert.equal((await saved(page)).campaign_printed, false);
   assert.deepEqual((await saved(page)).completedChapters, []);
   assert.equal((await saved(page)).settings.music_volume, 0.2);
-  assert.equal(await page.locator('#campaign-press').isVisible(), false);
+  assert.equal(await page.locator('#plaza').isVisible(), true, 'Reset starts in the plaza');
+  await enter(page, 'printshop');
+  assert.equal(await page.locator('#campaign-print').isVisible(), false);
   assert.equal(await page.locator('#download-campaign').getAttribute('href'), null);
-  assert.equal(await page.locator('#plaza').isVisible(), true);
+  assert.equal(await page.locator('#house-printshop').isVisible(), true);
   await close(context, page);
 
   const replacement = await session(['printing', 'comparison', 'consultation']);
@@ -238,6 +309,21 @@ try {
   assert.notDeepEqual(changed.bytes, custom.bytes, 'Only explicit replacement changes the print');
   await close(replacement.context, replacement.page);
 
+  const systemMotion = await session(['printing', 'comparison', 'consultation'], {}, 'reduce');
+  await enter(systemMotion.page, 'hall'); await send(systemMotion.page); await print(systemMotion.page);
+  await close(systemMotion.context, systemMotion.page);
+
+  const interrupted = await session(['printing', 'comparison', 'consultation']);
+  await enter(interrupted.page, 'hall'); await send(interrupted.page);
+  await enter(interrupted.page, 'printshop'); await interrupted.page.locator('#campaign-print').click();
+  assert.equal(await interrupted.page.locator('#print-reveal').isVisible(), true);
+  assert.equal((await saved(interrupted.page)).campaign_printed, true, 'Printing commits once before the reveal');
+  await interrupted.page.keyboard.press('Escape');
+  assert.equal(await interrupted.page.locator('#house-printshop').isVisible(), true);
+  await interrupted.page.locator('#reopen-press-ending').click();
+  assert.equal(await interrupted.page.locator('#print-reveal').isVisible(), false, 'An interrupted reveal is never replayed');
+  await close(interrupted.context, interrupted.page);
+
   assert.equal(requests.some(request => request.method !== 'GET' || new URL(request.url).origin !== url.origin), false, 'No response telemetry or external requests');
   assert.deepEqual(errors, [], 'All runtime, console and network checks remain strict');
   const result = { url: url.href, browser: browser.version(), finale: 'passed', allFiveActions: 'passed',
@@ -245,7 +331,7 @@ try {
     defaultHashes: hashes, customHash: digest(custom.bytes), replacementHash: digest(changed.bytes),
     snapshotCancellation: 'passed: draft and async generation cancellation; failed replacement preserves queue', queuedReload: 'recreate at Inés', completedReload: 'completion without regenerated PDF',
     audio: 'interaction start, 20% default, persisted mute/35% volume, reset; no media errors',
-    mediaRangeCancellations, privacy: 'passed', accessibility,
+    mediaRangeCancellations, privacy: 'passed', accessibility, reveals,
     widths: [320, 768, 1440], text200Percent: 'passed (CSS text enlargement; native zoom not tested)', errors };
   await writeFile(join(evidence, 'browser-campaign-results.json'), JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result, null, 2));

@@ -2,7 +2,9 @@
 import io
 import json
 import re
+import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 from pypdf import PdfReader
 
@@ -28,9 +30,35 @@ def inspect_pdf(data):
         if number:
             assert data[offset:].startswith(f"{number} 0 obj\n".encode())
     links = [str(ref.get_object()["/A"]["/URI"]) for ref in page.get("/Annots", [])]
-    rectangles = [list(map(float, args)) for args, operator in page.get_contents().operations if operator == b"re"]
+    operations = page.get_contents().operations
+    rectangles = [list(map(float, args)) for args, operator in operations if operator == b"re"]
+    colors = [list(map(float, args)) for args, operator in operations if operator == b"rg"]
+    sizes = [float(args[1]) for args, operator in operations if operator == b"Tf"]
+    # Poppler measures actual rendered words independently of our layout/font JSON.
+    bbox = subprocess.run(["pdftotext", "-bbox", "-", "-"], input=data,
+                          capture_output=True, check=True)
+    assert not bbox.stderr, bbox.stderr.decode()
+    words = [{"text": node.text, **{key: float(node.attrib[key]) for key in
+              ("xMin", "yMin", "xMax", "yMax")}}
+             for node in ET.fromstring(bbox.stdout).iter("{http://www.w3.org/1999/xhtml}word")]
+    assert words, "No searchable words"
+    for word in words:
+        assert 36 <= word["xMin"] < word["xMax"] <= 576.01, word
+        assert 36 <= word["yMin"] < word["yMax"] <= 765, word
+        for x, y, width, height in rectangles:
+            if height > 16:
+                continue  # Masthead/discussion backgrounds intentionally contain words.
+            overlap_x = min(word["xMax"], x + width) - max(word["xMin"], x)
+            overlap_y = min(word["yMax"], 792 - y) - max(word["yMin"], 792 - y - height)
+            assert overlap_x <= 0.1 or overlap_y <= 0.1, ("Text overlaps a bar/rule", word)
+    for index, first in enumerate(words):
+        for second in words[index + 1:]:
+            overlap_x = min(first["xMax"], second["xMax"]) - max(first["xMin"], second["xMin"])
+            overlap_y = min(first["yMax"], second["yMax"]) - max(first["yMin"], second["yMin"])
+            assert overlap_x <= 0.1 or overlap_y <= 0.1, ("Overlapping words", first, second)
     return {"text": " ".join(page.extract_text().split()), "fonts": fonts,
-            "links": links, "rectangles": rectangles, "bytes": len(data)}
+            "links": links, "rectangles": rectangles, "colors": colors,
+            "font_sizes": sizes, "word_count": len(words), "bytes": len(data)}
 
 
 if __name__ == "__main__":

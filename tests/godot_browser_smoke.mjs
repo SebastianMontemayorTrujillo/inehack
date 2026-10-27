@@ -17,7 +17,15 @@ const worldSpeed = 65 / 2.5; // CharacterBody2D velocity is global; the world is
 const sha256 = data => createHash('sha256').update(data).digest('hex');
 const activities = ['participation-reading', 'unknown', 'unknown-transfer', 'more-count', 'higher-rate', 'comparison-transfer'];
 const crops = { panel: [180, 160, 1080, 205], spaciousTitle: [124, 60, 850, 104], dialogueTitle: [64, 444, 870, 488],
-  dialogueBody: [64, 444, 1216, 752], house: [116, 248, 800, 294], body: [184, 264, 1080, 664], poster: [124, 210, 1140, 650] };
+  dialogueBody: [64, 444, 1216, 752], house: [180, 375, 350, 470], body: [184, 264, 1080, 664], poster: [124, 210, 1140, 650],
+  exhibit: [184, 210, 1080, 664], prompt: [300, 310, 900, 380], ending: [124, 60, 1156, 145],
+  endingActions: [124, 145, 1156, 220], endingPoster: [124, 245, 1156, 740] };
+const paperScans = new Set(['poster-count', 'poster-rate', 'poster-saved', 'poster-published',
+  'poster-unpublished-draft', 'poster-after-cancel', 'poster-from-journal']);
+const interactionRefs = ['early-artifact-1', 'early-artifact-2', 'early-artifact-3', 'comparison-artifact-before',
+  'comparison-artifact-after', 'comparison-replay', 'poster-revisit', 'poster-revisit-workshop',
+  'fresh-luz-after-press', 'prompt-final-press', 'prompt-comparison-complete', ...[1, 2, 3].flatMap(n => [`prompt-host-${n}`, `prompt-artifact-${n}`])];
+const endingRefs = ['ending', 'ending-large'].flatMap(name => [name, ...['expanded', 'footer', 'expanded-top', 'compact-restored'].map(part => `${name}-${part}`)]);
 const defaultSettings = { large_text: false, muted: false, reduced_motion: false, music_volume: 0.2 };
 const dialogueViews = new Set(['intro-1', 'intro-2', 'house-2-prerequisite', 'house-3-prerequisite', 'poster-intro',
   'consultation-intro', 'poster-carried-intro', 'consultation-poster', 'poster-carried-acknowledgment', 'campaign-intro', 'campaign-sent']);
@@ -39,21 +47,46 @@ const workshopRefs = ['poster-archive-before', 'poster-defaults', 'poster-duplic
 const pixelReader = String.raw`
 import hashlib, io, json, sys
 from PIL import Image, ImageChops
-from tests.native_window_smoke import focus_bounds, avatar_position, poster_bounds, dialogue_bounds
+from tests.native_window_smoke import focus_bounds, avatar_position, poster_bounds, poster_edge, stitch_poster, dialogue_bounds, prompt_bounds, ending_visible, HOUSE, PINK
 options = json.loads(sys.argv[1])
+def mask(picture, light=False, poster=False):
+    if not poster:
+        return picture.convert('L').point(lambda p: 255 if (p > 210 if light else p < 110) else 0, mode='1')
+    # Ignore the broad pink masthead/bar fills. Actual ink text must match;
+    # common brand rectangles cannot dominate a wrong-poster comparison.
+    result = Image.new('1', picture.size)
+    result.putdata([255 if max(rgb) < 110 and max(rgb) - min(rgb) < 32 else 0 for rgb in picture.getdata()])
+    return result
+def compare_masks(pictures, light=False, poster=False):
+    masks = [mask(item, light, poster) for item in pictures]
+    counts = [item.convert('L').histogram()[255] for item in masks]
+    overlap = ImageChops.logical_and(*masks).convert('L').histogram()[255] if masks[0].size == masks[1].size else 0
+    return {'ink_pixels': counts, 'title_ink_f1': 2 * overlap / sum(counts) if min(counts) > 200 else 0}
+if options.get('paper_frames'):
+    paper = stitch_poster([Image.open(path).convert('RGB') for path in options['paper_frames']])
+    paper.save(options['paper_output'])
+    result = {'poster_sha256': hashlib.sha256(paper.tobytes()).hexdigest(), 'paper_size': paper.size}
+    result.update(compare_masks([paper, Image.open(options['reference']).convert('RGB')], poster=True))
+    print(json.dumps(result))
+    sys.exit(0)
 image = Image.open(io.BytesIO(sys.stdin.buffer.read())).convert('RGB')
 assert image.size == (1280, 800), image.size
 result = {'terrain': list(image.getpixel((50, 160))),
           'panel': list(image.getpixel((180, 160))),
           'title_sha256': hashlib.sha256(image.crop((180, 160, 1080, 205)).tobytes()).hexdigest(),
-          'house_sha256': hashlib.sha256(image.crop((116, 248, 800, 294)).tobytes()).hexdigest(),
+          'house_sha256': hashlib.sha256(image.crop(HOUSE).tobytes()).hexdigest(),
           'body_sha256': hashlib.sha256(image.crop((184, 264, 1080, 664)).tobytes()).hexdigest(),
           'poster_sha256': hashlib.sha256(image.crop((124, 210, 1140, 650)).tobytes()).hexdigest(),
-          'artifact_sha256': hashlib.sha256(image.crop((132, 536, 1080, 596)).tobytes()).hexdigest()}
+          'ending_heading_sha256': hashlib.sha256(image.crop((124, 60, 1156, 145)).tobytes()).hexdigest(),
+          'ending_actions_sha256': hashlib.sha256(image.crop((124, 145, 1156, 220)).tobytes()).hexdigest(),
+          'ending_poster_sha256': hashlib.sha256(image.crop((124, 245, 1156, 740)).tobytes()).hexdigest()}
 result['spacious'] = image.getpixel((110, 120)) == (246, 240, 218)
+result['ending_shell'] = image.getpixel((110, 120)) == PINK
+result['ending'] = ending_visible(image)
+result['prompt_bounds'] = prompt_bounds(image)
 result['dialogue_bounds'] = dialogue_bounds(image)
 result['dialogue'] = result['dialogue_bounds'] is not None
-result['panel_open'] = result['dialogue'] or result['spacious'] or result['panel'] == [246, 240, 218]
+result['panel_open'] = result['dialogue'] or result['spacious'] or result['ending_shell'] or result['panel'] == [246, 240, 218]
 if result['dialogue']:
     offset = result['dialogue_bounds'][1] - 420
     result['title_sha256'] = hashlib.sha256(image.crop((64, 444 + offset, 870, 488 + offset)).tobytes()).hexdigest()
@@ -61,6 +94,7 @@ if result['dialogue']:
 elif result['spacious']:
     result['title_sha256'] = hashlib.sha256(image.crop((124, 60, 850, 104)).tobytes()).hexdigest()
 result['paper_bounds'] = poster_bounds(image) if result['spacious'] else None
+result['paper_bottom'] = poster_edge(image, result['paper_bounds'], 'bottom')
 if result['paper_bounds']:
     result['poster_sha256'] = hashlib.sha256(image.crop(result['paper_bounds']).tobytes()).hexdigest()
 
@@ -99,23 +133,20 @@ if options.get('reference'):
     assert reference.size == image.size, reference.size
     crop = tuple(options['crop'])
     regions = [crop, crop]
-    if crop == (124, 210, 1140, 650):
+    if crop == (124, 210, 1140, 650) and all(item.getpixel((110, 120)) == (246, 240, 218) for item in (image, reference)):
         bounds = [poster_bounds(item) for item in (image, reference)]
         if all(bounds):
             regions = bounds
     # Dialogue has light text on dark translucent paper. Comparing dark pixels
     # there would falsely match any two mostly-dark conversations.
-    light = crop in ((64, 444, 870, 488), (64, 444, 1216, 752), (64, 384, 1216, 752))
-    masks = [item.crop(region).convert('L').point(lambda p: 255 if (p > 210 if light else p < 110) else 0, mode='1') for item, region in zip((image, reference), regions)]
-    counts = [mask.convert('L').histogram()[255] for mask in masks]
-    overlap = ImageChops.logical_and(*masks).convert('L').histogram()[255] if masks[0].size == masks[1].size else 0
-    result['ink_pixels'] = counts
-    result['title_ink_f1'] = 2 * overlap / sum(counts) if min(counts) > 200 else 0
+    light = crop in ((64, 444, 870, 488), (64, 444, 1216, 752), (64, 384, 1216, 752), (124, 60, 1156, 145))
+    result.update(compare_masks([item.crop(region) for item, region in zip((image, reference), regions)],
+                                light=light, poster=crop == (124, 210, 1140, 650)))
 print(json.dumps(result))
 `;
 
-function pixels(png, reference, crop = crops.panel, focus = true) {
-  const result = spawnSync('python3', ['-c', pixelReader, JSON.stringify({ reference, crop, focus })], {
+function pixels(png, reference, crop = crops.panel, focus = true, extra = {}) {
+  const result = spawnSync('python3', ['-c', pixelReader, JSON.stringify({ reference, crop, focus, ...extra })], {
     input: png, cwd: root, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' }, maxBuffer: 1024 * 1024, timeout: 5000,
   });
   assert.equal(result.status, 0, `Screenshot decoding failed: ${result.error || result.stderr}`);
@@ -131,7 +162,7 @@ async function selfTest() {
   assert.ok(equalRGB(plaza.terrain, pixels(await readFile(nativePath('door-return'))).terrain));
   const refs = ['house-1', 'house-2', 'house-3', 'quest-1-1', 'quest-1-2', 'quest-1-3', 'quest-2-1', 'quest-2-2', 'quest-2-3', 'ending'];
   for (const name of refs) {
-    const crop = name.startsWith('house-') ? crops.house : name === 'ending' ? crops.spaciousTitle : crops.panel;
+    const crop = name.startsWith('house-') ? crops.house : name === 'ending' ? crops.ending : crops.panel;
     assert.ok(titleMatches(pixels(await readFile(nativePath(name)), nativePath(name), crop)), name);
     const wrong = name.startsWith('house-') ? `house-${name === 'house-1' ? 2 : 1}` : (name === 'ending' ? 'quest-1-1' : 'ending');
     assert.ok(!titleMatches(pixels(await readFile(nativePath(wrong)), nativePath(name), crop)), `Reject wrong state for ${name}`);
@@ -203,17 +234,19 @@ async function main() {
     status: 'running', created_at_utc: new Date().toISOString(), url: url.href, viewport,
     run_kind: process.argv.includes('--implementation') ? 'implementation-on-existing-export' : 'final-export',
     environment: 'Playwright Chromium, fresh non-persistent context, exported Godot canvas',
-    phases: [], movement_checks: [], dialogue_checks: [], finale_checks: [], screenshots: [], progress: [], browser_errors: [], page_errors: [], error_context: [], reference_mismatches: [], warnings: [], request_failures: [],
+    phases: [], movement_checks: [], dialogue_checks: [], prompt_checks: [], poster_checks: [], finale_checks: [], screenshots: [], progress: [], browser_errors: [], page_errors: [], error_context: [], reference_mismatches: [], warnings: [], request_failures: [],
     visual_review: 'Required separately: pixel comparison is not OCR or a semantic reading of screenshots.',
     limits: ['Automated operator, not a participant pilot or accessibility certification',
       'One unmarked consultation path; all-five-choice coverage belongs to compiled-PCK/GUT and HTML checks'],
   };
   let browser, context, page, stage = 'preflight', closing = false, timedOut = false;
+  let comparisonBefore;
   let watchdog;
   const nativeNames = ['plaza', 'door-entry', 'door-return', 'house-1', 'house-2', 'house-3',
     'no-move-left', 'no-move-right', 'no-move-up', 'no-move-down', 'no-teleport-0', 'no-teleport-1', 'no-teleport-2', 'no-teleport-3', 'no-escape-exit',
     'house-2-prerequisite', 'house-2-prerequisite-closed', 'house-3-prerequisite', 'house-3-prerequisite-closed',
-    'quest-1-1', 'quest-1-2', 'quest-1-3', 'quest-2-1', 'quest-2-2', 'quest-2-3', 'ending', ...workshopRefs, ...finaleRefs];
+    'quest-1-1', 'quest-1-2', 'quest-1-3', 'quest-2-1', 'quest-2-2', 'quest-2-3', 'ending', ...workshopRefs, ...finaleRefs,
+    ...interactionRefs, ...endingRefs, ...[...paperScans].map(name => `${name}-paper`)];
   const artifactFiles = ['index.html', 'index.js', 'index.wasm', 'index.pck'];
   const responseChecks = [];
   await mkdir(evidence, { recursive: true });
@@ -226,22 +259,23 @@ async function main() {
   }
 
   async function checkpoint(name, { inside = true, panel = false, reference, referenceCrop, differentTitle, differentBody,
-    sameBody, differentPoster, samePoster, differentArtifact, visibleFocus = false, spacious = false, dialogue = false, largeDialogue = false, deferReference = false } = {}) {
+    sameBody, differentPoster, samePoster, visibleFocus = false, spacious = false, dialogue = false, ending = false, largeDialogue = false, deferReference = false } = {}) {
     stage = name;
     const deadline = Date.now() + 8000;
     let png, metrics;
     do {
       png = await page.screenshot({ type: 'png', timeout: 5000 });
-      const crop = referenceCrop || (dialogue ? crops.dialogueTitle : spacious ? crops.spaciousTitle : panel ? crops.panel : crops.house);
+      const crop = referenceCrop || (dialogue ? crops.dialogueTitle : ending ? crops.ending : spacious ? crops.spaciousTitle : panel ? crops.panel : crops.house);
       metrics = pixels(png, reference ? nativePath(reference) : undefined, crop);
       const location = inside ? 'interior' : 'plaza';
       const terrain = report.markers[panel && !dialogue ? `${location}_panel` : location];
       if (equalRGB(metrics.terrain, terrain) && metrics.panel_open === panel && metrics.spacious === spacious
+          && metrics.ending === ending
           && metrics.dialogue === dialogue && (!dialogue || metrics.dialogue_bounds[1] === (largeDialogue ? 360 : 420))
           && (!reference || titleMatches(metrics) || deferReference) && (!differentTitle || metrics.title_sha256 !== differentTitle)
           && (!differentBody || metrics.body_sha256 !== differentBody) && (!sameBody || metrics.body_sha256 === sameBody)
           && (!differentPoster || metrics.poster_sha256 !== differentPoster) && (!samePoster || metrics.poster_sha256 === samePoster)
-          && (!differentArtifact || metrics.artifact_sha256 !== differentArtifact) && (!visibleFocus || metrics.focus_rows.length)) {
+          && (!visibleFocus || metrics.focus_rows.length)) {
         await capture(name, png, { ...metrics, native_reference: reference || null, reference_crop: crop });
         if (reference && !titleMatches(metrics)) report.reference_mismatches.push({ phase: name, reference, ink_f1: metrics.title_ink_f1 });
         return metrics;
@@ -330,12 +364,50 @@ async function main() {
     report.movement_checks.push({ check: 'automatic S exit', house: index + 1, spawn: position });
   }
   const approachHost = () => walkTo({ x: 175, y: 130 });
-  const posterCheckpoint = (name, options = {}) => checkpoint(name, {
-    panel: true, spacious: posterViews.has(name), dialogue: dialogueViews.has(name), reference: name,
-    referenceCrop: dialogueViews.has(name) ? crops.dialogueBody : posterViews.has(name) ? crops.poster : crops.body, ...options,
-  });
+  async function prompt(name, kind) {
+    const state = await checkpoint(name, { reference: name, referenceCrop: crops.prompt });
+    assert.ok(state.prompt_bounds, `${name}: complete above-target prompt required`);
+    const [left, top, right] = state.prompt_bounds;
+    const point = kind === 'host' ? [477.5, 438.5] : [747.5, 431];
+    assert.ok(Math.abs((left + right) / 2 - point[0]) <= 2 && Math.abs(top - (point[1] - 114)) <= 2, name);
+    report.prompt_checks.push({ check: name, target: kind, bounds: state.prompt_bounds });
+    return state;
+  }
+  async function posterCheckpoint(name, options = {}) {
+    const { samePoster, differentPoster, ...rest } = options;
+    const state = await checkpoint(name, {
+      panel: true, spacious: posterViews.has(name), dialogue: dialogueViews.has(name), reference: name,
+      referenceCrop: dialogueViews.has(name) ? crops.dialogueBody : posterViews.has(name) ? crops.poster : crops.body,
+      ...rest, ...(paperScans.has(name) ? {} : { samePoster, differentPoster }),
+    });
+    if (!paperScans.has(name)) return state;
+    const frames = [join(evidence, `godot-web-${name}.png`)];
+    let current = state;
+    for (let part = 0; !current.paper_bottom && part < 12; part++) {
+      await page.mouse.move(1000, 620); await page.mouse.wheel(0, 240); await page.waitForTimeout(150);
+      const png = await page.screenshot();
+      current = pixels(png, undefined, crops.poster, false);
+      const frameName = `${name}-scroll-${part + 1}`;
+      await capture(frameName, png, current);
+      frames.push(join(evidence, `godot-web-${frameName}.png`));
+    }
+    assert.ok(current.paper_bottom, `${name}: real scrolling must reach the card bottom`);
+    const output = join(evidence, `godot-web-${name}-paper.png`);
+    const full = pixels(Buffer.alloc(0), nativePath(`${name}-paper`), crops.poster, false, { paper_frames: frames, paper_output: output });
+    assert.ok(titleMatches(full), `${name}: full scrolled poster must match native at F1 >= .90: ${JSON.stringify(full)}`);
+    if (samePoster) assert.equal(full.poster_sha256, samePoster, `${name}: the complete published card changed`);
+    if (differentPoster) assert.notEqual(full.poster_sha256, differentPoster, `${name}: the complete revised card did not change`);
+    report.poster_checks.push({ check: name + ' full card via exact overlapping scroll captures', frames: frames.length,
+      ...full, path: relative(root, output), sha256: sha256(await readFile(output)) });
+    await page.mouse.wheel(0, -10000); await page.waitForTimeout(150);
+    const restored = pixels(await page.screenshot(), undefined, crops.poster, false);
+    assert.deepEqual(restored.paper_bounds, state.paper_bounds, 'Restore the same card top');
+    assert.equal(restored.poster_sha256, state.poster_sha256, 'Restoring the top must preserve all visible card pixels');
+    return { ...state, ...full, visible_poster_sha256: state.poster_sha256 };
+  }
   async function dialogueFreezesWorld(name, before) {
-    await checkpoint(name, { panel: true, dialogue: true, reference: name });
+    const speech = await checkpoint(name, { panel: true, dialogue: true, reference: name });
+    assert.equal(speech.prompt_bounds, null, 'Dialogue hides the nearby prompt');
     await hold('d', 300);
     await click(45, 710);
     await checkpoint(`${name}-input-contained`, { panel: true, dialogue: true, reference: name });
@@ -347,8 +419,22 @@ async function main() {
   }
   async function workshop() {
     await key('Escape');
+    await walkTo({ x: 283, y: 130 });
+    await prompt('prompt-comparison-complete', 'artifact');
+    await key('e');
+    await checkpoint('comparison-artifact-after', { panel: true, reference: 'comparison-artifact-after', referenceCrop: crops.body,
+      differentBody: comparisonBefore.body_sha256 });
+    await key('Escape'); await approachHost();
     const archive = await checkpoint('poster-archive-before', { reference: 'house-2' });
-    await click(140, 765); await choose(2);
+    await click(140, 765); await choose();
+    stationary('Completed Mateo primary action only resumes exploration', archive, await worldState());
+    await key('e'); await checkpoint('poster-revisit', { panel: true, dialogue: true, reference: 'poster-revisit' });
+    await choose(2);
+    await checkpoint('comparison-replay', { panel: true, reference: 'comparison-replay' });
+    await assertProgress(['printing', 'comparison']);
+    await key('Escape'); await key('e');
+    await checkpoint('poster-revisit-workshop', { panel: true, dialogue: true, reference: 'poster-revisit-workshop' });
+    await choose(3);
     await posterCheckpoint('poster-defaults');
     await key('Tab'); await key('Tab'); await option(0, 1);
     await choose(3);
@@ -366,7 +452,7 @@ async function main() {
     await posterCheckpoint('poster-question', { visibleFocus: true });
     await choose();
     const rate = await posterCheckpoint('poster-rate', { differentPoster: count.poster_sha256 });
-    await posterCheckpoint('poster-preview', { samePoster: rate.poster_sha256 });
+    await posterCheckpoint('poster-preview', { samePoster: rate.visible_poster_sha256 });
     await key('Tab'); await posterCheckpoint('poster-rate-details', { visibleFocus: true });
     await key('Tab'); await choose();
     await posterCheckpoint('poster-source');
@@ -388,7 +474,7 @@ async function main() {
     await choose();
     await posterCheckpoint('poster-unpublished-draft', { differentPoster: published.poster_sha256 });
     await choose(); await choose(6);
-    await checkpoint('poster-cancelled-room', { reference: 'house-2', differentArtifact: archive.artifact_sha256 });
+    await checkpoint('poster-cancelled-room', { reference: 'house-2' });
     await key('e');
     await posterCheckpoint('poster-after-cancel', { samePoster: published.poster_sha256 });
     await key('Escape'); await key('j'); await choose(2);
@@ -416,6 +502,25 @@ async function main() {
     assert.deepEqual(saved.value.hints, [], 'Journey completed without assisted shortcuts');
     assert.deepEqual(saved.value.settings, settings);
     report.progress.push(saved);
+  }
+
+  async function endingControls(prefix) {
+    await checkpoint(prefix, { panel: true, ending: true, reference: prefix, visibleFocus: true });
+    await key('Tab'); await key('Enter');
+    await key('Tab'); await key('Tab');
+    const expanded = await checkpoint(`${prefix}-expanded`, { panel: true, ending: true, reference: `${prefix}-expanded`, referenceCrop: crops.endingPoster });
+    await key('End');
+    const footer = await checkpoint(`${prefix}-footer`, { panel: true, ending: true, reference: `${prefix}-footer`, referenceCrop: crops.endingPoster });
+    assert.equal(footer.ending_heading_sha256, expanded.ending_heading_sha256, 'FIN heading stays fixed while scrolling');
+    assert.equal(footer.ending_actions_sha256, expanded.ending_actions_sha256, 'FIN controls stay fixed while scrolling');
+    assert.notEqual(footer.ending_poster_sha256, expanded.ending_poster_sha256, 'End exposes full evidence footer');
+    await key('Home');
+    const restored = await checkpoint(`${prefix}-expanded-top`, { panel: true, ending: true, reference: `${prefix}-expanded-top`, referenceCrop: crops.endingPoster });
+    assert.equal(restored.ending_poster_sha256, expanded.ending_poster_sha256, 'Home restores the exact poster top');
+    await key('Shift+Tab'); await key('Shift+Tab'); await key('Enter');
+    await checkpoint(`${prefix}-compact-restored`, { panel: true, ending: true, reference: `${prefix}-compact-restored`, referenceCrop: crops.endingPoster });
+    await key('Shift+Tab');
+    report.finale_checks.push({ check: prefix + ' fixed FIN heading/actions, keyboard Enlarge/End/Home/Reduce' });
   }
 
   try {
@@ -483,6 +588,7 @@ async function main() {
     await click(80, 40);
     await key('Escape');
     const plaza = await checkpoint('plaza', { inside: false });
+    assert.equal(plaza.prompt_bounds, null, 'No nearby prompt at the plaza spawn');
     assert.ok(plaza.avatar && plaza.avatar.every((value, index) => Math.abs(value - [240, 176][index]) <= .4));
     for (const direction of ['Left', 'Right', 'Up', 'Down']) {
       const before = await worldState();
@@ -530,8 +636,19 @@ async function main() {
         await click(x, y); await key('Escape');
         stationary(`Old control ${x},${y} cannot leave house ${index + 1}`, before, await worldState());
       }
+      await walkTo({ x: 283, y: 130 });
+      const artifactPosition = await prompt(`prompt-artifact-${index + 1}`, 'artifact');
+      await key('e');
+      const artifact = await checkpoint(`early-artifact-${index + 1}`, { panel: true, reference: `early-artifact-${index + 1}`, referenceCrop: crops.exhibit });
+      assert.equal(artifact.dialogue, false, 'Objects open an exhibit/machine, never host speech');
+      assert.equal(artifact.prompt_bounds, null, 'Open exhibit hides the nearby prompt');
+      if (index === 1) comparisonBefore = await checkpoint('comparison-artifact-before', { panel: true, reference: 'comparison-artifact-before', referenceCrop: crops.body });
+      assert.deepEqual((await progress(page))?.value.completed || [], [], 'Object inspection cannot complete a lesson');
+      await key('Escape');
+      stationary(`Inspecting object ${index + 1} returns to its physical position`, artifactPosition, await worldState());
+      await approachHost();
+      await prompt(`prompt-host-${index + 1}`, 'host');
       if (index > 0) {
-        await approachHost();
         const position = await worldState();
         await key('e');
         await checkpoint(`house-${index + 1}-prerequisite`, { panel: true, dialogue: true, reference: `house-${index + 1}-prerequisite` });
@@ -539,6 +656,9 @@ async function main() {
         stationary(`House ${index + 1} prerequisite gives directions without travel`, position,
           await checkpoint(`house-${index + 1}-prerequisite-closed`, { reference: `house-${index + 1}` }));
         assert.deepEqual((await progress(page))?.value.completed || [], []);
+      } else {
+        await key('e'); await checkpoint('fresh-luz-after-press', { panel: true, dialogue: true, reference: 'fresh-luz-after-press' });
+        await key('Escape');
       }
       await leaveHouse(index);
       await checkpoint(`house-${index + 1}-return`, { inside: false });
@@ -605,17 +725,27 @@ async function main() {
     stationary('Press cannot be activated remotely from the printshop entrance', atEntrance, await worldState());
     await assertProgress(['printing', 'comparison', 'consultation']);
     await walkTo({ x: 283, y: 110 });
+    const pressWorld = await prompt('prompt-final-press', 'artifact');
     const pressPosition = (await worldState()).avatar;
     await key('e');
     await checkpoint('campaign-press', { panel: true, reference: 'campaign-press' });
     await choose(); // Imprimir cartel.
-    await page.waitForTimeout(700);
-    await checkpoint('ending', { panel: true, spacious: true, reference: 'ending' });
+    const revealPng = await page.screenshot();
+    const reveal = pixels(revealPng, undefined, crops.ending, false);
+    assert.ok(reveal.ending_shell && !reveal.ending, 'First print displays the reveal before E skip');
+    await capture('campaign-reveal', revealPng, reveal);
+    const skipStarted = Date.now();
+    await key('e');
+    const skippedPng = await page.screenshot();
+    const skipSeconds = (Date.now() - skipStarted) / 1000;
+    assert.ok(pixels(skippedPng, undefined, crops.ending, false).ending && skipSeconds < 1, 'E skips directly to FIN');
+    report.finale_checks.push({ check: 'Real E input skips first-print reveal', observation_seconds: skipSeconds });
+    await endingControls('ending');
     await assertProgress(['printing', 'comparison', 'consultation'], defaultSettings, true);
     report.finale_checks.push({ check: 'Physically reached Luz and used E/Imprimir cartel at her local press', position: pressPosition });
     stage = 'campaign-download';
     const downloadPromise = page.waitForEvent('download', { timeout: 15000 });
-    await choose(); // Descargar cartel PDF through the actual canvas control.
+    await key('Enter'); // FIN directly focuses Descargar cartel PDF.
     const download = await downloadPromise;
     assert.equal(download.suggestedFilename(), 'campana-ciudadana-voto-informado.pdf');
     const pdfPath = join(evidence, 'godot-web-campaign.pdf');
@@ -627,7 +757,8 @@ async function main() {
     report.pdf = JSON.parse(pdfCheck.stdout);
     await assertProgress(['printing', 'comparison', 'consultation'], defaultSettings, true);
     await key('Escape');
-    await checkpoint('campaign-complete-hud', { reference: 'campaign-complete-hud', referenceCrop: [40, 16, 1240, 152] });
+    stationary('Closing FIN leaves the player at the same physical press', pressWorld,
+      await checkpoint('campaign-complete-hud', { reference: 'campaign-complete-hud', referenceCrop: [40, 16, 1240, 152] }));
     report.phases.push('Unmarked consultation and follow-up, Inés review/send, physical walk to Luz, nearby printing, fourth completion step, FIN and real PDF download/render/text checks');
 
     await click(205, 711);
@@ -639,13 +770,12 @@ async function main() {
     await key('ArrowLeft');
     await assertProgress(['printing', 'comparison', 'consultation'], largeSettings, true);
     await key('Escape'); await key('e');
-    await checkpoint('ending-large', { panel: true, spacious: true, reference: 'ending-large' });
-    await key('Tab');
-    await checkpoint('ending-large-download-focused', { panel: true, spacious: true, reference: 'ending-large-download-focused', referenceCrop: crops.body });
+    await checkpoint('ending-large-download-focused', { panel: true, ending: true, reference: 'ending-large-download-focused', visibleFocus: true });
+    await endingControls('ending-large');
     await key('Escape'); await leaveHouse(0); await enterHouse(1); await approachHost();
     await click(140, 765);
     await checkpoint('poster-large-intro', { panel: true, dialogue: true, largeDialogue: true, reference: 'poster-large-intro', referenceCrop: [64, 384, 1216, 752] });
-    await choose(2);
+    await choose(3);
     for (const control of ['first', 'second', 'metric', 'question']) {
       await key('Tab'); await posterCheckpoint(`poster-large-${control}`, { visibleFocus: true });
     }

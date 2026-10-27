@@ -2,7 +2,7 @@ import { aggregateRecords, compareRecord } from './logic.mjs';
 import { composePoster, posterStates } from './poster.mjs';
 import { element, bars, integer, percent, perHundred, sourceDetails } from './views.mjs';
 
-export function renderPoster(target, poster, data, story, headingLevel) {
+export function renderPoster(target, poster, data, story, headingLevel, layout) {
   const { records, metric, finding, question } = poster;
   const totals = records.map(record => aggregateRecords([record]));
   const rates = metric === 'rate';
@@ -11,15 +11,23 @@ export function renderPoster(target, poster, data, story, headingLevel) {
   const heading = element(`h${headingLevel}`, finding, 'finding');
   heading.id = `${target.id}-title`; heading.tabIndex = -1;
   section.setAttribute('aria-labelledby', heading.id);
-  section.append(element('p', 'Tu cartel · Actividad opcional, sin calificación', 'eyebrow'), heading,
+  const header = element('header', undefined, 'citizen-poster-header');
+  header.append(element('p', layout.copy.headline, 'citizen-poster-title'), element('p', layout.copy.citizen));
+  section.append(header, heading,
     element('p', `Datos reales · INE / CCPC · ${records.map(record => record.geography_name).join(' y ')} · ${records[0].year}`, 'evidence-label'),
     element('p', story.poster_workshop[rates ? 'rate_label' : 'count_label']));
-  section.append(bars(records.map((record, index) => ({
+  const chart = bars(records.map((record, index) => ({
     label: record.geography_name, value: values[index],
     formatted: rates ? `${perHundred(values[index])} · ${percent(values[index])}` : `${integer(values[index])} registros`,
   })), rates ? 100 : Math.max(...values), rates ?
     'Cada estado usa su propio grupo con información conocida (SV + NV). Escala de 0 a 100; NS se muestra aparte.' :
-    'Registros con participación (SV). Las dos barras usan la misma escala y los conteos son exactos.'));
+    'Registros con participación (SV). Las dos barras usan la misma escala y los conteos son exactos.');
+  chart.querySelectorAll('.bar-row').forEach((row, index) => {
+    const record = records[index];
+    if (values[index] === null) row.querySelector('.bar-track').remove();
+    row.append(element('p', `SV: ${integer(record.sv)} · NV: ${integer(record.nv)} · Base (SV + NV): ${integer(totals[index].classified)}. NS: ${integer(record.ns)} · Lista nominal (LN): ${integer(record.ln)}.`, 'poster-counts'));
+  });
+  section.append(chart);
   if (rates) {
     section.append(element('p', 'Los porcentajes se muestran hasta ocho decimales. El titular compara las fracciones exactas SV / (SV + NV), sin redondearlas.', 'small-note'));
     if (values.every(value => value !== null) && Math.round(values[0]) === Math.round(values[1]) &&
@@ -27,23 +35,27 @@ export function renderPoster(target, poster, data, story, headingLevel) {
       section.append(element('p', 'Las cifras redondeadas se parecen, pero las fracciones exactas son distintas. Revisa los conteos y las bases en «Ver datos y fuente».', 'finding'));
     }
   }
-  section.append(element('p', records.map((record, index) =>
+  section.append(element('p', `Para conversar: ${question}`, 'poster-question finding'), element('p', records.map((record, index) =>
     `${record.geography_name}: ${integer(record.ns)} registros sin información (NS), de ${integer(record.ln)} en toda la lista; ${perHundred(totals[index].unknown_pct)}.`
   ).join(' '), 'unknown-note'), element('p', story.poster_workshop.limit),
-  element('p', `Para conversar: ${question}`, 'finding'), sourceDetails(records, data, story));
+  element('p', layout.copy.classification, 'small-note'));
+  const source = element('p', undefined, 'poster-source');
+  const sourceLink = element('a', data.source.portal_url); sourceLink.href = data.source.portal_url; sourceLink.rel = 'noreferrer';
+  source.append(element('strong', `${layout.copy.source_label}: `), sourceLink);
+  section.append(source, sourceDetails(records, data, story));
   const formula = element('details');
   formula.append(element('summary', 'Ver cómo se comparó'), element('p', rates ? story.optional_math.formula :
     'Comparamos las cantidades de registros con participación (SV), sin dividir. NS se mantiene aparte.'));
   if (rates) records.forEach((record, index) => formula.append(element('p',
     totals[index].classified ? `${record.geography_name}: ${integer(record.sv)} ÷ (${integer(record.sv)} + ${integer(record.nv)}) × 100 = ${percent(values[index])}.` :
       `${record.geography_name}: no hay registros con información conocida; su proporción no está disponible.`)));
-  section.append(formula, element('p', `${story.poster_workshop.memory_note} Al recargar o reiniciar se borra; puedes crear otro.`, 'small-note'));
+  section.append(formula);
   target.replaceChildren(section); target.hidden = false;
 }
 
 // This controller owns only volatile draft/publication state. No storage, URL,
 // progress, assessment, consultation or network API enters this module.
-export function createPosterWorkshop({ data, story, archive, meeting, exhibit, onOpen, onCarry, announce }) {
+export function createPosterWorkshop({ data, story, layout, archive, meeting, exhibit, onOpen, onCarry, announce }) {
   const copy = story.poster_workshop;
   const states = posterStates(data);
   const open = element('button', copy.title); open.type = 'button'; open.id = 'open-poster-workshop'; open.hidden = true;
@@ -100,7 +112,8 @@ export function createPosterWorkshop({ data, story, archive, meeting, exhibit, o
     open.textContent = published ? 'Revisar mi cartel' : copy.title;
     for (const [target, level] of [[archiveSlot, 3], [meetingSlot, 3], [exhibitSlot, 4]]) {
       if (published) {
-        renderPoster(target, published.poster, data, story, level);
+        renderPoster(target, published.poster, data, story, level, layout);
+        target.append(element('p', `${copy.memory_note} Al recargar o reiniciar se borra; puedes crear otro.`, 'small-note'));
         if (target === meetingSlot) {
           const speech = element('div', undefined, 'speech-card');
           speech.append(element('p', 'Inés', 'speaker'), element('p',
@@ -139,7 +152,7 @@ export function createPosterWorkshop({ data, story, archive, meeting, exhibit, o
       invalid.setAttribute('aria-invalid', 'true'); invalid.setAttribute('aria-describedby', error.id); invalid.focus();
       return;
     }
-    draft = { selection: chosen, poster }; renderPoster(preview, poster, data, story, 4); carry.disabled = false;
+    draft = { selection: chosen, poster }; renderPoster(preview, poster, data, story, 4, layout); carry.disabled = false;
     preview.querySelector('h4').focus();
   });
   carry.addEventListener('click', () => {

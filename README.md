@@ -8,6 +8,8 @@ After Mateo's archive, an optional workshop lets you choose two of the 32 states
 
 **26 October revision:** walk with **WASD** and cross doorways to enter or leave houses. Approach a person or exhibit and press **E/Enter** to interact. **Escape** closes panels; **J** opens the diary. There are no travel buttons. Save your designed poster in place, then walk to Inés to discuss it. The semantic HTML route retains its independent document navigation.
 
+**Sequential/pink campaign revision:** begin with **Luz on the left**, then **Mateo in the center**, then **Inés on the right**. All houses are enterable; early hosts guide you to the first unfinished lesson. A nearby **[E]** box names the person or object you can use. The floor is clear of text; your next destination is in the HUD. Luz handles the first lesson, while the press is reserved for Inés's final poster. Printing reveals the pink citizen campaign and an explicit **FIN** screen with download, enlarged poster and exploration controls. E/Enter skips the brief reveal; reduced motion opens FIN immediately. See the [design contract](docs/sequential_campaign_design.md).
+
 ## Play and teach
 
 **27 October campaign finale:** four passive progress indicators distinguish the consultation from the final print mission. Character conversations use translucent bottom panels; questions, charts and the poster workshop retain larger reading panels. A locally bundled CC0 ambient loop has mute and volume controls. The final PDF is a citizen initiative, without team/event branding or official endorsement; INE/CCPC is its data source. No physical printer is required. See the [campaign contract](docs/campaign_finale.md).
@@ -53,7 +55,7 @@ The aggregate browser checks require the local server. Native GUI QA uses isolat
 
 The campaign PDF test helper uses `python3 -m pip install -r tools/pdf-requirements.txt` in your development Python environment; independent extraction/render checks also use Poppler. `python3 tools/build_campaign_font.py --check` verifies the bundled font metadata using the standard library. These are build/test dependencies, not runtime requirements.
 
-Godot 4.7.2 and matching templates were verified against official SHA-512 sums; GUT is 9.7.1. Compatibility rendering and single-threaded web export are used. The unchanged CCPC snapshot reproduces 32 CSV, 9,773,730 rows and 33 aggregates; see the [source register](docs/source_register.md) and data validation report. Asset catalogs resolve 32 roles. Final artwork/sounds are original, and the font/engine notices ship.
+Godot 4.7.2 and matching templates were verified against official SHA-512 sums; GUT is 9.7.1. Compatibility rendering and single-threaded web export are used. The unchanged CCPC snapshot reproduces 32 CSV, 9,773,730 rows and 33 aggregates; see the [source register](docs/source_register.md) and data validation report. Asset catalogs resolve 33 roles. Final artwork/effects are original; the separately credited music is CC0. Font, music and engine notices ship.
 
 ## Data, privacy and evidence boundaries
 
