@@ -1,9 +1,10 @@
 import {
   loadDataset, loadStory, assessActivity, resolveConsultation,
-  readProgress, writeProgress, sanitizeProgress, gameHref, creditsHref,
+  readProgress, writeProgress, sanitizeProgress, gameHref, creditsHref, musicHref,
 } from './logic.mjs';
 import { element, table, renderEvidence, artifact, percent } from './views.mjs';
-import { createPosterWorkshop } from './poster-workshop.mjs';
+import { createPosterWorkshop, renderPoster } from './poster-workshop.mjs';
+import { composePoster, createCampaignSession } from './poster.mjs';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -34,6 +35,9 @@ let progress = readProgress(storage);
 let story;
 let dataset;
 let posterWorkshop;
+let campaign;
+let downloadURL;
+let campaignAttempt = 0;
 let locationId = 'plaza';
 let openTask = null;
 let hasResult = false;
@@ -55,6 +59,11 @@ function applySettings() {
   document.body.classList.toggle('reduced-motion', progress.settings.reducedMotion);
   $('#text-size').value = progress.settings.textSize;
   $('#reduced-motion').checked = progress.settings.reducedMotion;
+  $('#music-muted').checked = progress.settings.muted;
+  $('#music-volume').value = Math.round(progress.settings.music_volume * 100);
+  $('#music-volume-value').textContent = `${Math.round(progress.settings.music_volume * 100)} %`;
+  $('#background-music').volume = progress.settings.music_volume;
+  $('#background-music').muted = progress.settings.muted;
 }
 
 function updateNavigation() {
@@ -72,9 +81,25 @@ function updateNavigation() {
   setStatusText('#progress-summary', `${progress.completedChapters.length} de 3 capítulos terminados`);
   $('#next-objective').textContent = !done('printing') ? story.houses.find(h => h.id === 'printshop').objective :
     !done('comparison') ? story.houses.find(h => h.id === 'archive').objective :
-      !done('consultation') ? story.houses.find(h => h.id === 'hall').objective : 'Puedes volver a leer los trabajos de la exposición y conversar sobre lo que sigue.';
+      !done('consultation') ? story.houses.find(h => h.id === 'hall').objective : progress.campaign_printed ? story.campaign.ending_title :
+        campaign?.ready ? story.campaign.objective : 'Habla con Inés para enviar tu cartel a la imprenta de Luz.';
   $('#legacy-notice').hidden = !progress.legacyCompleted.length;
   $('#legacy-notice').textContent = 'Conservamos tu avance anterior. Ese guardado no evaluó estas actividades nuevas; no demuestra comprensión independiente en esta revisión.';
+  updateDialogue();
+}
+
+function updateDialogue() {
+  for (const house of story.houses) {
+    const chapter = story.chapters.find(item => item.id === house.chapter);
+    let message = chapter.intro;
+    if (!unlocked(house.chapter)) {
+      const needsLuz = !done('printing');
+      message = `${(needsLuz ? story.dialogue.before_luz : story.dialogue.before_mateo).split('. ')[0]}. Entra a ${needsLuz ? 'la Imprenta de Luz' : 'el Archivo de Mateo'} desde la navegación de casas.`;
+    } else if (house.id === 'printshop' && campaign?.ready) message = story.campaign.press_intro;
+    else if (house.id === 'hall' && done('consultation')) message = progress.campaign_printed ? story.campaign.ending : story.campaign.intro;
+    else if (done(house.chapter)) message = `${story.dialogue.revisit} ${chapter.reflection}`;
+    $(`#speech-${house.id}`).textContent = message;
+  }
 }
 
 function clearDecision() {
@@ -99,6 +124,7 @@ function showLocation(id, focus = true) {
   clearAnnouncement();
   const previous = locationId;
   posterWorkshop?.close(false);
+  cancelDispatch();
   closeTask(false);
   if (previous === 'hall') clearDecision();
   locationId = id;
@@ -106,14 +132,105 @@ function showLocation(id, focus = true) {
   for (const house of story.houses) $(`#house-${house.id}`).hidden = id !== house.id;
   $('.skip-link').href = id === 'plaza' ? '#plaza-title' : `#house-title-${id}`;
   updateNavigation();
+  renderCampaign();
   if (focus) {
     if (id === 'plaza') ($(`[data-house="${previous}"]`) || $('#plaza-title')).focus();
     else $(`#house-title-${id}`).focus();
   }
 }
 
+function cancelDispatch() {
+  campaignAttempt++;
+  campaign?.cancel();
+}
+
+function clearDownload() {
+  if (downloadURL) URL.revokeObjectURL(downloadURL);
+  downloadURL = null;
+  $('#download-campaign').removeAttribute('href');
+  $('#download-campaign').hidden = true;
+}
+
+function renderCampaign() {
+  if (!story || !campaign) return;
+  const copy = story.campaign;
+  const panel = $('#campaign-dispatch');
+  panel.hidden = !done('consultation') || progress.campaign_printed;
+  if (!panel.hidden) {
+    const selected = posterWorkshop.selection || { first: 'state_01', second: 'state_02', metric: 'rate', question: 'missing' };
+    renderPoster($('#campaign-preview'), composePoster(dataset, story, selected), dataset, story, 4);
+    $('#campaign-preview .eyebrow').textContent = posterWorkshop.selection ? 'Tu cartel actual · Para enviar a Luz' : 'Cartel de ejemplo · Para enviar a Luz';
+    $('#campaign-queued').hidden = !campaign.ready;
+    if (campaign.ready) {
+      renderPoster($('#campaign-queued-preview'), composePoster(dataset, story, campaign.selection), dataset, story, 4);
+      $('#campaign-queued-preview .eyebrow').textContent = 'Diseño enviado · Se conserva hasta reemplazarlo';
+    } else $('#campaign-queued-preview').replaceChildren();
+    $('#campaign-status').textContent = campaign.ready ?
+      'Inés: El diseño está listo en la imprenta de Luz. Entra a su casa desde la navegación y usa «Imprimir cartel».' : copy.reload_note;
+    $('#campaign-send').textContent = campaign.ready ? copy.replace_label : copy.send_label;
+    $('#campaign-send').disabled = campaign.busy;
+    $('#campaign-cancel').hidden = !campaign.busy;
+    $('#campaign-dispatch').setAttribute('aria-busy', String(campaign.busy));
+  }
+  $('#campaign-press').hidden = !campaign.ready || progress.campaign_printed;
+  $('#ending').hidden = !progress.campaign_printed;
+  $('#campaign-reload-note').hidden = !progress.campaign_printed || Boolean(downloadURL);
+  $('#campaign-reload-note').textContent = copy.completed_reload;
+  $('#campaign-format').hidden = !downloadURL;
+  updateDialogue();
+}
+
+function setupCampaign() {
+  const copy = story.campaign;
+  const dispatch = element('section', undefined, 'campaign-panel'); dispatch.id = 'campaign-dispatch'; dispatch.hidden = true;
+  dispatch.setAttribute('aria-labelledby', 'campaign-title');
+  const title = element('h3', 'Tu campaña ciudadana'); title.id = 'campaign-title'; title.tabIndex = -1;
+  const preview = element('div'); preview.id = 'campaign-preview';
+  const queued = element('details'); queued.id = 'campaign-queued'; queued.hidden = true;
+  const queuedPreview = element('div'); queuedPreview.id = 'campaign-queued-preview';
+  queued.append(element('summary', 'Ver el diseño ya enviado a Luz'), queuedPreview);
+  const speech = element('div', undefined, 'speech-card');
+  const status = element('p'); status.id = 'campaign-status';
+  const send = element('button', copy.send_label); send.id = 'campaign-send'; send.type = 'button';
+  const cancel = element('button', 'Cancelar preparación y conservar el envío anterior', 'quiet'); cancel.id = 'campaign-cancel'; cancel.type = 'button'; cancel.hidden = true;
+  speech.append(element('p', 'Inés', 'speaker'), status, send, cancel);
+  dispatch.append(title, element('p', copy.review), preview, queued, speech);
+  $('#house-hall').append(dispatch);
+  const press = element('section', undefined, 'campaign-panel'); press.id = 'campaign-press'; press.hidden = true;
+  press.setAttribute('aria-labelledby', 'campaign-press-title');
+  const pressTitle = element('h3', 'La prensa de Luz'); pressTitle.id = 'campaign-press-title';
+  const print = element('button', copy.print_label); print.id = 'campaign-print'; print.type = 'button';
+  press.append(pressTitle, print); $('#house-printshop').append(press);
+  send.addEventListener('click', async () => {
+    if (locationId !== 'hall' || !done('consultation') || progress.campaign_printed || campaign.busy) return;
+    const attempt = ++campaignAttempt;
+    const pending = campaign.queue(progress, posterWorkshop.selection, campaign.ready);
+    send.disabled = true; cancel.hidden = false;
+    dispatch.setAttribute('aria-busy', 'true'); status.textContent = 'Preparando el PDF del cartel…';
+    try {
+      const queued = await pending;
+      if (attempt !== campaignAttempt) return;
+      renderCampaign(); updateNavigation();
+      if (queued) { title.focus(); announce('Diseño preparado. Entra a la imprenta de Luz para imprimirlo.'); }
+    } catch {
+      if (attempt !== campaignAttempt) return;
+      renderCampaign(); status.textContent = copy.error; announce(copy.error); send.focus();
+    }
+  });
+  cancel.addEventListener('click', () => { cancelDispatch(); renderCampaign(); send.focus(); announce('Preparación cancelada. El envío anterior se conserva.'); });
+  print.addEventListener('click', () => {
+    if (locationId !== 'printshop' || !campaign.print(progress)) return;
+    clearDownload();
+    downloadURL = URL.createObjectURL(new Blob([campaign.download()], { type: 'application/pdf' }));
+    $('#download-campaign').href = downloadURL; $('#download-campaign').hidden = false;
+    save(); renderArtifacts(); showLocation('plaza', false); $('#ending-title').focus();
+    announce(copy.ending_title);
+  });
+}
+
 function startTask(chapter) {
   if (!unlocked(chapter)) return;
+  cancelDispatch(); renderCampaign();
   closeTask(false);
   posterWorkshop?.close(false);
   openTask = chapter;
@@ -248,8 +365,8 @@ function renderArtifacts() {
     $('#exhibit-content').append(exhibit);
   }
   if (!done('printing') && !done('comparison')) $('#exhibit-content').append(element('p', 'Aquí quedarán el boletín y el cartel que preparemos.'));
-  $('#ending').hidden = !done('consultation');
   posterWorkshop?.sync(done('comparison'));
+  renderCampaign();
 }
 
 function renderHouses() {
@@ -266,17 +383,19 @@ function renderHouses() {
     leave.addEventListener('click', () => showLocation('plaza'));
     const chapter = story.chapters.find(c => c.id === house.chapter);
     section.append(element('p', 'Estás en una casa de Villa Brisa', 'eyebrow'), heading, leave,
-      element('p', house.preview), element('p', house.objective, 'finding'));
+      element('p', house.objective, 'finding'));
+    const speech = element('div', undefined, 'speech-card');
+    const message = element('p'); message.id = `speech-${house.id}`;
+    speech.append(element('p', chapter.npc, 'speaker'), element('p', house.preview), message);
     if (house.chapter === 'consultation') {
       section.append($('#consultation-template').content.cloneNode(true));
     } else {
-      section.append(element('p', `${chapter.npc}: ${chapter.intro}`));
       if (house.chapter === 'comparison') {
         const blocked = element('p', 'Puedes conocer el archivo. Para empezar el cartel, primero publica el boletín con Luz.', 'finding'); blocked.id = 'blocked-comparison';
         section.append(blocked);
       }
       const start = element('button', house.chapter === 'printing' ? 'Revisar el boletín con Luz' : 'Revisar el cartel con Mateo');
-      start.type = 'button'; start.dataset.start = house.chapter; section.append(start);
+      start.type = 'button'; start.dataset.start = house.chapter; speech.append(start);
       const published = element('section', undefined, 'artifact'); published.id = `artifact-${house.chapter}`;
       published.setAttribute('aria-labelledby', `artifact-title-${house.chapter}`); published.hidden = true; section.append(published);
       const task = element('div', undefined, 'task'); task.id = `task-${house.chapter}`; task.hidden = true;
@@ -295,13 +414,18 @@ function renderHouses() {
       const completion = element('div', undefined, 'chapter-completion'); completion.append(status, publish, close);
       task.append(title, slot, completion); section.append(task);
     }
-    $('#houses').append(section);
+    if (house.chapter === 'consultation') speech.append(section.querySelector('[data-start="consultation"]'));
+    section.append(speech); $('#houses').append(section);
   }
   $$('[data-start]').forEach(button => button.addEventListener('click', () => startTask(button.dataset.start)));
   $$('[data-close-task]').forEach(button => button.addEventListener('click', () => closeTask()));
   posterWorkshop = createPosterWorkshop({ data: dataset, story, archive: $('#house-archive'), meeting: $('#house-hall'), exhibit: $('#exhibit-content'),
     onOpen: () => { clearAnnouncement(); closeTask(false); },
     onCarry: () => { showLocation('hall', false); $('#poster-meeting-title').focus(); }, announce });
+  setupCampaign();
+  for (const house of story.houses) {
+    const section = $(`#house-${house.id}`); section.append(section.querySelector(':scope > .speech-card'));
+  }
   setupConsultation(); renderArtifacts(); updateNavigation();
 }
 
@@ -348,7 +472,9 @@ function setupConsultation() {
     event.preventDefault();
     if (!hasResult || !unlocked('consultation')) return;
     if (!done('consultation')) progress.completedChapters.push('consultation');
-    event.currentTarget.reset(); save(); renderArtifacts(); showLocation('plaza', false); $('#ending-title').focus();
+    event.currentTarget.reset(); save(); closeTask(false); renderArtifacts(); updateNavigation();
+    if (progress.campaign_printed) { showLocation('plaza', false); $('#ending-title').focus(); }
+    else $('#campaign-title').focus();
     announce($('#progress-summary').textContent);
   });
 }
@@ -358,10 +484,14 @@ async function initialize() {
   $('#data-status').textContent = 'Cargando los datos y la historia compartida…'; $('#data-status').className = '';
   try {
     [dataset, story] = await Promise.all([loadDataset(), loadStory()]);
+    campaign = createCampaignSession({ data: dataset, story,
+      createPDF: async (...args) => (await import('./campaign-pdf.mjs')).createCampaignPDF(...args) });
     document.title = `${story.title} · Cuaderno de campo`;
     $('.introduction .eyebrow').textContent = story.exhibit; $('#opening').textContent = story.opening;
     $('#audience').textContent = story.audience; $('#exhibit-title').textContent = story.exhibit;
-    $('#ending-message').textContent = story.message;
+    $('#ending-title').textContent = story.campaign.ending_title;
+    $('#ending-message').textContent = story.campaign.ending;
+    $('#download-campaign').textContent = story.campaign.download_label;
     renderHouses(); showLocation('plaza', false);
     $('#data-status').textContent = 'Archivo CCPC 2024 e historia compartida cargados.'; $('#data-status').className = 'small-note';
   } catch (error) {
@@ -374,7 +504,35 @@ async function initialize() {
 $('#retry-data').addEventListener('click', initialize);
 $('#text-size').addEventListener('change', event => { progress.settings.textSize = event.target.value; applySettings(); save(); });
 $('#reduced-motion').addEventListener('change', event => { progress.settings.reducedMotion = event.target.checked; applySettings(); save(); });
+const music = $('#background-music');
+let musicPending = false;
+let musicEpoch = 0;
+async function startMusic() {
+  if (musicPending || !music.paused || progress.settings.muted || progress.settings.music_volume === 0) return;
+  musicPending = true;
+  const epoch = musicEpoch;
+  try {
+    await music.play();
+    if (epoch === musicEpoch) $('#music-status').textContent = 'Música: Sunset Walk · CC0. Puedes silenciarla o ajustar su volumen.';
+  } catch {
+    if (epoch === musicEpoch) $('#music-status').textContent = 'La música no pudo iniciarse. Puedes usar «Reproducir música» para reintentar y continuar leyendo sin sonido.';
+  } finally { if (epoch === musicEpoch) musicPending = false; }
+}
+function stopMusic() { musicEpoch++; musicPending = false; music.pause(); }
+$('#music-muted').addEventListener('change', event => {
+  progress.settings.muted = event.target.checked; applySettings(); save();
+  if (!progress.settings.muted) startMusic();
+});
+$('#music-volume').addEventListener('input', event => {
+  progress.settings.music_volume = Number(event.target.value) / 100; applySettings(); save(); startMusic();
+});
+$('#music-play').addEventListener('click', startMusic);
+for (const type of ['click', 'keydown']) document.addEventListener(type, event => {
+  if (event.isTrusted && event.target?.id !== 'reset-progress') startMusic();
+});
 $('#reset-progress').addEventListener('click', () => {
+  stopMusic();
+  cancelDispatch(); campaign?.clear(); clearDownload(); posterWorkshop?.clear();
   progress = sanitizeProgress(null); answered.clear(); attempts.clear(); current.printing = 0; current.comparison = 0;
   openTask = null; clearDecision(); applySettings(); save();
   if (story) { renderHouses(); showLocation('plaza', false); $('#plaza-title').focus(); }
@@ -386,9 +544,10 @@ document.addEventListener('keydown', event => {
   else if (openTask) { event.preventDefault(); closeTask(); }
   else if (locationId !== 'plaza') { event.preventDefault(); showLocation('plaza'); }
 });
-window.addEventListener('pagehide', () => { clearDecision(); posterWorkshop?.clear(); });
-window.addEventListener('pageshow', clearDecision);
+window.addEventListener('pagehide', () => { clearDecision(); cancelDispatch(); campaign?.clear(); clearDownload(); posterWorkshop?.clear(); stopMusic(); });
+window.addEventListener('pageshow', () => { clearDecision(); renderCampaign(); });
 $('#game-link').href = gameHref(window.location.pathname);
 $('#credits-link').href = creditsHref(window.location.pathname);
+music.src = musicHref(window.location.pathname);
 applySettings(); save();
 await initialize();

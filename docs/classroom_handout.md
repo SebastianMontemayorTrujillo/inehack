@@ -4,7 +4,7 @@
 
 **Cara 1 de 2 · Datos y seis actividades**
 
-Villa Brisa quiere mejorar su plaza. Ayuda a preparar información antes de la reunión con Inés. Puedes pedir apoyo; no necesitas hacer divisiones. Esta hoja es para ti: no escribas tu nombre ni preferencias políticas.
+Villa Brisa quiere mejorar su plaza. Prepara información para la reunión y un cartel ciudadano. Puedes pedir apoyo; no necesitas divisiones. Esta hoja es para ti: no escribas tu nombre ni preferencias políticas.
 
 ## Casa 1 · La imprenta de Luz
 
@@ -50,7 +50,7 @@ Fuente: INE, ZIP 2024; copia local `ccpc-2024-v1`, registros `national`, `state_
 
 ## Casa 3 · La reunión con Inés
 
-**Cara 2 de 2 · Consulta ficticia y reflexión**
+**Cara 2 de 2 · Consulta, campaña y reflexión**
 
 **Consulta inventada; no son datos del INE ni del salón.** Hay recursos para comenzar un proyecto. No recogemos preferencias.
 
@@ -60,11 +60,11 @@ Fuente: INE, ZIP 2024; copia local `ccpc-2024-v1`, registros `national`, `state_
 | B · Rincón de lectura | Compartir historias y aprender. | Cuidado de libros y facilitación. |
 | C · Jardín comunitario | Cuidar un espacio verde entre varias personas. | Agua y trabajo continuo. |
 
-**Cinco acciones: elegir A, B o C, dejar sin marcar o no participar.** Todas permiten el mismo final y reconocimiento; ninguna es la respuesta correcta. No marques ni entregues aquí tu elección.
+**Cinco acciones: elegir A, B o C, dejar sin marcar o no participar.** Mismo final y reconocimiento; ninguna es la respuesta correcta. No registres aquí tu elección.
 
-Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar conserva los conteos. Un empate exige otra decisión; las necesidades pendientes siguen siendo legítimas. Estas reglas no reproducen una elección constitucional completa.
+Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar conserva los conteos. Un empate exige otra decisión. Las necesidades pendientes siguen siendo legítimas. Es una regla didáctica.
 
-**Escenarios inventados antes de tu acción.** Grupo de 30 personajes; quien juega es adicional. Fuente: `game/content/story.json`, consulta y escenarios.
+**Escenarios inventados antes de tu acción.** 30 personajes; quien juega es adicional. Fuente: `game/content/story.json`.
 
 | Escenario ficticio | A | B | C | Participantes | Encabeza |
 | --- | ---: | ---: | ---: | ---: | --- |
@@ -74,9 +74,13 @@ Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar
 
 **Compara:** las dos alternativas tienen 25 participantes y ganadores distintos. ¿Qué cambió en el reparto de votos? Habla de los conteos, no de tu preferencia.
 
-## Al regresar a la plaza
+## Misión final · Volver a la imprenta
 
-Puedes escribir, hablar o reflexionar en silencio; compartir es voluntario.
+Tras la consulta y el seguimiento, Inés encarga a Luz tu cartel o el guiado AGS/BC. Vuelve a la primera casa y usa la prensa: **Imprimir cartel → FIN · La campaña comienza contigo**. Godot: camina con WASD. HTML: navega a la imprenta. La descarga PDF Carta es opcional; no necesitas impresora.
+
+**«Tu voto cuenta. Infórmate y participa.»** Campaña ciudadana con fuente INE/CCPC, año, conteos, bases, NS, pregunta y límite. Sin marcas de equipo, sello oficial ni resultado ficticio.
+
+**Mi mensaje con datos.** Puedes escribir, hablar o reflexionar en silencio; compartir es voluntario.
 
 **Un hallazgo real que puedo explicar con la primera cara es:**
 
@@ -90,14 +94,10 @@ ______________________________________________________________________
 
 ______________________________________________________________________
 
-Piensa en el presupuesto, el avance o las necesidades pendientes.
+**Cartel opcional:** compara las entidades de la primera cara por cantidad o proporción y pregunta «¿Qué información nos falta antes de decidir?». El juego ofrece 32 entidades. Descarga antes de cerrar: el diseño no se guarda con el progreso.
 
-**Cartel opcional:** compara las dos entidades de la primera cara por cantidad o proporción. Usa tu hallazgo como título y añade «¿Qué información nos falta antes de decidir?». Conserva base, NS, fuente y límite.
+**Fuentes: INE, CCPC federal 2024.** [Portal CCPC](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/) y [ZIP oficial con diccionario](https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip): `01_descripcioncampos_conteoscensales2024.txt`.
 
-## Fuentes para revisar
+Copia local: `ccpc-2024-v1`. Excluye casillas especiales y voto desde el extranjero; no da resultados por candidatura. Villa Brisa, la consulta y los ejemplos nuevos son ficción.
 
-**Datos reales: INE, CCPC federal 2024.** [ZIP oficial y diccionario](https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip); archivo `01_descripcioncampos_conteoscensales2024.txt`. Portal: [https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/)
-
-Copia local: `game/content/ccpc.json`, `ccpc-2024-v1`. Excluye casillas especiales y voto desde el extranjero; no son resultados por candidatura. Villa Brisa, la consulta y los ejemplos 60/30/10 y A/B son ficción didáctica.
-
-**Voces de la Plaza · 25 de octubre de 2026.** Para bachillerato y personas adultas principiantes. Tiempo de planeación; aún no hay pilotaje. Revisa el equipo y acceso antes de clase.
+**Voces de la Plaza · 27 de octubre de 2026.** Sin pilotaje; revisa equipo y acceso antes de clase.

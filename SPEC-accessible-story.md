@@ -1,5 +1,7 @@
 # SPEC: accessible-story
 
+**Campaign amendment · 27 October 2026:** Provide the same ordered speech, optional libre music, Inés dispatch, Luz printing and explicit FIN through independent semantic HTML navigation. Download the actual Carta PDF locally. Migrate saves to version 3 while keeping selections/jobs/ballots memory-only; no cross-route storage synchronization. See [contract](docs/campaign_finale.md).
+
 **Classroom amendment · 25 October 2026:** The independent semantic HTML route has three enterable house sections, restored focus, the same six activities and two transfers, optional mathematics, artifacts and ending. Shared content validation rejects missing fields. Keyboard and responsive checks run against the assembled export; assistive-technology observations are scoped in the verification record. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
 
 Version 2 · 25 October 2026 · Owner: web contributor; integration: main.

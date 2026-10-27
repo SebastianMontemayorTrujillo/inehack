@@ -8,6 +8,7 @@ var story: Dictionary
 var bounds := Rect2(8, 12, 464, 186)
 var interactions: Array[Dictionary] = []
 var artifact_label: Label
+var prop_label: Label
 var exhibit_labels: Array[Label] = []
 
 func _ready() -> void:
@@ -126,7 +127,7 @@ func _interior() -> void:
 	target("host", house_index, Vector2(175, 113), Vector2(55, 45))
 	target("artifact", house_index, Vector2(283, 110), Vector2(55, 45))
 	label(story.chapters[house_index].npc + " · E para conversar", Vector2(127, 128), 7)
-	label(["Imprimir boletín", "Revisar cartel", "Conocer propuestas"][house_index], Vector2(247, 125), 7)
+	prop_label = label(["Imprimir boletín", "Revisar cartel", "Conocer propuestas"][house_index], Vector2(247, 125), 7)
 	solid(Vector2(283, 91), Vector2(25, 18))
 	if house_index == 0:
 		sprite("prop.desk", Vector2(74, 97))
@@ -148,7 +149,7 @@ func _interior() -> void:
 	target("exit", house_index, Vector2(240, 186), Vector2(44, 18))
 	label("SALIR · CAMINA HACIA ABAJO", Vector2(263, 178), 7)
 
-func update_artifacts(completed: Array, data: Dictionary, selection: Dictionary = {}) -> void:
+func update_artifacts(completed: Array, data: Dictionary, selection: Dictionary = {}, campaign_state: int = 0) -> void:
 	var unfinished := ["BOLETÍN POR PUBLICAR", "CARTEL POR REVISAR", "REUNIÓN POR PREPARAR"]
 	var finished := ["BOLETÍN PUBLICADO · CON FUENTE", "CARTEL CORREGIDO · CON FUENTE", "ACUERDOS PARA DAR SEGUIMIENTO"]
 	var records: Dictionary = {}
@@ -170,6 +171,9 @@ func update_artifacts(completed: Array, data: Dictionary, selection: Dictionary 
 			if not authored.is_empty(): artifact_label.text = "MI CARTEL PUBLICADO · INE / CCPC 2024"
 		if story.chapters[house_index].id in completed:
 			artifact_label.text += "\n" + [short_finding, comparison.trim_suffix("\n"), "Escuchar necesidades y revisar avances."][house_index]
+		if house_index == 0 and campaign_state > 0:
+			prop_label.text = "Cartel impreso · E" if campaign_state == 2 else "Imprimir cartel · E"
+			artifact_label.text = "CAMPAÑA IMPRESA · FIN" if campaign_state == 2 else "ENVÍO DE INÉS RECIBIDO\nAcércate a la prensa para imprimir tu cartel."
 	else:
 		for i in exhibit_labels.size():
 			exhibit_labels[i].text = (["Boletín con fuente", "Cartel con fuente", "Seguimiento listo"][i] if story.chapters[i].id in completed else ["Informarnos", "Comparar con justicia", "Escuchar y decidir"][i])

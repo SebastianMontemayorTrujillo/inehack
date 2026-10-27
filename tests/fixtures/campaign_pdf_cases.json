@@ -1,0 +1,8 @@
+[
+  {"name": "count", "selection": {"first": "state_01", "second": "state_02", "metric": "count", "question": "voices"}},
+  {"name": "rate", "selection": {"first": "state_01", "second": "state_02", "metric": "rate", "question": "missing"}},
+  {"name": "long", "selection": {"first": "state_30", "second": "state_16", "metric": "rate", "question": "followup"}, "overrides": {"state_30": {"geography_name": "VERACRUZ DE IGNACIO DE LA LLAVE"}, "state_16": {"geography_name": "MICHOACÁN DE OCAMPO"}}},
+  {"name": "unavailable", "selection": {"first": "state_01", "second": "state_02", "metric": "rate", "question": "missing"}, "overrides": {"state_01": {"sv": 0, "nv": 0, "ns": 12}}},
+  {"name": "near", "selection": {"first": "state_01", "second": "state_02", "metric": "rate", "question": "voices"}, "overrides": {"state_01": {"sv": 1000000000, "nv": 1000000001, "ns": 3}, "state_02": {"sv": 1000000001, "nv": 1000000002, "ns": 4}}},
+  {"name": "equal", "selection": {"first": "state_01", "second": "state_02", "metric": "count", "question": "followup"}, "overrides": {"state_01": {"sv": 17, "nv": 23, "ns": 4}, "state_02": {"sv": 17, "nv": 13, "ns": 5}}}
+]

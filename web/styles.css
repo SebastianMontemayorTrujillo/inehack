@@ -117,6 +117,17 @@ legend { font-weight: 700; padding: 0; margin-bottom: .75rem; }
 .activity-evidence .evidence-label { margin-top: 1rem; }
 .unknown-note { border-left: 3px dotted var(--ochre); padding: .5rem 1rem; }
 .house > .finding { font-weight: 600; }
+.house { display: flex; flex-direction: column; }
+.house > button { align-self: flex-start; }
+.speech-card { background: rgba(255, 253, 247, .92); border: 1px solid var(--line); border-left: 4px solid var(--green); padding: 1rem 1.25rem; margin-top: 1.5rem; }
+.house > .speech-card { order: 1; }
+.speech-card .speaker { font-weight: 750; margin: 0 0 .5rem; }
+.speech-card p:last-child { margin-bottom: 0; }
+.speech-card button { margin: .5rem .5rem 0 0; }
+.campaign-panel { border-top: 2px solid var(--green); margin-top: 1.5rem; }
+.campaign-panel .speech-card { margin-bottom: 1rem; }
+.download-link { display: inline-block; padding: .75rem 1rem; border: 1px solid var(--green); font-weight: 650; }
+#music-volume { display: block; width: min(15rem, 100%); min-height: 2.75rem; }
 .artifact { border-top: 2px solid var(--green); margin-top: 1.5rem; }
 .poster-workshop, .composed-poster { border-top: 2px solid var(--green); margin-top: 1.5rem; padding-top: 1rem; }
 #open-poster-workshop { margin-top: 1.5rem; }

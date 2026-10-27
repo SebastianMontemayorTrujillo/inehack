@@ -2,7 +2,7 @@ import { aggregateRecords, compareRecord } from './logic.mjs';
 import { composePoster, posterStates } from './poster.mjs';
 import { element, bars, integer, percent, perHundred, sourceDetails } from './views.mjs';
 
-function renderPoster(target, poster, data, story, headingLevel) {
+export function renderPoster(target, poster, data, story, headingLevel) {
   const { records, metric, finding, question } = poster;
   const totals = records.map(record => aggregateRecords([record]));
   const rates = metric === 'rate';
@@ -101,8 +101,12 @@ export function createPosterWorkshop({ data, story, archive, meeting, exhibit, o
     for (const [target, level] of [[archiveSlot, 3], [meetingSlot, 3], [exhibitSlot, 4]]) {
       if (published) {
         renderPoster(target, published.poster, data, story, level);
-        if (target === meetingSlot) target.querySelector('#poster-meeting-title').after(element('p',
-          'Inés: Gracias por traer tu cartel. Tomemos tu pregunta para conversar y escuchar otras necesidades. El cartel no elige un proyecto por nosotros.'));
+        if (target === meetingSlot) {
+          const speech = element('div', undefined, 'speech-card');
+          speech.append(element('p', 'Inés', 'speaker'), element('p',
+            'Gracias por traer tu cartel. Tomemos tu pregunta para conversar y escuchar otras necesidades. El cartel no elige un proyecto por nosotros.'));
+          target.append(speech);
+        }
       } else { target.replaceChildren(); target.hidden = true; }
     }
     // The app rebuilds the required exhibit when a chapter is completed.
@@ -147,5 +151,6 @@ export function createPosterWorkshop({ data, story, archive, meeting, exhibit, o
   cancel.addEventListener('click', () => {
     close(); announce(published ? 'Cambios descartados. Conservas tu publicación anterior.' : 'Volviste sin publicar un cartel.');
   });
-  return { sync, close, clear() { published = null; close(false); sync(available); } };
+  return { sync, close, get selection() { return published ? { ...published.selection } : null; },
+    clear() { published = null; close(false); sync(available); } };
 }

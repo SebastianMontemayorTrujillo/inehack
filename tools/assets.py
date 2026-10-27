@@ -7,6 +7,7 @@ import json
 from pathlib import Path, PurePosixPath
 import shutil
 import sys
+import tempfile
 import urllib.request
 import zipfile
 
@@ -16,7 +17,7 @@ REQUIRED_ROLES = set((
     "building.printshop building.archive building.hall prop.tree prop.bench prop.printer "
     "prop.noticeboard prop.ballotbox prop.desk prop.bookshelf prop.chair prop.exit "
     "icon.shade icon.reading icon.garden character.player character.luz character.mateo "
-    "character.ines sound.focus sound.select sound.journal sound.corrective sound.chapter font.regular font.bold"
+    "character.ines sound.focus sound.select sound.journal sound.corrective sound.chapter font.regular font.bold music.plaza"
 ).split())
 PACKS = {
     "tiny-town": "https://kenney.nl/media/pages/assets/tiny-town/a415fbeb49-1735736916/kenney_tiny-town.zip",
@@ -25,6 +26,19 @@ PACKS = {
     "interface-sounds": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
 }
 FONT_BASE = "https://raw.githubusercontent.com/google/fonts/main/ofl/atkinsonhyperlegible/"
+MUSIC_ENTRY = {
+    "path": "res://assets/audio/sunset-walk.ogg",
+    "origin": "third-party",
+    "author": "KiluaBoy",
+    "source_page": "https://opengameart.org/node/87082",
+    "license": "CC0-1.0",
+    "license_path": "res://assets/audio/CC0-1.0.txt",
+    "loop": True,
+}
+MUSIC_DOWNLOADS = {
+    "audio": ("game/assets/audio/sunset-walk.ogg", "https://opengameart.org/sites/default/files/SunsetWalk.ogg"),
+    "license_file": ("game/assets/audio/CC0-1.0.txt", "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt"),
+}
 
 
 def utc_now():
@@ -66,7 +80,7 @@ def checked_file(root, entry):
 def record_original(root=ROOT):
     catalog = json.loads((root / "game/assets/catalogs/original.json").read_text())
     files = []
-    paths = {item["path"].removeprefix("res://") for item in catalog["assets"].values()}
+    paths = {item["path"].removeprefix("res://") for role, item in catalog["assets"].items() if role != "music.plaza"}
     paths.add("assets/fonts/OFL.txt")
     for relative in sorted(paths):
         path = safe_path(root / "game", relative)
@@ -80,6 +94,7 @@ def record_original(root=ROOT):
         "generator": "tools/create_original_assets.py",
         "generator_sha256": sha256(Path(__file__).with_name("create_original_assets.py")),
         "font_dependency": "Atkinson Hyperlegible, Braille Institute of America, OFL-1.1; see reference_manifest.json and game/assets/fonts/OFL.txt",
+        "music_dependency": "Sunset Walk by KiluaBoy, CC0-1.0; separately recorded in assets/music_manifest.json, not authored by this generator.",
         "files": files,
     })
 
@@ -97,6 +112,29 @@ def verify_references(root=ROOT):
     return manifest
 
 
+def music_manifest(root=ROOT):
+    manifest = json.loads((root / "assets/music_manifest.json").read_text())
+    if manifest.get("schema_version") != 1 or manifest.get("role") != "music.plaza":
+        raise ValueError("invalid music manifest")
+    for field in ("author", "source_page", "license"):
+        if manifest.get(field) != MUSIC_ENTRY[field]:
+            raise ValueError(f"invalid music provenance: {field}")
+    for key, (path, url) in MUSIC_DOWNLOADS.items():
+        if manifest[key].get("path") != path or manifest[key].get("url") != url:
+            raise ValueError(f"unapproved music dependency: {key}")
+    return manifest
+
+
+def verify_music(root=ROOT):
+    manifest = music_manifest(root)
+    for key in MUSIC_DOWNLOADS:
+        entry = manifest[key]
+        path = checked_file(root, entry)
+        if path.stat().st_size != entry["bytes"]:
+            raise ValueError(f"music byte count mismatch: {entry['path']}")
+    return manifest
+
+
 def verify_catalog(root=ROOT, asset_set="original"):
     if asset_set not in ("original", "development"):
         raise ValueError(f"unknown asset set: {asset_set}")
@@ -107,6 +145,7 @@ def verify_catalog(root=ROOT, asset_set="original"):
         raise ValueError("catalog roles do not match required contract")
     original = json.loads((root / "assets/original_manifest.json").read_text())
     known = {e["path"]: e for e in original["files"]}
+    verify_music(root)
     if asset_set == "development":
         refs = verify_references(root)
         known.update({e["path"]: e for e in refs.get("selections", [])})
@@ -116,6 +155,10 @@ def verify_catalog(root=ROOT, asset_set="original"):
             raise ValueError(f"invalid resource path: {path}")
         relative = path.removeprefix("res://")
         safe_path(root / "game", relative)
+        if role == "music.plaza":
+            if item != MUSIC_ENTRY:
+                raise ValueError("invalid CC0 music role or provenance")
+            continue
         font = role.startswith("font.")
         allowed = ("assets/fonts/",) if font else (("assets/original/",) if asset_set == "original" else ("assets/original/", "assets/development/"))
         if not relative.startswith(allowed):
@@ -182,12 +225,30 @@ def acquire(root=ROOT):
                     license_path.write_bytes(archive.read(member))
                     manifest["licenses"].append({"pack": ident, "archive_member": member, "path": license_path.relative_to(root).as_posix(), "sha256": sha256(license_path)})
         write_json(root / "assets/reference_manifest.json", manifest)
+    acquire_music(root)
     make_development(root, manifest)
     record_original(root)
     verify_references(root)
     verify_catalog(root, "original")
     verify_catalog(root, "development")
     return manifest
+
+
+def acquire_music(root=ROOT):
+    """Restore only the approved, pinned OGG and CC0 text; never bless new bytes."""
+    manifest = music_manifest(root)
+    with tempfile.TemporaryDirectory(prefix="plaza-music-") as directory:
+        staging = Path(directory)
+        for key in MUSIC_DOWNLOADS:
+            entry = manifest[key]
+            download(entry["url"], staging / entry["path"])
+            checked_file(staging, entry)
+        for key in MUSIC_DOWNLOADS:
+            relative = manifest[key]["path"]
+            destination = safe_path(root, relative)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(staging / relative, destination)
+    return verify_music(root)
 
 
 def make_development(root, manifest):
@@ -222,12 +283,14 @@ def make_development(root, manifest):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("fetch", "verify", "record-original"))
+    parser.add_argument("command", choices=("fetch", "fetch-music", "verify", "record-original"))
     parser.add_argument("--asset-set", choices=("original", "development"), default="original")
     args = parser.parse_args()
     try:
         if args.command == "fetch":
             acquire()
+        elif args.command == "fetch-music":
+            acquire_music()
         elif args.command == "record-original":
             record_original()
         else:

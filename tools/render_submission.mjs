@@ -1,12 +1,15 @@
 // Local, reproducible print deliverables. Browser layout preserves selectable text.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { chromium } from '../.tools/browser/node_modules/playwright/index.mjs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'submission');
+const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const deckOnly = process.argv.includes('--deck-only');
 await mkdir(output, { recursive: true });
 const handoutOnly = process.argv.includes('--handout-only');
@@ -129,6 +132,23 @@ if (handoutOnly) {
   await buildClassroomResources();
   process.exit(0);
 }
+// Final media may only use the current, completed campaign runtime. In particular,
+// an older successful receipt must not authenticate freshly overwritten captures.
+const renderInputs = [];
+async function input(filename) {
+  const bytes = await readFile(path.join(root, filename));
+  renderInputs.push({ path: filename, sha256: sha(bytes), bytes: bytes.length });
+  return bytes;
+}
+const native = JSON.parse(await input('build/evidence/native-window.json'));
+assert.equal(native.status, 'passed', 'Wait for the campaign native journey to pass');
+assert.deepEqual(native.runtime_errors, [], 'Native runtime errors must remain fatal');
+assert.ok(native.finale_checks?.length && native.checkpoints?.length, 'The native receipt predates the campaign finale');
+assert.equal(sha(await input('build/linux/voces-de-la-plaza.pck')), native.pack_sha256, 'Native captures belong to a different PCK');
+for (const [filename, expected] of Object.entries(native.source_sha256)) {
+  assert.equal(sha(await input(filename)), expected, 'Native source changed after the journey: ' + filename);
+}
+for (const filename of ['docs/deck_outline_es.md', 'docs/storyline_and_dissemination_es.md', 'tools/render_submission.mjs']) await input(filename);
 const narrative = await readFile(path.join(root, 'docs/storyline_and_dissemination_es.md'), 'utf8');
 const body = narrative.split('<!-- INICIO DEL CONTENIDO PARA PDF: PÁGINA 1 -->')[1].split('<!-- FIN DEL CONTENIDO PARA PDF -->')[0];
 const blocks = body.split(/<div style="page-break-after: always;"><\/div>/);
@@ -155,28 +175,31 @@ const captures = {
   0: ['native-plaza.png', 'Villa Brisa · Captura real del recorrido Linux'],
   3: ['native-house-1-complete.png', 'Imprenta de Luz · Boletín terminado'],
   4: ['native-poster-archive-before.png', 'Archivo de Mateo · Cartel corregido'],
-  5: ['native-house-3.png', 'Casa de reunión de Inés · Consulta ficticia'],
+  5: ['native-consultation-intro.png', 'Inés · Conversación antes de la consulta ficticia'],
   8: ['native-poster-preview.png', 'Archivo de Mateo · Vista previa del cartel opcional'],
-  9: ['native-ending.png', 'Cierre del recorrido · Exposición completa'],
+  9: ['native-ending.png', 'Prensa de Luz · FIN después de imprimir el cartel'],
 };
 const figure = (data, caption) => '<figure><img src="data:image/png;base64,' + data.toString('base64') + '" alt="' + escape(caption) + '"><figcaption>' + escape(caption) + '</figcaption></figure>';
 const images = Object.fromEntries(await Promise.all(Object.entries(captures).map(async ([index, [filename, caption]]) => {
-  const bytes = await readFile(path.join(root, 'build/evidence', filename));
+  const capturePath = 'build/evidence/' + filename;
+  const bytes = await input(capturePath);
+  const checkpoint = native.checkpoints.find(item => item.path === capturePath);
+  assert.equal(sha(bytes), checkpoint?.sha256, 'Capture is not authenticated by the current native run: ' + filename);
   return [index, figure(bytes, caption)];
 })));
 const footnotes = [
   'Una actividad de educación cívica en español de México · Datos públicos, historia original.',
-  'Dos misiones CCPC, una consulta ficticia y un cierre común. Objetivo de aventura: 10-15 minutos.',
+  'Dos misiones CCPC, consulta ficticia y vuelta a Luz para imprimir. Meta: 10-15 minutos, sin pilotaje.',
   sourceNote + ' SV/(SV+NV) y NS/LN tienen bases distintas.',
   sourceNote + ' Las tarjetas 60/30/10 son un ejemplo inventado.',
   sourceNote + ' Los agregados no explican motivos individuales.',
   'Ficción didáctica. No reproduce todos los procedimientos de una elección constitucional.',
   'La ruta HTML ofrece el mismo contenido sin ejecutar el lienzo Godot.',
   'Tiempo de planeación, sin pilotaje. Prever tiempo adicional si se ofrece el taller opcional.',
-  sourceNote + ' Cartel solo durante la sesión; no cambia la consulta ni el reconocimiento.',
-  'Materiales de aula disponibles. Uso institucional propuesto, sin adopción confirmada.',
+  sourceNote + ' Personalizar es opcional; Inés también ofrece el cartel guiado.',
+  'Campaña ciudadana sin marcas de equipo ni sello oficial. Fuente histórica INE/CCPC; descarga opcional.',
 ];
-const kickers = ['INEhack 2026 · Reto 3', 'La historia', 'Dato nacional · 2024', 'Primera misión · Imprenta', 'Segunda misión · Archivo', 'Tercera casa · Reunión', 'Acceso y materiales', 'Uso en el aula', 'Taller opcional · Archivo', 'La conversación continúa'];
+const kickers = ['INEhack 2026 · Reto 3', 'La historia', 'Dato nacional · 2024', 'Primera misión · Imprenta', 'Segunda misión · Archivo', 'Tercer paso · Consulta', 'Acceso y materiales', 'Uso en el aula', 'Taller opcional · Archivo', 'Cuarto paso · Imprimir'];
 function slideBody(slide, index) {
   if (index === 1) return '<p class="lead">' + escape(slide.lines[0]) + '</p><div class="journey">' + slide.lines.slice(1).map((line, n) => '<div><p class="step">' + (n + 1) + '</p><h2>' + escape(line.split(':')[0]) + '</h2><p>' + escape(line.split(':').slice(1).join(':').trim()) + '</p></div>').join('') + '</div>';
   if (index === 2) {
@@ -209,6 +232,12 @@ const browser = await chromium.launch({ executablePath: browserExecutable, args:
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const preview = process.env.PREVIEW_URL || 'http://127.0.0.1:8765/build/web/';
+  for (const filename of ['index.html', 'app.mjs', 'logic.mjs', 'styles.css']) {
+    const expected = await input('web/' + filename);
+    const response = await fetch(new URL(filename, preview));
+    assert.equal(response.status, 200, 'Exported HTML resource missing: ' + filename);
+    assert.equal(sha(Buffer.from(await response.arrayBuffer())), sha(expected), 'Stale HTML export: ' + filename);
+  }
   await page.goto(preview, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => /Archivo CCPC 2024.*cargad/.test(document.querySelector('#data-status')?.textContent || ''));
   const exportedStory = await page.evaluate(async () => {
@@ -217,12 +246,17 @@ try {
     return response.json();
   });
   const canonicalStory = JSON.parse(await readFile(path.join(root, 'game/content/story.json'), 'utf8'));
+  assert.equal(canonicalStory.schema_version, '3.0.0', 'Campaign media requires story schema 3');
   if (JSON.stringify(exportedStory) !== JSON.stringify(canonicalStory)) throw new Error('The web export does not match the current shared story');
   await page.evaluate(async () => { await document.fonts.ready; window.scrollTo(0, 0); });
   const settings = await page.locator('details.settings').boundingBox();
   if (!settings) throw new Error('The exported HTML overview is unavailable');
   const overviewHeight = Math.ceil(settings.y + settings.height + 16);
-  images[6] = figure(await page.screenshot({ clip: { x: 0, y: 0, width: 1440, height: overviewHeight } }), 'Ruta HTML · Portada del export final');
+  const overview = await page.screenshot({ clip: { x: 0, y: 0, width: 1440, height: overviewHeight } });
+  const overviewPath = 'build/evidence/submission-html-overview.png';
+  await writeFile(path.join(root, overviewPath), overview);
+  await input(overviewPath);
+  images[6] = figure(overview, 'Ruta HTML · Portada del export final');
   const deckHtml = '<!doctype html><html lang="es-MX"><head><meta charset="utf-8"><title>Voces de la Plaza · Presentación</title><style>' + deckStyle + '</style></head><body><main>' + slides.map((slide, i) => '<section class="slide ' + (images[i] ? 'with-image' : '') + '" aria-label="Diapositiva ' + (i + 1) + '"><p class="kicker">' + kickers[i] + '</p><h1>' + escape(slide.title) + '</h1><div class="layout"><div class="copy">' + slideBody(slide, i) + '</div>' + (images[i] || '') + '</div><footer><span class="note">' + footnotes[i] + '</span><span class="folio">' + (i + 1) + ' / 10</span></footer></section>').join('') + '</main></body></html>';
   if (!deckOnly) await writeFile(path.join(output, 'narrativa.html'), narrativeHtml);
   await writeFile(path.join(output, 'presentacion.html'), deckHtml);
@@ -249,4 +283,12 @@ try {
     verifyPdfPageCount(filename, expectedPages);
     console.log('Generated submission/' + filename);
   }
+  for (const item of renderInputs) assert.equal(sha(await readFile(path.join(root, item.path))), item.sha256, 'Source changed during rendering: ' + item.path);
+  const artifactPaths = targets.flatMap(([name, filename]) => ['submission/' + name + '.html', 'submission/' + filename]);
+  const artifacts = await Promise.all(artifactPaths.map(async filename => ({ path: filename, sha256: sha(await readFile(path.join(root, filename))) })));
+  await writeFile(path.join(root, 'build/evidence/document-render-inputs.json'), JSON.stringify({
+    status: 'rendered; visual review pending', created_at_utc: new Date().toISOString(), story_schema: canonicalStory.schema_version,
+    native_pack_sha256: native.pack_sha256, inputs: renderInputs, artifacts,
+    limits: ['Rendering and hash checks do not establish a participant pilot or accessibility certification'],
+  }, null, 2) + '\n');
 } finally { await browser.close(); }

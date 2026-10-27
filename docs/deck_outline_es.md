@@ -1,8 +1,10 @@
 # Voces de la Plaza · esquema de presentación
 
-**Equipo Latas · Edición de aula · presentación revisada el 27 de octubre de 2026.** Diez diapositivas para presentar la aventura, sus datos y su uso docente. El generador lee el texto en pantalla de este documento y lo combina con capturas reales del recorrido Linux y del export HTML. [Presentación PDF](../submission/voces_presentacion.pdf) y [versión HTML](../submission/presentacion.html).
+**Equipo Latas · Cierre de campaña · 27 de octubre de 2026.** Diez diapositivas para presentar la aventura, sus datos y su uso docente. El generador lee el texto en pantalla y lo combina con capturas reales del recorrido Linux y del export HTML. [Presentación PDF](../submission/voces_presentacion.pdf) y [versión HTML](../submission/presentacion.html).
 
-La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional implementado en Godot y HTML. Se conserva la comparación guiada AGS/BC en la diapositiva 5. La vista previa nativa procede de `build/evidence/native-poster-preview.png`; el [recorrido nativo](../build/evidence/native-window.json) y la [verificación](verification.md) delimitan el alcance técnico comprobado. Las seis actividades siguen siendo obligatorias; el taller y los cálculos son opcionales.
+La diapositiva 9 presenta la personalización opcional; la 10, el encargo de Inés, regreso a Luz, impresión y FIN. Se conserva la comparación guiada AGS/BC en la 5. Las seis actividades siguen siendo obligatorias; el taller, los cálculos y descargar el PDF son opcionales. La misión final usa el cartel guiado si no se personaliza.
+
+**Estado de producción de campaña:** los registros históricos de este archivo describen ediciones anteriores. Las capturas y medios nuevos requieren recibos del runtime de esta revisión; no se atribuyen vistas nuevas a capturas antiguas. El [contrato](campaign_finale.md), [recorrido nativo](../build/evidence/native-window.json) y [verificación](verification.md) fijan contenido y alcance.
 
 ## Diapositiva 1 · Voces de la Plaza
 
@@ -18,7 +20,7 @@ La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional im
 
 **Visual:** tres estaciones con anfitrión y propósito, dentro de un mismo pueblo.
 
-**Nota de exposición:** las tres casas se pueden visitar desde el inicio; la consulta requiere el boletín y el cartel. Son dos misiones CCPC, consulta ficticia y un cierre común. Objetivo de duración de la aventura: 10–15 minutos.
+**Nota de exposición:** todas las casas abren desde el inicio, pero las conversaciones siguen el orden Luz, Mateo e Inés. Las visitas tempranas indican qué evidencia falta. Son dos misiones CCPC, consulta ficticia como paso tres de cuatro y regreso a la primera casa para imprimir. Las intervenciones aparecen abajo, con fondo oscuro translúcido y retrato; las actividades conservan paneles amplios. Objetivo de duración: 10–15 minutos, aún sin pilotaje.
 
 ## Diapositiva 3 · Qué sabemos y qué falta
 
@@ -46,11 +48,11 @@ La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional im
 
 ## Diapositiva 6 · Inés: una consulta ficticia
 
-**Texto en pantalla:** «A · Sombra y bancas». «B · Rincón de lectura». «C · Jardín comunitario». «También: dejar sin marcar o no participar». «Cinco acciones, mismo final y reconocimiento».
+**Texto en pantalla:** «A · Sombra y bancas». «B · Rincón de lectura». «C · Jardín comunitario». «También: dejar sin marcar o no participar». «Cinco acciones habilitan la campaña».
 
-**Visual:** `native-house-3.png`, con rótulo de consulta ficticia; igual jerarquía para los tres proyectos.
+**Visual:** `native-consultation-intro.png`, conversación de Inés en la franja inferior translúcida, con retrato y decisión explícitamente ficticia. Los tres proyectos conservan igual jerarquía en el texto de la diapositiva.
 
-**Nota de exposición:** cada proyecto aporta algo y requiere cuidado. Los datos históricos no eligen cuál necesita la plaza. Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar conserva ambos. Un empate necesita otra decisión ficticia. La elección no se guarda ni transmite.
+**Nota de exposición:** cada proyecto aporta algo y requiere cuidado. Los datos históricos no eligen cuál necesita la plaza. Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar conserva ambos. Un empate necesita otra decisión ficticia. Todas las acciones y una pregunta neutral de seguimiento habilitan el encargo de Inés; ninguna preferencia se califica. El final llega al imprimir, con el mismo reconocimiento. La elección no se guarda ni transmite.
 
 ## Diapositiva 7 · Dos rutas y una hoja de trabajo
 
@@ -58,11 +60,11 @@ La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional im
 
 **Visual:** captura de la portada de la ruta HTML del export final, con la misma historia compartida y sin cortar el título de la sección siguiente.
 
-**Nota de exposición:** HTML ofrece las actividades sin ejecutar el lienzo; el taller opcional está disponible en ambas rutas. En la aventura caminamos con WASD y cruzamos puertas; hay silencio, movimiento reducido y texto ampliable. Comprobar el equipo y la ruta adecuada antes de clase. El alcance de las comprobaciones está en el registro de verificación; no se promete compatibilidad universal, web sin conexión o evaluación formal con lector de pantalla.
+**Nota de exposición:** HTML ofrece las actividades y la campaña sin ejecutar el lienzo, con navegación propia. En Godot caminamos con WASD y cruzamos puertas; E/Enter interactúa solo cerca. Hay silencio, movimiento reducido y texto ampliable. La música tranquila «Sunset Walk», de KiluaBoy, es una dependencia CC0 con control de volumen, no música original del equipo. No es necesaria para avanzar. Comprobar equipo y ruta antes de clase. Los recibos delimitan las comprobaciones; no se promete compatibilidad universal, web sin conexión o certificación de accesibilidad.
 
 ## Diapositiva 8 · Una clase de 20 minutos
 
-**Texto en pantalla:** «2 min: invitación». «13 min: aventura y cierre». «5 min: conversación opcional». «Individual, parejas o proyector». «Un hallazgo · Un límite · Una pregunta de seguimiento».
+**Texto en pantalla:** «2 min: invitación». «13 min: aventura y campaña». «5 min: conversación opcional». «Individual, parejas o proyector». «Un hallazgo · Un límite · Una pregunta de seguimiento».
 
 **Visual:** secuencia de tiempo legible, sin resultados de participantes.
 
@@ -74,15 +76,15 @@ La diapositiva 9 muestra «Crea tu cartel para la reunión», taller opcional im
 
 **Visual:** captura nativa real `native-poster-preview.png`, con Nuevo León y Baja California, titular del hallazgo, proporciones en una misma escala, bases y registros sin clasificación. La pregunta neutral ocupa un panel destacado. El botón de datos y fuente abre los conteos completos; el texto ampliado permite desplazarse dentro de la vista previa del juego.
 
-**Nota de exposición:** taller disponible después de las seis actividades del recorrido principal. Elegir dos entidades del conjunto CCPC federal 2024, cantidad de registros con participación o proporción entre registros con información y una pregunta neutral. Las preguntas son sobre información faltante, voces por escuchar o seguimiento de acuerdos. La vista previa muestra hallazgo, valores, bases, NS, año, fuente y límites; los conteos completos y la procedencia se consultan en un botón. Guardar conserva la posición; se camina con WASD hasta Inés. El cartel permanece en memoria durante la sesión: no cambia resultados de consulta ni reconocimiento. No añade una pregunta calificada ni exige calcular. Los datos no explican motivos ni señalan qué proyecto necesita Villa Brisa.
+**Nota de exposición:** taller disponible después de las seis actividades. Elegir dos entidades, cantidad o proporción y una pregunta sobre información faltante, voces por escuchar o seguimiento de acuerdos. La vista previa muestra hallazgo, valores, bases, NS, año, fuente y límites. Guardar conserva la posición; en Godot se camina a Inés. Borrador y publicación están separados: cancelar conserva lo publicado. Después de la consulta, Inés ofrece el diseño personal o el guiado AGS/BC por proporción. Se conserva en memoria; no cambia la consulta, no añade una pregunta calificada ni exige calcular.
 
-## Diapositiva 10 · La conversación continúa
+## Diapositiva 10 · FIN · La campaña comienza contigo
 
-**Texto en pantalla:** «Propuesta para bachilleratos, bibliotecas y talleres». «Latas prepara una edición con fuentes y guía». «La persona facilitadora prueba equipo y recorrido». «Observaciones por versión; Latas revisa y actualiza».
+**Texto en pantalla:** «Inés encarga el diseño a Luz». «Vuelve a la primera casa y usa la prensa». «Imprimir cartel completa la aventura». «Descarga opcional: PDF Carta ciudadano».
 
-**Visual:** `native-ending.png`, diálogo de cierre con la exposición completa.
+**Visual:** `native-ending.png`, captura nueva del final después de usar la prensa, con «FIN · La campaña comienza contigo» y la acción separada para descargar. No reutilizar el cierre anterior como evidencia de impresión.
 
-**Nota de exposición:** secuencia propuesta, sin adopción confirmada: una persona mantenedora de Latas prepara un paquete identificado por versión; la persona facilitadora receptora revisa el encaje docente, prepara el equipo y recorre la actividad. Después de una sesión voluntaria, devuelve observaciones de claridad, tiempo y barreras con versión y modalidad, sin datos personales. Latas revisa, corrige, comprueba datos y ambas rutas y entrega una nueva edición con registro de cambios. Repetir la preparación antes de difundir por canales autorizados. La [propuesta de reutilización](institutional_reuse.md) detalla requisitos. Esta revisión formativa no acredita eficacia ni efectos electorales.
+**Nota de exposición:** Inés prepara y congela el diseño dentro de la ficción; no envía un mensaje externo. Se camina a la primera casa y se interactúa cerca de la prensa. «Imprimir cartel» completa el juego; descargar o imprimir físicamente no es requisito. La página Carta dice «Tu voto cuenta. Infórmate y participa.», sin Latas, INEhack, sello oficial ni resultados ficticios. Cita INE/CCPC histórico con conteos, bases, NS, barras, pregunta y límites. Cancelar el guardado no deshace FIN. Se puede explorar y reabrir el final; recargar no reconstruye el cartel personal. La entrega sigue acreditada a Latas. Para reutilizarla: Latas prepara una versión; la persona facilitadora prueba equipo y recorrido, devuelve observaciones voluntarias y sin datos personales, y Latas revisa. No hay adopción confirmada, pilotaje ni efectos educativos demostrados.
 
 ## Revisión editorial contra la rúbrica local
 
@@ -92,7 +94,7 @@ Fuente: **Rúbrica de evaluación_Hackaton -1.pdf**, tres páginas leídas e ins
 | --- | --- | --- |
 | Apego a la temática · 35 | CCPC sostiene boletín y comparación; fuente, año, bases y límites visibles. Cifras cotejadas con el archivo compartido y capturas finales incrustadas. La consulta se distingue de los datos históricos. | Los registros federales de 2024 no describen al salón ni permiten inferir preferencias o efectos del juego. |
 | Claridad y solidez · 30 | Seis actividades conceptuales, cifras exactas y sencillas, cálculos opcionales y guía de uso. La hoja incluye los tres escenarios canónicos de consulta y permite comparar ganadores con el mismo total. | Los casos nuevos permiten intentar aplicar una idea; no son una medida validada de comprensión. La duración con participantes aún no se ha observado. |
-| Originalidad y creatividad · 20 | Una reunión da sentido a tres interiores, un boletín que se publica, un cartel que se corrige y una consulta plural. El taller permite componer y revisar un mensaje propio con dos entidades, una medida y una pregunta neutral. | La creación del cartel es una interacción observable; no demuestra por sí sola aprendizaje o eficacia cívica. |
+| Originalidad y creatividad · 20 | Una reunión da sentido a tres interiores, un boletín, una comparación y una consulta plural. El taller permite revisar un mensaje con dos entidades; Inés lo encarga y la prensa de Luz cierra la aventura con un PDF ciudadano descargable. | Las interacciones requieren evidencia del runtime de esta edición; no demuestran por sí solas aprendizaje o eficacia cívica. |
 | Viabilidad para el aprovechamiento institucional · 15 | Guía HTML, hoja HTML/PDF de dos caras, modalidades individual/parejas/proyector, respaldo Linux y secuencia propuesta de preparación, devolución y revisión por versión entre Latas y la persona facilitadora. | Revisar acceso en el entorno de destino y adecuación docente. No existe acuerdo de adopción acreditado. |
 
 Temática y claridad son los criterios de desempate. La revisión identifica sustento y límites de uso; no transforma objetivos numéricos del plan en resultados.
@@ -147,7 +149,7 @@ Se ejecutaron `pdfinfo`, `pdftoppm -r 120 -png` y, como apoyo, `pdftotext -layou
 
 La grabación de esa edición dura **140.10 segundos**. Se revisaron los 32 fotogramas extraídos (27 escenas y cinco vistas de preguntas) y los 27 subtítulos; todos coincidían con su recibo y transcripción. El inicio muestra la entrada con W al archivo; el taller posterior muestra HTML. La revisión del cartel Godot corresponde al recorrido nativo y a la presentación de esa edición. Registros de trabajo: `build/pdf-review-2026-10-26/review.md` y `build/pitch-recording/2026-10-26T23-59-25.895Z/visual-review.md`. Estos registros de inspección no acreditan aprendizaje, evaluación formal de accesibilidad ni adopción institucional.
 
-## Producción de la presentación · 27 de octubre
+## Registro histórico de interfaz · 27 de octubre, antes de campaña
 
 Se refrescó solo la presentación para mostrar la interfaz revisada: progreso y objetivo separados, controles WASD visibles, encabezados compactos y fondo atenuado al abrir un panel. El marcador PDF de la habilidad `pdf/26.1020.11618` se ejecutó correctamente **una sola vez**, inmediatamente antes de `node tools/render_submission.mjs --deck-only`, con operación `edit`, **un PDF** esperado y formato `pdf`. El comando terminó con código 0; produjo el PDF a las **15:56:20 UTC**. La narrativa y los tres recursos de aula conservaron sus hashes; su revisión anterior no se atribuye a esta operación.
 

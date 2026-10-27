@@ -41,16 +41,22 @@
     </section>
     <p id="game-note" class="small-note">La aventura visual requiere el paquete Godot exportado. Si todavía no está disponible, puedes completar aquí la misma historia.</p>
     <details class="settings">
-      <summary>Lectura y accesibilidad</summary>
+      <summary>Lectura, música y accesibilidad</summary>
       <div class="settings-controls">
         <label for="text-size">Tamaño del texto <select id="text-size"><option value="normal">Estándar</option><option value="large">Grande</option></select></label>
         <label class="check"><input type="checkbox" id="reduced-motion"> Reducir movimiento</label>
+        <label class="check"><input type="checkbox" id="music-muted"> Silenciar música</label>
+        <label for="music-volume">Volumen de música <output id="music-volume-value" for="music-volume">20 %</output>
+          <input id="music-volume" type="range" min="0" max="100" step="1" value="20"></label>
+        <button type="button" id="music-play" class="quiet">Reproducir música</button>
         <button type="button" id="reset-progress" class="quiet">Borrar avance y ajustes</button>
       </div>
-      <p>Usa Tab para recorrer los controles y Enter o Espacio para activarlos. Escape cierra la tarea; desde una casa, vuelve a la plaza. También puedes ampliar el texto con tu navegador. No hay arrastres ni límite de tiempo. Esta ruta no usa audio.</p>
-      <p>Solo guardamos capítulos terminados, ajustes y uso de apoyo en este dispositivo. Tu decisión ficticia, sus resultados y tu reflexión no se guardan ni se envían.</p>
+      <p>Usa Tab para recorrer los controles y Enter o Espacio para activarlos. Escape cierra la tarea; desde una casa, vuelve a la plaza. También puedes ampliar el texto con tu navegador. No hay arrastres ni límite de tiempo.</p>
+      <p id="music-status">Música tranquila a volumen bajo (20 %), después de tu primera interacción. Todo el contenido se puede leer sin sonido.</p>
+      <p>Solo guardamos capítulos terminados, el cierre de la campaña, ajustes y uso de apoyo en este dispositivo. Tu decisión ficticia, sus resultados y tu reflexión no se guardan ni se envían. El diseño del cartel y el PDF permanecen solo en esta sesión.</p>
       <p id="storage-status" role="status"></p>
     </details>
+    <audio id="background-music" src="./assets/audio/sunset-walk.ogg" loop preload="none" hidden></audio>
     <noscript><p class="error">Activa JavaScript para cargar el archivo CCPC y la historia incluidos. No se requieren cuentas ni servicios externos.</p></noscript>
     <div class="notebook">
       <aside class="itinerary">
@@ -74,8 +80,11 @@
           </section>
           <section id="ending" class="ending" aria-labelledby="ending-title" hidden>
             <p class="eyebrow">Recorrido completo · Villa Brisa</p>
-            <h3 id="ending-title" tabindex="-1">La plaza sigue en construcción.</h3>
+            <h3 id="ending-title" tabindex="-1"></h3>
             <p id="ending-message"></p>
+            <p id="campaign-reload-note" class="small-note" hidden></p>
+            <a id="download-campaign" class="download-link" download="cartel-voces-de-la-plaza.pdf" hidden>Descargar cartel PDF</a>
+            <p id="campaign-format" class="small-note" hidden>PDF · Una página · Tamaño Carta (21.59 × 27.94 cm)</p>
             <p>Te llevas tres herramientas: leer lo que sabemos, reconocer lo que falta y preguntar qué sigue después de decidir.</p>
             <p>En otra reunión podemos revisar el presupuesto, los avances y las necesidades pendientes. Todas son preguntas válidas.</p>
             <p class="small-note">Conservamos que terminaste el recorrido, sin guardar tu elección ni su resultado. Terminar con apoyo no demuestra comprensión independiente. Esta experiencia no mide efectos en la participación electoral real.</p>
@@ -123,7 +132,7 @@
           <label class="choice"><input type="radio" name="followup" value="budget" required> ¿Qué se hizo con el presupuesto?</label>
           <label class="choice"><input type="radio" name="followup" value="review"> ¿Cuándo revisaremos los avances?</label>
           <label class="choice"><input type="radio" name="followup" value="needs"> ¿Cómo atenderemos las necesidades pendientes?</label>
-        </fieldset><button type="submit">Volver a la plaza y cerrar el recorrido</button></form>
+        </fieldset><button type="submit">Continuar con Inés</button></form>
       </section>
       <button type="button" class="quiet" data-close-task="consultation">Cerrar tarea</button>
     </div>

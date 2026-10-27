@@ -626,6 +626,15 @@
       "license": "OFL-1.1",
       "license_path": "res://assets/fonts/OFL.txt"
     },
+    "music.plaza": {
+      "path": "res://assets/audio/sunset-walk.ogg",
+      "origin": "third-party",
+      "author": "KiluaBoy",
+      "source_page": "https://opengameart.org/node/87082",
+      "license": "CC0-1.0",
+      "license_path": "res://assets/audio/CC0-1.0.txt",
+      "loop": true
+    },
     "font.bold": {
       "path": "res://assets/fonts/AtkinsonHyperlegible-Bold.ttf",
       "origin": "dependency",

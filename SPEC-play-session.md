@@ -1,5 +1,7 @@
 # SPEC: play-session
 
+**Campaign amendment · 27 October 2026:** Approved [campaign finale](docs/campaign_finale.md) supersedes the three-step ending: NPC speech uses translucent bottom panels; a bundled CC0 music loop has mute/volume controls; the fourth objective finishes only at Luz's nearby press after Inés dispatches the poster. WASD-only travel and all enterable houses remain. Save schema 2 adds only non-sensitive completion/audio fields.
+
 **Interface amendment · 27 October 2026:** Show bounded location/objective text and three noninteractive progress indicators. Open paper panels dim the world and contain keyboard/mouse interaction; closing restores a usable world control without changing location. Keep controls and content readable at enlarged text, with equal presentation of answer and consultation choices. See `docs/interface_polish.md` and RV17.
 
 **Movement amendment · 26 October 2026:** At the user's request, WASD is the only world movement. Walk into a doorway to enter a house and down through its exit to return. House buttons, remote exit, Escape travel, prerequisite travel and poster-publication travel are removed. E/Enter and the interaction button act only on nearby people/exhibits. Escape closes panels; arrow keys still operate interface controls. Reset starts a new run in the plaza. The independent semantic HTML route retains normal document navigation.

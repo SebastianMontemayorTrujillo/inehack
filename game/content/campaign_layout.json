@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "page": [612, 792],
+  "colors": {"ink": "173b39", "accent": "9b4d2d", "teal": "286c61", "track": "e5e5de", "paper": "f5efdc"},
+  "copy": {
+    "count_scale": "Misma escala: 0 a {maximum} registros con participación (SV).",
+    "zero_scale": "Ambos lugares tienen 0 registros con participación (SV).",
+    "rate_scale": "Misma escala: 0 a 100%. Porcentajes redondeados a dos decimales; el titular compara las fracciones exactas SV / (SV + NV).",
+    "unavailable": "Sin datos clasificables",
+    "details": "SV: {sv} · NV: {nv} · Base (SV + NV): {base}\nNS (sin información): {ns} · Lista nominal (LN): {ln}"
+  },
+  "blocks": [
+    {"type": "rect", "x": 36, "y": 36, "w": 5, "h": 100, "color": "teal"},
+    {"type": "text", "x": 54, "y": 35, "w": 522, "h": 76, "size": 30, "leading": 34, "font": 1, "text": "Tu voto cuenta.\nInfórmate y participa."},
+    {"type": "text", "x": 54, "y": 119, "w": 522, "h": 20, "size": 12.5, "text": "Campaña ciudadana por el voto informado."},
+    {"type": "rect", "x": 36, "y": 155, "w": 540, "h": 1, "color": "teal"},
+    {"type": "text", "x": 36, "y": 168, "w": 540, "h": 16, "size": 10, "font": 1, "color": "accent", "text": "DATOS REALES · INE / CCPC · ELECCIÓN FEDERAL {year}"},
+    {"type": "text", "x": 36, "y": 191, "w": 540, "h": 53, "size": 20, "leading": 23, "font": 1, "text": "{finding}"},
+    {"type": "text", "x": 36, "y": 252, "w": 540, "h": 18, "size": 12, "font": 1, "text": "{measure}"},
+    {"type": "text", "x": 36, "y": 280, "w": 365, "h": 20, "size": 12, "font": 1, "text": "{first_name}"},
+    {"type": "text", "x": 405, "y": 277, "w": 171, "h": 23, "size": 14, "align": "right", "font": 1, "text": "{first_value}"},
+    {"type": "bar", "x": 36, "y": 305, "w": 540, "h": 12, "value": "first_ratio"},
+    {"type": "text", "x": 36, "y": 327, "w": 540, "h": 35, "size": 10, "leading": 13, "text": "{first_details}"},
+    {"type": "text", "x": 36, "y": 375, "w": 365, "h": 20, "size": 12, "font": 1, "text": "{second_name}"},
+    {"type": "text", "x": 405, "y": 372, "w": 171, "h": 23, "size": 14, "align": "right", "font": 1, "text": "{second_value}"},
+    {"type": "bar", "x": 36, "y": 400, "w": 540, "h": 12, "value": "second_ratio"},
+    {"type": "text", "x": 36, "y": 422, "w": 540, "h": 35, "size": 10, "leading": 13, "text": "{second_details}"},
+    {"type": "text", "x": 36, "y": 467, "w": 540, "h": 30, "size": 10, "leading": 13, "text": "{scale}"},
+    {"type": "rect", "x": 36, "y": 511, "w": 540, "h": 87, "color": "paper"},
+    {"type": "rect", "x": 36, "y": 511, "w": 4, "h": 87, "color": "accent"},
+    {"type": "text", "x": 52, "y": 524, "w": 508, "h": 16, "size": 10, "font": 1, "color": "accent", "text": "PARA CONVERSAR"},
+    {"type": "text", "x": 52, "y": 545, "w": 508, "h": 43, "size": 16, "leading": 19, "font": 1, "text": "{question}"},
+    {"type": "text", "x": 36, "y": 614, "w": 540, "h": 31, "size": 10.5, "leading": 13, "text": "Base de la proporción: registros con información (SV + NV). NS indica clasificación desconocida; se muestra aparte y no se suma a NV."},
+    {"type": "text", "x": 36, "y": 656, "w": 540, "h": 42, "size": 10.5, "leading": 13, "text": "Límite: {limit}"},
+    {"type": "rect", "x": 36, "y": 707, "w": 540, "h": 1, "color": "track"},
+    {"type": "text", "x": 36, "y": 718, "w": 540, "h": 16, "size": 10, "font": 1, "text": "Fuente oficial: INE · Conteos Censales de Participación Ciudadana"},
+    {"type": "text", "x": 36, "y": 738, "w": 540, "h": 27, "size": 8.5, "leading": 11, "text": "{source_url}"},
+    {"type": "link", "x": 36, "y": 716, "w": 540, "h": 49, "value": "source_url"}
+  ]
+}

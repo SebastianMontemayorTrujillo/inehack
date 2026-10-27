@@ -2,11 +2,11 @@
 
 ## Narrativa y plan de difusión · Reto 3
 
-**Equipo Latas · Edición de aula · 25 de octubre de 2026.** Narrativa de cuatro páginas con una propuesta de difusión para bachillerato y personas adultas principiantes. [PDF de narrativa y difusión](../submission/voces_narrativa_y_difusion.pdf), [materiales docentes](../submission/classroom.html) y [registro de verificación](verification.md).
+**Equipo Latas · Cierre de campaña · 27 de octubre de 2026.** Narrativa de cuatro páginas con una propuesta de difusión para bachillerato y personas adultas principiantes. [PDF de narrativa y difusión](../submission/voces_narrativa_y_difusion.pdf), [materiales docentes](../submission/classroom.html) y [registro de verificación](verification.md).
 
 Los cuatro bloques conservan el formato de `tools/render_submission.mjs`. La [revisión editorial contra la rúbrica local](deck_outline_es.md#revisión-editorial-contra-la-rúbrica-local) distingue calidad del contenido, comprobaciones técnicas y evaluación educativa.
 
-El taller opcional está implementado en Godot y HTML. El [recorrido nativo](../build/evidence/native-window.json) y el [registro de verificación](verification.md) delimitan las comprobaciones técnicas; no constituyen una evaluación de aprendizaje. La presentación incluye una captura real de su vista previa.
+El [contrato de campaña](campaign_finale.md) define la secuencia nueva. Los recibos y capturas de ediciones anteriores son evidencia histórica hasta que se regeneren los recorridos y medios de esta revisión. El [recorrido nativo](../build/evidence/native-window.json) y el [registro de verificación](verification.md) delimitan comprobaciones técnicas; no constituyen una evaluación de aprendizaje.
 
 <!-- INICIO DEL CONTENIDO PARA PDF: PÁGINA 1 -->
 
@@ -14,15 +14,15 @@ El taller opcional está implementado en Godot y HTML. El [recorrido nativo](../
 
 **Voces de la Plaza** propone una aventura de educación cívica para estudiantes de bachillerato de aproximadamente 15–18 años que se acercan a su primer voto, y para personas adultas principiantes. La pregunta es cómo leer información pública, reconocer sus límites y usarla en una conversación sobre decisiones colectivas. No requiere experiencia con videojuegos ni resolver operaciones para avanzar.
 
-En la Villa Brisa ficticia hay recursos para empezar una mejora de la plaza y tres propuestas distintas. Antes de la reunión, la persona jugadora ayuda a preparar **Las voces que construyen la plaza**, una exhibición con un boletín y un cartel. El recorrido conserva un pueblo, tres casas, tres personajes que hablan, dos misiones CCPC y una consulta ficticia con final.
+En la Villa Brisa ficticia hay recursos para empezar una mejora de la plaza y tres propuestas distintas. Antes de la reunión, la persona jugadora prepara **Las voces que construyen la plaza**, una exhibición con un boletín y un cartel. El recorrido conserva un pueblo, tres casas, tres personajes, dos misiones CCPC y una consulta ficticia; termina al imprimir un cartel ciudadano en la primera casa.
 
 **Imprenta de Luz:** preparar un boletín honesto sobre la participación nacional de 2024, sin borrar la información desconocida. **Archivo de Mateo:** corregir un cartel que confunde cantidad con proporción al comparar Aguascalientes y Baja California. **Casa de reunión de Inés:** escuchar necesidades distintas, conocer una regla de decisión inventada y pensar cómo dar seguimiento.
 
-El diseño permite entrar y salir de las tres casas desde el principio. Cada anfitrión anticipa su tarea; la consulta se habilita cuando están listos los dos objetos de evidencia. Al regresar a la plaza se pueden volver a leer los hallazgos, fuentes y límites. Los interiores sirven para trabajar sobre esos objetos, dentro de la misma historia.
+Las tres casas se pueden visitar desde el principio. Las conversaciones siguen el orden Luz, Mateo e Inés; las visitas tempranas reciben indicaciones sobre la actividad pendiente. El diálogo aparece en una franja inferior oscura y translúcida, con retrato y texto inmediato. La consulta requiere los dos objetos de evidencia y es el paso tres de cuatro. Después, Inés encarga un diseño a Luz dentro de la ficción; la persona vuelve caminando a su prensa para completar el paso final.
 
 La aventura tiene una duración objetivo de 10–15 minutos. La guía docente propone una clase de 20 minutos: dos de introducción, trece de actividad y cinco de conversación opcional. Son tiempos por comprobar con participantes. Se ofrecen formatos individual, por parejas o con proyector, y una hoja de trabajo para usar sin computadora.
 
-El taller de carteles es una ampliación opcional del archivo, con tiempo adicional por prever. Omitirlo conserva las seis actividades, la consulta y el mismo cierre; no es una misión obligatoria nueva.
+El taller del archivo permite personalizar el cartel, con tiempo adicional por prever. Si se omite, Inés ofrece la comparación guiada AGS/BC por proporción. Las seis actividades y la consulta se conservan; la impresión final no exige otra prueba ni una impresora física.
 
 El resultado educativo buscado es explicar un hallazgo real, reconocer algo que no sabemos y formular una pregunta de seguimiento. El contenido compartido conecta los tres interiores con los materiales de aula. No se atribuyen al juego cambios en intención de voto o participación electoral.
 
@@ -65,17 +65,19 @@ Antes de entrar a la consulta, Inés explica: **«Los datos del INE nos hablan d
 
 La Casa de reunión ofrece tres propuestas con igual espacio y tono: **A, Sombra y bancas**, para descansar y conversar, con mantenimiento y riego; **B, Rincón de lectura**, para compartir historias y aprender, con cuidado de libros y facilitación; **C, Jardín comunitario**, para cuidar un espacio verde, con agua y trabajo continuo. Los recursos permiten comenzar una; las necesidades que quedan pendientes siguen siendo legítimas.
 
-Hay cinco acciones: elegir A, elegir B, elegir C, dejar la boleta sin marcar o no participar. Todas permiten el mismo final y reconocimiento. Elegir suma uno a esa opción y al total; dejar sin marcar suma solo al total; no participar conserva ambos. Si hay empate, la ficción requiere otra decisión, sin preferir automáticamente A. Estas reglas didácticas no reproducen todos los procedimientos de una elección constitucional.
+Hay cinco acciones: elegir A, B o C, dejar la boleta sin marcar o no participar. Todas permiten el mismo final y reconocimiento. Elegir suma uno a esa opción y al total; sin marcar, solo al total; no participar conserva ambos. Un empate requiere otra decisión ficticia, sin preferir automáticamente A. No se reproducen todos los procedimientos de una elección constitucional.
 
 Los escenarios son inventados: conteos A/B/C de 8/5/3, 11/8/6 y 8/10/7. Los últimos dos tienen 25 participantes y ganadores distintos: el total de participación, por sí solo, no determina quién gana. Proceden de un grupo ficticio de 30 personajes; quien juega es una persona adicional. No son resultados del salón ni datos del INE.
 
-El cierre propone revisar el uso de recursos, el avance del proyecto o las necesidades aún pendientes. Las tres preguntas son válidas. Ninguna preferencia ni voluntad de votar se califica. La clase no solicita nombres, afiliaciones, intención de voto o elecciones de consulta; no recoge datos políticos de menores ni de personas adultas. La hoja permanece con quien la usa. En proyector se demuestra una acción anunciada, sin votar ni contar preferencias del grupo.
+Las tres preguntas de seguimiento son válidas: recursos, avances o necesidades pendientes. Ninguna preferencia ni voluntad de votar se califica. La clase no recoge nombres ni datos políticos; la hoja permanece con quien la usa. En proyector se demuestra una acción anunciada, sin votar ni contar preferencias del grupo.
 
-La ruta HTML semántica ofrece las mismas seis actividades, fuentes, apoyos y final sin ejecutar Godot. El taller opcional está disponible en ambas rutas. En la aventura caminamos con WASD y cruzamos puertas; incorpora foco visible, texto ampliable, silencio y movimiento reducido. Las visualizaciones tienen tablas exactas; Linux ofrece una alternativa local. El registro de verificación identifica el entorno y alcance de las comprobaciones, sin prometer compatibilidad universal.
+**La misión final.** Tras la consulta y el seguimiento, Inés revisa el cartel personal. Si no se creó uno, ofrece AGS/BC con la pregunta sobre información faltante. Confirmar el encargo prepara el PDF y congela el diseño en la sesión; no envía nada fuera del juego. Se camina a la primera casa y, cerca de la prensa, se elige **Imprimir cartel**. Aparece **FIN · La campaña comienza contigo**. El pueblo sigue abierto y el diario permite releer el final.
 
-La elección y los resultados que la revelan no se guardan ni transmiten. Al retomar la historia, el cierre conserva un resumen neutral de lo completado. La revisión técnica de estas reglas es distinta de observar comprensión en una clase.
+El PDF descargable es una página Carta vertical: **«Tu voto cuenta. Infórmate y participa.»** Campaña ciudadana no partidista, sin Latas, INEhack, sello oficial ni resultado ficticio. Cita INE/CCPC como fuente histórica y muestra año, conteos exactos, bases, NS, barras en una escala común, pregunta y límites. Descargar es una acción aparte: cancelar el guardado en Linux o bloquear la descarga web no deshace el final.
 
-El cartel opcional se conserva solo en memoria durante la sesión. Su pregunta puede invitar a reconocer información faltante, escuchar a quienes no han hablado o revisar si se cumplió lo acordado. No identifica personas ni recoge preferencias; los datos del cartel no eligen un proyecto para la consulta ficticia.
+La ruta HTML conserva contenido y final con navegación propia. Godot usa WASD para cruzar puertas y E/Enter cerca para interactuar. Ofrece texto ampliable, foco, silencio y movimiento reducido; Linux es la alternativa local. La música tranquila «Sunset Walk», de KiluaBoy, es CC0, con volumen y silencio: no es música original del equipo ni es necesaria para avanzar.
+
+La elección y los resultados que la revelan no se guardan ni transmiten. Diseños, encargo y PDF viven en memoria: cancelar una revisión conserva el encargo; imprimir lo fija para repetir descargas. Reiniciar los borra. Al recargar un pendiente se recrea con Inés; un progreso completado conserva el final, sin reconstruir el cartel personal. La revisión técnica no equivale a observar aprendizaje o certificar accesibilidad.
 
 <div style="page-break-after: always;"></div>
 
@@ -94,11 +96,11 @@ La propuesta es una sesión breve de ética o educación cívica sobre informaci
 **Secuencia de difusión propuesta:**
 
 1. Una persona mantenedora de **Latas** prepararía un paquete identificado por versión, con fuentes, requisitos, guía, hoja y registro de cambios, para una persona facilitadora receptora.
-2. La persona facilitadora revisaría el encaje docente, prepararía el equipo y recorrería las seis actividades, la consulta y el cierre; decidiría si ofrece el taller opcional. Elegiría HTML, aventura, Linux o papel según el acceso disponible.
+2. La persona facilitadora revisaría el encaje docente, prepararía el equipo y recorrería las seis actividades, la consulta, el encargo y la impresión final; decidiría si ofrece personalización. Elegiría HTML, aventura, Linux o papel según el acceso disponible.
 3. Tras una sesión voluntaria, devolvería observaciones de claridad, tiempo y barreras, asociadas a la versión y modalidad; sin nombres, preferencias ni respuestas individuales del alumnado.
 4. Latas revisaría esas observaciones, corregiría el material y comprobaría datos y ambas rutas. Entregaría una nueva edición y sus cambios para repetir la preparación antes de difundirla por canales autorizados.
 
-**Materiales preparados:** guía HTML, hoja HTML/PDF de dos páginas con datos y escenarios de consulta, glosario, narrativa de cuatro páginas, presentación de diez diapositivas y guion de pitch. Las capturas muestran la plaza, los interiores, el cierre y la ruta HTML.
+**Materiales:** guía HTML, hoja HTML/PDF de dos páginas con datos, consulta y campaña, glosario, narrativa de cuatro páginas, presentación de diez diapositivas y demostración subtitulada de hasta 150 segundos. Los recibos identifican las capturas y archivos de cada edición. Latas se conserva como autor de la entrega, fuera del cartel ciudadano.
 
 **Evaluación futura:** una revisión con una persona docente y 5–8 principiantes podría orientar mejoras. Con menores, coordinar participación voluntaria y condiciones escolares. Registrar barreras, apoyo y totales anónimos de explicaciones, e informar el número real observado. Aún no hay pilotaje ni evaluación formal con lector de pantalla; las comprobaciones técnicas no acreditan aprendizaje.
 

@@ -1,5 +1,7 @@
 # SPEC: submission-package
 
+**Campaign amendment · 27 October 2026:** Include the revised four-step journey, libre music provenance/license, local Carta PDF capability and citizen example, updated teaching/media artifacts, and exact native/canvas/HTML/save receipts. Campaign artwork omits Latas/INEhack branding; submission metadata remains Latas. Prior Orca/rubric evidence stays explicitly historical. See [campaign contract](docs/campaign_finale.md) and [current verification](docs/verification.md).
+
 **Classroom amendment · 25 October 2026:** The classroom candidate adds a teacher guide and two-sided printable sheet. Narrative, deck and captioned recording must correspond to the revised runtime. The package builder verifies source and export fingerprints before writing its manifest. Local candidate production is separate from signatures, hosting and external submission. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
 
 Version 2 · 25 October 2026 · Owner: main, package integration; team owns signatures/submission.

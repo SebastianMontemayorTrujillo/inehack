@@ -4,18 +4,18 @@
 
 ## Local artifacts and checks
 
-- [x] Godot web prototype with WASD-only walking, three physical house entrances/exits and redesigned authored poster, clearer HUD and contained dialog focus; independent semantic HTML route, six conceptual decisions, two CCPC artifacts, synthetic consultation and ending.
+- [x] Godot web prototype with WASD-only walking, three enterable houses, translucent bottom NPC speech and four progress steps. Both routes provide six conceptual decisions, two CCPC artifacts, consultation, Inés dispatch and Luz's press/FIN with a local Carta PDF.
 - [x] Linux fallback: actual window walkthrough, private save/settings, compiled five-choice journeys and license notices. Linux is the user's fallback requirement, not an additional organizer artifact.
 - [x] Source, canonical data/story, aggregation method, source hashes, context, asset provenance and third-party notices prepared.
 - [x] Classroom guide and two-sided printable activity sheet, including exact CCPC values and three canonical synthetic consultation scenarios.
-- [x] Four-page narrative/dissemination PDF and ten-slide presentation produced for Latas. The 27 October deck's ten pages were individually reviewed; the unchanged narrative retains its 26 October review and identity.
-- [x] Refreshed MP4, SRT and transcript: 137.67 seconds, 1920×1080, 30 fps, H.264/yuv420p. All 32 sampled encoded stills reviewed; 27 subtitle cues match the transcript/receipt, use at most two lines and do not overlap. The final cue extends 11.33 ms beyond the exact track duration (less than one frame); the complete closing caption is visible in the decoded final frame. `pitch-visual-review-2026-10-27.json` records this measured boundary. The call limit is three minutes at 1080p; captions identify a silent automated demonstration.
-- [x] 105 unit tests pass: Python 30, Node 33, GUT 42/42 with 1,418 assertions and zero orphans.
+- [x] Campaign-revised narrative (4 pages), deck (10 slides) and classroom sheet (2 pages) individually rendered and visually reviewed. A separate one-page citizen campaign example is included.
+- [x] Refreshed MP4, SRT and transcript: 140.10-second video track, 1920×1080, 30 fps, H.264/yuv420p. All 31 cues, 36 sampled encoded stills and the closing tail were reviewed. Maximum measured reading rate is 21.556 characters/s; the 23-character/s gate and 150-second production cap were retained. The clip shows actual UI and PDF download, with silent-demo identification.
+- [x] 134 unit tests pass: Python 38, Node 43, GUT 53/53 with 1,608 assertions and zero orphans.
 - [x] Original web/Linux exports and complete input-driven journeys, HTML keyboard/five-choice/privacy/recovery checks, responsive checks, axe and classroom links pass.
-- [x] Scoped actual Orca feedback/reading and native browser zoom observations recorded separately from formal accessibility evaluation.
-- [x] Original final art/sounds, 32 resolved roles, font/engine notices and preserved research originals.
-- [x] Assembled submission/Latas_Reto_3.zip; manifest/CRC/safe-extraction checks, extracted Linux boot and five compiled-PCK paths, HTML journey and Godot browser startup passed. `build/evidence/clean-candidate.json` identifies the exact final ZIP and the checkout tooling used to validate it.
-- [x] Dated 25 October internal rubric review: **100/100 (35/30/20/15)** with criterion-level reasoning in `rubric_review.md`. This is not an official committee score or a new assessment of the 26–27 October movement/interface revisions.
+- [x] Fresh keyboard/axe/responsive checks recorded; earlier Orca/native browser-zoom observations explicitly historical after the HTML changes. No fresh formal accessibility claim.
+- [x] Original art/SFX, approved CC0 Sunset Walk music, 33 resolved roles, font/engine/CC0 notices and preserved research originals.
+- [x] Refreshed submission/Latas_Reto_3.zip passes manifest/CRC/safe extraction, isolated Linux/five-choice/HTML/Godot checks. `build/evidence/clean-candidate.json` identifies the exact final ZIP; the receipt remains outside the archive to avoid recursive hashes.
+- [x] Dated 25 October internal rubric review: **100/100 (35/30/20/15)** with criterion-level reasoning in `rubric_review.md`. This is not an official committee score or a new assessment of the movement/interface/campaign revisions.
 
 ## Official forms and external delivery
 

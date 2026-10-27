@@ -236,13 +236,16 @@ export function resolveConsultation(choice, scenario = 'base', story) {
 // Retain the storage key to migrate existing devices, but never migrate old mastery.
 export const PROGRESS_KEY = 'voces-plaza.web.v1';
 export function sanitizeProgress(input) {
-  const value = input && typeof input === 'object' && [1, 2].includes(input.version) ? input : {};
+  const value = input && typeof input === 'object' && [1, 2, 3].includes(input.version) ? input : {};
   const list = key => Array.isArray(value[key]) ? value[key] : [];
   const legacy = value.version === 1;
   const completedChapters = CHAPTER_IDS.filter((id, i) => list('completedChapters').includes(legacy ? i + 1 : id));
-  return { version: 2, completedChapters,
+  return { version: 3, completedChapters,
+    campaign_printed: value.version === 3 && value.campaign_printed === true && completedChapters.length === CHAPTER_IDS.length,
     legacyCompleted: legacy ? [...completedChapters] : completedChapters.filter(id => list('legacyCompleted').includes(id)),
-    settings: { textSize: value.settings?.textSize === 'large' ? 'large' : 'normal', reducedMotion: value.settings?.reducedMotion === true },
+    settings: { textSize: value.settings?.textSize === 'large' ? 'large' : 'normal', reducedMotion: value.settings?.reducedMotion === true,
+      muted: value.settings?.muted === true,
+      music_volume: Number.isFinite(value.settings?.music_volume) ? Math.max(0, Math.min(1, value.settings.music_volume)) : 0.2 },
     hints: legacy ? [] : Object.keys(ACTIVITY_CONTRACT).filter(id => list('hints').includes(id)),
     assisted: legacy ? [] : Object.keys(ACTIVITY_CONTRACT).filter(id => list('assisted').includes(id)) };
 }
@@ -265,9 +268,18 @@ export function creditsHref(pathname) {
     ? '../game/THIRD_PARTY_NOTICES.txt' : './licenses/THIRD_PARTY_NOTICES.txt';
 }
 
+export function musicHref(pathname) {
+  return /^\/web\/(?:index\.html)?$/.test(pathname)
+    ? '../game/assets/audio/sunset-walk.ogg' : './assets/audio/sunset-walk.ogg';
+}
+
 export function normalizeStory(value) {
-  if (!value || value.schema_version !== '2.0.0' ||
+  if (!value || value.schema_version !== '3.0.0' ||
       !['title', 'exhibit', 'message', 'opening', 'audience', 'fiction_label', 'bridge'].every(key => nonempty(value[key]))) return null;
+  if (!['intro', 'review', 'send_label', 'replace_label', 'sent', 'objective', 'press_intro', 'print_label',
+    'ending_title', 'ending', 'download_label', 'reload_note', 'completed_reload', 'error'].every(key => nonempty(value.campaign?.[key]))) return null;
+  if (!['continue_label', 'close_label', 'before_luz', 'before_mateo', 'revisit', 'luz_queued', 'luz_waiting']
+    .every(key => nonempty(value.dialogue?.[key]))) return null;
   if (!sameIds(value.activities, Object.keys(ACTIVITY_CONTRACT)) || !value.activities.every(validActivity)) return null;
   if (!sameIds(value.chapters, CHAPTER_IDS) || !value.chapters.every(chapter =>
     ['title', 'question', 'intro', 'npc', 'reflection'].every(key => nonempty(chapter[key])))) return null;

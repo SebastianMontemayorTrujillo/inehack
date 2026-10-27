@@ -1,8 +1,8 @@
 # Voces de la Plaza · Equipo Latas · INEhack Reto 3
 
-An original Godot adventure for introductory ethics/civic classes in Mexico, especially high-school beginners approaching their first vote and adults new to civic education. Visit three houses, answer six short conceptual questions, publish two CCPC exhibits, explore a clearly fictional consultation and choose a follow-up question. Calculations are optional. The design target is 10–15 minutes; learner duration and educational effects have not been measured.
+An original Godot adventure for introductory ethics/civic classes in Mexico, especially high-school beginners approaching their first vote and adults new to civic education. Visit three houses, answer six short conceptual questions, publish two CCPC exhibits, and explore a clearly fictional consultation. Inés then sends your citizen campaign design to Luz: walk back to the first house and use its press to reach **FIN** and download your **Carta portrait PDF**. Calculations are optional. The design target is 10–15 minutes; learner duration and educational effects have not been measured.
 
-**105 tests pass: 30 Python, 33 Node, 42 Godot/GUT; 1,418 Godot assertions, zero orphans.** [Verification and limits](docs/verification.md) records the exported HTML/Linux/browser-canvas journeys, all five consultation choices, artifact fingerprints and actual assistive-technology observations.
+[Verification and limits](docs/verification.md) records the checks for each artifact revision, all five consultation choices, PDF generation and exported journeys. Historical accessibility observations retain their dates; changed interfaces require fresh evaluation.
 
 After Mateo's archive, an optional workshop lets you choose two of the 32 states, a count/proportion view and a discussion question. Preview and revise your sourced poster, then bring it to Inés. The published poster stays in memory for that session and never changes the fictional vote. All 496 state pairs are checked against exact references in both measures.
 
@@ -10,7 +10,7 @@ After Mateo's archive, an optional workshop lets you choose two of the 32 states
 
 ## Play and teach
 
-**27 October interface:** location/objective and three passive progress indicators have distinct places in the header. Shared paper dialogs dim the world, keep keyboard focus inside and restore controls when closed. Buttons, source cards and enlarged text use the same paper/ink palette as the final poster.
+**27 October campaign finale:** four passive progress indicators distinguish the consultation from the final print mission. Character conversations use translucent bottom panels; questions, charts and the poster workshop retain larger reading panels. A locally bundled CC0 ambient loop has mute and volume controls. The final PDF is a citizen initiative, without team/event branding or official endorsement; INE/CCPC is its data source. No physical printer is required. See the [campaign contract](docs/campaign_finale.md).
 
 From this repository, run:
 
@@ -25,6 +25,7 @@ Open **http://127.0.0.1:8765/build/web/** for the complete HTML route and Godot 
 ```
 
 - [Teacher guide](docs/facilitator.md), [classroom website](submission/classroom.html), [two-sided printable sheet](submission/classroom-handout.pdf), [glossary](docs/glossary_es_MX.md).
+- [Example citizen campaign PDF](submission/cartel_ciudadano_ejemplo.pdf): the game's guided default, one printable Carta page with actual CCPC data.
 - [Institutional reuse proposal](docs/institutional_reuse.md): individual, pair, projector and paper modes; setup, maintenance and adaptation requirements.
 - [Narrative/dissemination PDF](submission/voces_narrativa_y_difusion.pdf), [ten-slide presentation](submission/voces_presentacion.pdf), [captioned MP4](submission/voces_pitch_borrador.mp4), [captions](submission/pitch_subtitulos.srt), [transcript](submission/pitch_transcripcion.txt).
 - [Latas Reto 3 candidate ZIP](submission/Latas_Reto_3.zip), [release manifest](submission/release_manifest.json), [rubric iterations](docs/rubric_review.md), [handoff](docs/handoff.md), [submission checklist](docs/submission_checklist.md).
@@ -49,6 +50,8 @@ python3 tools/check_candidate.py
 ```
 
 The aggregate browser checks require the local server. Native GUI QA uses isolated Xvfb/xdotool; scoped Orca QA has its own documented dependencies. For browser/PDF/video tooling, copy tools/browser-package.json to .tools/browser/package.json and install there. Set BROWSER_EXECUTABLE to Chromium if the recorded default is unavailable; review/approve the FFmpeg package's install script before its rebuild. These tools are not required to play the built exports.
+
+The campaign PDF test helper uses `python3 -m pip install -r tools/pdf-requirements.txt` in your development Python environment; independent extraction/render checks also use Poppler. `python3 tools/build_campaign_font.py --check` verifies the bundled font metadata using the standard library. These are build/test dependencies, not runtime requirements.
 
 Godot 4.7.2 and matching templates were verified against official SHA-512 sums; GUT is 9.7.1. Compatibility rendering and single-threaded web export are used. The unchanged CCPC snapshot reproduces 32 CSV, 9,773,730 rows and 33 aggregates; see the [source register](docs/source_register.md) and data validation report. Asset catalogs resolve 32 roles. Final artwork/sounds are original, and the font/engine notices ship.
 

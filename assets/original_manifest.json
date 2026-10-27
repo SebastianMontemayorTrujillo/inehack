@@ -1,10 +1,11 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-10-25T18:13:30+00:00",
+  "generated_at_utc": "2026-10-27T18:34:54+00:00",
   "authoring": "Original procedural SVG geometry and synthesized WAV notation authored for the Voces de la Plaza team; no reference pixels, traces or samples used.",
   "generator": "tools/create_original_assets.py",
-  "generator_sha256": "6992eaf8cfcf5d92d2d3bff0a9a5c3baf36dc1f7cf3b194d973ecaabb770671c",
+  "generator_sha256": "f92446586ea71345a73d19a346447f071471c90b0ac7928744d036a51b5232b6",
   "font_dependency": "Atkinson Hyperlegible, Braille Institute of America, OFL-1.1; see reference_manifest.json and game/assets/fonts/OFL.txt",
+  "music_dependency": "Sunset Walk by KiluaBoy, CC0-1.0; separately recorded in assets/music_manifest.json, not authored by this generator.",
   "files": [
     {
       "path": "game/assets/fonts/AtkinsonHyperlegible-Bold.ttf",

@@ -1,5 +1,7 @@
 # Architecture and implementation contracts
 
+**Campaign revision, 27 October:** [The finale contract](campaign_finale.md) supersedes earlier three-step ending, audio and persistence descriptions. Story schema 3 supplies speech and campaign copy; saves are Godot 2 / HTML 3. Only the nearby press finishes the fourth objective. Shared font/layout resources produce local Carta PDFs; queued jobs and selections remain session-only. Music is a separately credited CC0 dependency.
+
 **Interface revision, 27 October:** `interface_theme.gd` owns shared paper/ink control styling and `interface_shell.gd` builds the bounded HUD, passive progress and backdrop. The play-session root still owns navigation, progress and panel state; open panels disable focus/mouse behavior in the world-controls branch. No visual progress indicator is a travel action. See [interface contract](interface_polish.md).
 
 **Movement/poster revision, 26 October 2026:** the persistent session root owns one active `room.tscn`, a persistent player and interface. `room.gd` configures the plaza or one of three interiors. Physical WASD movement crosses door/exit areas; E/Enter and the contextual button interact with nearby hosts/exhibits. No menu, Escape, prerequisite or poster action changes location. Reset begins a new session in the plaza. See [design](classroom_redesign.md), [tasks](../tasks/todo.md), and the current export identities in [verification](verification.md).

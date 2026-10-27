@@ -8,8 +8,22 @@ Atkinson Hyperlegible Regular and Bold: SIL Open Font License 1.1.
 Copyright and full license: assets/fonts/OFL.txt.
 These fonts are third-party dependencies, not team-authored illustrations.
 
+Sunset Walk / Ambient / Quiet / Sweet / Loop by KiluaBoy (Kilua Boy).
+Author: https://opengameart.org/users/kiluaboy
+Source: https://opengameart.org/node/87082
+Audio: assets/audio/sunset-walk.ogg (original filename: SunsetWalk.ogg).
+License: CC0 1.0 Universal (CC0-1.0), as listed on the source page.
+https://creativecommons.org/publicdomain/zero/1.0/
+Full legal code: assets/audio/CC0-1.0.txt in the project; CC0-1.0.txt in
+the exported licenses directory. Attribution is retained voluntarily.
+Modifications: filename only; audio bytes unchanged. Runtime loop/gain settings
+do not modify the OGG. This approved third-party music ships in both catalogs
+and is not team-authored. Provenance: assets/music_manifest.json in the source.
+SHA-256: 1d230721e6200276065b913e44943d0e0503af88fc2dd793be1249738e06d98c
+
 The original submission asset catalog uses project-authored SVG illustrations
-and synthesized WAV sounds. Downloaded Kenney reference artwork/audio is not
+and synthesized WAV sound effects, plus the CC0 music exception above.
+Downloaded Kenney reference artwork/audio is not
 included in an original-catalog export. Development references and their CC0
 notices are documented in the repository assets/reference_manifest.json.
 

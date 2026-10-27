@@ -1,5 +1,7 @@
 # SPEC: community-choice
 
+**Campaign amendment · 27 October 2026:** All five consultation actions unlock the same Inés dispatch and first-house print finale. Consultation completion alone is not game completion. No ballot or synthetic result enters the citizen campaign PDF. See [contract](docs/campaign_finale.md).
+
 **Classroom amendment · 25 October 2026:** The consultation takes place in Inés’s enterable meeting house. Its preview is always accessible; the two evidence artifacts unlock decision practice. All five actions share the ending. Projects, roster and scenarios come from canonical content; choice and option-linked results remain memory-only. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
 
 Version 2 · 25 October 2026 · Owner: main, consultation rules/content.

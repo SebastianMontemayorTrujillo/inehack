@@ -8,6 +8,8 @@ const RoomScene = preload("res://scenes/room.tscn")
 const PosterView = preload("res://scripts/poster_view.gd")
 const InterfaceTheme = preload("res://scripts/interface_theme.gd")
 const InterfaceShell = preload("res://scripts/interface_shell.gd")
+const CampaignView = preload("res://scripts/campaign_view.gd")
+const Dialogue = preload("res://scripts/dialogue_view.gd")
 const CREAM := Color("f6f0da")
 const INK := Color("173b39")
 const GOLD := Color("e4ba5c")
@@ -22,6 +24,11 @@ var world := Node2D.new()
 var player := CharacterBody2D.new()
 var player_art := Sprite2D.new()
 var audio := AudioStreamPlayer.new()
+var music := AudioStreamPlayer.new()
+var music_started := false
+var dialogue_active := false
+var campaign_job: Dictionary = {}
+var campaign_pdf := PackedByteArray()
 var canvas := CanvasLayer.new()
 var overlay := PanelContainer.new()
 var body := VBoxContainer.new()
@@ -57,13 +64,18 @@ func _ready() -> void:
 		story = Rules.ordered_story(story)
 	if FileAccess.file_exists(save_path):
 		var saved := _read_json(save_path)
-		if saved.get("schema_version") == 1:
+		if saved.get("schema_version") == 1 or saved.get("schema_version") == 2:
 			progress = Rules.safe_progress(saved)
 		else:
 			storage_message = "No se pudo restaurar la partida. Puedes comenzar de nuevo."
 	_configure_input()
 	_theme()
 	add_child(audio)
+	add_child(music)
+	music.stream = catalog.sound("music.plaza")
+	if music.stream is AudioStreamOggVorbis:
+		music.stream.loop = true
+	music.volume_linear = 0.0
 	add_child(world)
 	world.position = Vector2(40, 156)
 	world.scale = Vector2(2.5, 2.5)
@@ -133,7 +145,7 @@ func _show_location(index: int, spawn: Vector2) -> void:
 	player.position = spawn
 	player.velocity = Vector2.ZERO
 	facing = "down"
-	room.update_artifacts(progress.completed, bundle, meeting_poster)
+	room.update_artifacts(progress.completed, bundle, meeting_poster, 2 if progress.campaign_printed else 1 if not campaign_job.is_empty() else 0)
 
 func _enter_house(index: int) -> void:
 	if not valid or transitioning or index < 0 or index >= 3:
@@ -166,7 +178,8 @@ func _interact() -> void:
 	match target.kind:
 		"host": _start_chapter(target.index)
 		"artifact":
-			if target.index == 1 and not meeting_poster.is_empty(): _published_poster()
+			if target.index == 0 and "consultation" in progress.completed: CampaignView.press(self)
+			elif target.index == 1 and not meeting_poster.is_empty(): _published_poster()
 			else: _start_chapter(target.index)
 
 func _accessible_action() -> void:
@@ -184,6 +197,7 @@ func _walk_through_door(movement: Vector2, target: Dictionary) -> bool:
 
 func _close_panel() -> void:
 	awaiting_answer = false
+	dialogue_active = false
 	overlay.hide()
 	backdrop.hide()
 	world_controls.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_INHERITED
@@ -224,6 +238,8 @@ func _build_interface() -> void:
 	_update_status()
 
 func _physics_process(delta: float) -> void:
+	var target_volume: float = 0.0 if progress.settings.muted else progress.settings.music_volume * (0.5 if dialogue_active else 1.0)
+	music.volume_linear = move_toward(music.volume_linear, target_volume, delta * 0.4)
 	if valid and not overlay.visible and not transitioning:
 		var movement := Input.get_vector("left", "right", "up", "down")
 		player.velocity = movement * 65
@@ -245,6 +261,7 @@ func _physics_process(delta: float) -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_pressed() and not event.is_echo() and event is InputEventKey:
+		_start_music()
 		if event.keycode == KEY_ESCAPE:
 			if overlay.visible:
 				_close_panel()
@@ -253,8 +270,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		elif event.keycode in [KEY_E, KEY_ENTER] and not overlay.visible:
 			_interact()
 
-func _panel(title: String, spacious: bool = false) -> void:
+func _panel(title: String, spacious: bool = false, conversation: bool = false) -> void:
 	awaiting_answer = false
+	dialogue_active = conversation
 	if not overlay.visible:
 		var focused := get_viewport().gui_get_focus_owner()
 		panel_return_focus = weakref(focused) if focused != null and world_controls.is_ancestor_of(focused) else null
@@ -266,11 +284,21 @@ func _panel(title: String, spacious: bool = false) -> void:
 	scroll.scroll_vertical = 0
 	overlay.position = Vector2(100, 36) if spacious else Vector2(160, 136)
 	overlay.size = Vector2(1080, 728) if spacious else Vector2(960, 555)
+	var shade := InterfaceTheme.panel(CREAM, GOLD, 2, 6)
+	shade.set_content_margin_all(24)
+	if conversation:
+		shade.bg_color = Color(0.06, 0.16, 0.15, 0.94)
+		overlay.position = Vector2(40, 360 if progress.settings.large_text else 420)
+		var dialogue_size := Vector2(1200, 416 if progress.settings.large_text else 356)
+		scroll.custom_minimum_size = dialogue_size - Vector2(48, 48)
+		overlay.set_deferred("size", dialogue_size)
+	overlay.add_theme_stylebox_override("panel", shade)
 	# Disable the world branch for both keyboard traversal and mouse input.
 	# https://docs.godotengine.org/en/stable/classes/class_control.html#class-control-property-focus-behavior-recursive
 	world_controls.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
 	world_controls.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED
 	backdrop.show()
+	backdrop.color.a = 0.0 if conversation else 0.66
 	overlay.show()
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 16)
@@ -282,6 +310,7 @@ func _panel(title: String, spacious: bool = false) -> void:
 	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	label.add_theme_font_size_override("font_size", int(theme.default_font_size) + 4 if spacious else 30)
 	label.add_theme_font_override("font", catalog.font("font.bold"))
+	if conversation: label.add_theme_color_override("font_color", CREAM)
 	header.add_child(label)
 	var close := Button.new()
 	close.text = "Volver al lugar · Esc"
@@ -305,6 +334,7 @@ func _text(value: String, container: VBoxContainer = null) -> Label:
 	label.text = value
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if dialogue_active: label.add_theme_color_override("font_color", CREAM)
 	(container if container != null else body).add_child(label)
 	return label
 
@@ -315,7 +345,7 @@ func _button(title: String, action: Callable, primary: bool = false) -> Button:
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.custom_minimum_size.y = 46
 	if primary: button.theme_type_variation = "PrimaryButton"
-	button.pressed.connect(func(): _sound("sound.select"); action.call())
+	button.pressed.connect(func(): _start_music(); _sound("sound.select"); action.call())
 	body.add_child(button)
 	return button
 
@@ -328,6 +358,13 @@ func _sound(role: String) -> void:
 func _exit_tree() -> void:
 	audio.stop()
 	audio.stream = null
+	music.stop()
+	music.stream = null
+
+func _start_music() -> void:
+	if not music_started and music.stream != null:
+		music_started = true
+		music.play()
 
 func _welcome() -> void:
 	_panel("Bienvenida a Villa Brisa")
@@ -335,6 +372,8 @@ func _welcome() -> void:
 	_text(story.audience)
 	_text(story.get("message", "Comprender los datos nos ayuda a participar con información."))
 	_text("Duración orientativa: 10–15 minutos. No hay cronómetro. Camina con WASD y cruza las puertas para visitar las casas. Acércate a cada persona u objeto y pulsa E. Puedes pedir pistas y ampliar el texto.")
+	if progress.campaign_printed: _text(story.campaign.completed_reload)
+	elif "consultation" in progress.completed: _text(story.campaign.reload_note)
 	if not storage_message.is_empty():
 		_text(storage_message)
 	_button("Entrar a la plaza", _close_panel, true)
@@ -352,25 +391,24 @@ func _start_chapter(index: int) -> void:
 		return
 	chapter = index
 	step = 0
-	var id: String = Rules.CHAPTERS[index]
-	_panel(story.chapters[index].title)
-	_text(story.chapters[index].npc + ": «" + story.houses[index].preview + "»")
 	var missing := Rules.first_missing(progress.completed, index)
 	if missing >= 0:
-		_text("Para continuar esta actividad, prepara primero " + ("el boletín con Luz." if missing == 0 else "el cartel con Mateo."))
-		if index == 2:
-			_button("Conocer las propuestas", _project_preview)
-		_text("Sal por la puerta inferior y camina hasta " + ("la imprenta, la casa de la izquierda." if missing == 0 else "el archivo, la casa del centro."))
-		_button("Seguir explorando", _close_panel)
+		Dialogue.show(self, index, story.dialogue.before_luz if missing == 0 else story.dialogue.before_mateo)
 		return
-	if id in progress.completed:
-		_text("Ya preparaste este material. Puedes revisarlo sin perder tus avances.")
-	_text(story.chapters[index].intro)
-	if index == 1:
-		_text("Titular por revisar: «" + story.comparison_artifact.before + "» Mira los datos antes de publicarlo.")
-	_button("Comenzar la actividad", _question, true)
+	if index == 2 and "consultation" in progress.completed:
+		CampaignView.talk_to_ines(self)
+		return
+	if index == 0 and "consultation" in progress.completed:
+		Dialogue.show(self, 0, story.campaign.ending if progress.campaign_printed else story.dialogue.luz_queued if not campaign_job.is_empty() else story.campaign.reload_note)
+		return
+	var message: String = story.chapters[index].intro
+	if Rules.CHAPTERS[index] in progress.completed: message = story.dialogue.revisit
+	Dialogue.show(self, index, message, [{"text": "Comenzar la actividad", "action": _question}])
 	if index == 1: _poster_controls()
-	if index == 2: PosterView.acknowledge(self)
+	if index == 2 and not meeting_poster.is_empty():
+		var poster: Dictionary = preload("res://scripts/poster_workshop.gd").compose(bundle, story, meeting_poster)
+		_text("Trajiste esta pregunta: " + poster.question)
+		_button("Abrir mi cartel y su fuente", _published_poster)
 
 func _poster_controls() -> void:
 	if "comparison" not in progress.completed: return
@@ -589,8 +627,7 @@ func _complete() -> void:
 		_text("Titular corregido:\n" + Rules.comparison_caption(a, b, story.comparison_artifact))
 		_text("Cartel corregido: %s tiene %s SV y una tasa de %s; %s tiene %s SV y una tasa de %s. Las cifras no explican los motivos individuales." % [a.geography_name, _number(a.sv), _percentage(a.participation_pct), b.geography_name, _number(b.sv), _percentage(b.participation_pct)])
 	else:
-		_text("La exposición está completa. Tu recorrido ayudó a traducir datos oficiales en una historia comprensible. La conversación democrática continúa.")
-		_text(story.message)
+		_text("La reunión terminó. Habla con Inés para enviar el cartel a la imprenta y completar tu campaña.")
 	_button("Ver mi exposición y las fuentes", _journal, true)
 	_button("Volver al lugar", _close_panel)
 	if chapter == 1: _poster_controls()
@@ -659,8 +696,10 @@ func _finish() -> void:
 		_start_chapter(2)
 		return
 	chapter = 2
-	_panel("La plaza sigue conversando")
-	_complete()
+	if "consultation" not in progress.completed: progress.completed.append("consultation")
+	_save()
+	_update_status()
+	CampaignView.talk_to_ines(self)
 
 func _journal() -> void:
 	if not valid:
@@ -670,6 +709,8 @@ func _journal() -> void:
 	_panel("Diario · Las voces que construyen la plaza")
 	_sound("sound.journal")
 	_text("Materiales listos: %d de 3. Puedes volver a leer las fuentes y practicar con apoyo." % progress.completed.size())
+	_text("Campaña impresa · FIN" if progress.campaign_printed else story.campaign.objective if not campaign_job.is_empty() else "Último paso: Inés enviará tu cartel a la imprenta después de la reunión.")
+	if progress.campaign_printed: _button("Ver el final del recorrido", func(): CampaignView.ending(self))
 	_poster_controls()
 	PosterView.acknowledge(self)
 	for item in story.get("chapters", []):
@@ -701,6 +742,21 @@ func _settings() -> void:
 		toggle.button_pressed = progress.settings[setting[0]]
 		toggle.toggled.connect(_toggle.bind(setting[0]))
 		body.add_child(toggle)
+	var volume_label := _text("Volumen de la música: %d%%" % roundi(progress.settings.music_volume * 100))
+	var volume := HSlider.new()
+	volume.name = "MusicVolume"
+	volume.accessibility_name = "Volumen de la música"
+	volume.min_value = 0
+	volume.max_value = 100
+	volume.step = 5
+	volume.value = progress.settings.music_volume * 100
+	volume.custom_minimum_size.y = 40
+	volume.value_changed.connect(func(value: float):
+		progress.settings.music_volume = value / 100.0
+		volume_label.text = "Volumen de la música: %d%%" % roundi(value)
+		_start_music()
+		_save())
+	body.add_child(volume)
 	_text("Camina con WASD y cruza las puertas. E o Enter interactúa con una persona u objeto cercano. Tab recorre los controles; Enter o Espacio activa el seleccionado. Esc cierra el panel sin cambiar de lugar.")
 	if not valid:
 		return
@@ -710,6 +766,9 @@ func _settings() -> void:
 		_button("Sí, reiniciar", func():
 			progress.completed = []
 			progress.hints = []
+			progress.campaign_printed = false
+			campaign_job = {}
+			campaign_pdf = PackedByteArray()
 			meeting_poster = {}
 			poster_selection = {"first": "state_01", "second": "state_02", "metric": "count", "question": "missing"}
 			_save()
@@ -719,6 +778,10 @@ func _settings() -> void:
 
 func _toggle(value: bool, key: String) -> void:
 	progress.settings[key] = value
+	if key == "muted" and value:
+		audio.stop()
+		music.volume_linear = 0.0
+	_start_music()
 	_theme()
 	_save()
 
@@ -741,10 +804,10 @@ func _update_status() -> void:
 	if missing == 2:
 		next = "Visita a Inés"
 	if missing == -1:
-		next = "La conversación continúa · Consulta tu diario"
-	status.text = "%s  ·  %d/3 pasos  ·  %s" % [place, progress.completed.size(), next]
+		next = "FIN · Campaña impresa" if progress.campaign_printed else story.campaign.objective if not campaign_job.is_empty() else "Habla con Inés para enviar tu cartel"
+	status.text = "%s  ·  %d/4 pasos  ·  %s" % [place, progress.completed.size() + (1 if progress.campaign_printed else 0), next]
 	InterfaceShell.refresh(self, missing)
 	action_button.text = "Acércate para conversar"
 	action_button.disabled = true
 	if room != null:
-		room.update_artifacts(progress.completed, bundle, meeting_poster)
+		room.update_artifacts(progress.completed, bundle, meeting_poster, 2 if progress.campaign_printed else 1 if not campaign_job.is_empty() else 0)

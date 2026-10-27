@@ -2,9 +2,11 @@
 import copy
 import json
 from pathlib import Path
+import shutil
 import struct
 import tempfile
 import unittest
+from unittest.mock import patch
 import wave
 import xml.etree.ElementTree as ET
 import zipfile
@@ -32,13 +34,110 @@ class AssetTests(unittest.TestCase):
         fonts.mkdir(parents=True)
         for name in ("AtkinsonHyperlegible-Regular.ttf", "AtkinsonHyperlegible-Bold.ttf", "OFL.txt"):
             (fonts / name).write_bytes(b"fixture font dependency")
+        # The music is a separately acquired dependency, never generated art.
+        for relative in ("game/assets/audio/sunset-walk.ogg", "game/assets/audio/CC0-1.0.txt", "assets/music_manifest.json"):
+            source = assets.ROOT / relative
+            destination = self.root / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
         assets.record_original(self.root)
 
     def test_original_catalog_has_every_role_and_valid_hashes(self):
         catalog = assets.verify_catalog(self.root, "original")
         self.assertEqual(set(catalog["assets"]), assets.REQUIRED_ROLES)
         for role, item in catalog["assets"].items():
-            self.assertEqual(item["origin"], "dependency" if role.startswith("font.") else "team-original")
+            expected = "third-party" if role == "music.plaza" else "dependency" if role.startswith("font.") else "team-original"
+            self.assertEqual(item["origin"], expected)
+
+    def test_plaza_music_is_an_explicit_cc0_dependency(self):
+        item = assets.verify_catalog(self.root)["assets"].get("music.plaza")
+        self.assertIsNotNone(item)
+        self.assertEqual(item["path"], "res://assets/audio/sunset-walk.ogg")
+        self.assertEqual(item["origin"], "third-party")
+        self.assertEqual(item["author"], "KiluaBoy")
+        self.assertEqual(item["license"], "CC0-1.0")
+        self.assertEqual(item["license_path"], "res://assets/audio/CC0-1.0.txt")
+        self.assertTrue(item["loop"])
+        manifest = json.loads((self.root / "assets/original_manifest.json").read_text())
+        self.assertFalse(any("assets/audio/" in entry["path"] for entry in manifest["files"]))
+
+    def test_music_and_cc0_notice_cannot_be_missing_or_modified(self):
+        for name in ("sunset-walk.ogg", "CC0-1.0.txt"):
+            path = self.root / "game/assets/audio" / name
+            data = path.read_bytes()
+            for contents in (None, b"tampered"):
+                with self.subTest(name=name, contents=contents):
+                    if contents is None:
+                        path.unlink()
+                    else:
+                        path.write_bytes(contents)
+                    try:
+                        with self.assertRaisesRegex(ValueError, "missing|checksum"):
+                            assets.verify_catalog(self.root)
+                    finally:
+                        path.write_bytes(data)
+
+    def test_music_cannot_be_miscredited_or_broaden_the_original_allowlist(self):
+        path = self.root / "game/assets/catalogs/original.json"
+        original = json.loads(path.read_text())
+        self.assertIn("music.plaza", original["assets"])
+        mutations = (("origin", "team-original"), ("author", "Voces de la Plaza"),
+                     ("license", "unknown"), ("license_path", "res://assets/fonts/OFL.txt"),
+                     ("path", "res://assets/audio/other.ogg"))
+        for key, value in mutations:
+            changed = copy.deepcopy(original)
+            changed["assets"]["music.plaza"][key] = value
+            assets.write_json(path, changed)
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                assets.verify_catalog(self.root)
+        changed = copy.deepcopy(original)
+        changed["assets"]["sound.select"] = copy.deepcopy(original["assets"]["music.plaza"])
+        assets.write_json(path, changed)
+        with self.assertRaises(ValueError):
+            assets.verify_catalog(self.root)
+
+    def test_missing_music_role_fails_both_catalogs(self):
+        original = json.loads((self.root / "game/assets/catalogs/original.json").read_text())
+        for asset_set in ("original", "development"):
+            changed = copy.deepcopy(original)
+            changed["asset_set"] = asset_set
+            del changed["assets"]["music.plaza"]
+            assets.write_json(self.root / f"game/assets/catalogs/{asset_set}.json", changed)
+            with self.subTest(asset_set=asset_set), self.assertRaisesRegex(ValueError, "roles"):
+                assets.verify_catalog(self.root, asset_set)
+
+    def test_music_provenance_is_required_and_validated(self):
+        path = self.root / "assets/music_manifest.json"
+        original = json.loads(path.read_text())
+        path.unlink()
+        with self.assertRaises(FileNotFoundError):
+            assets.verify_catalog(self.root)
+        for field, value in (("role", "sound.select"), ("author", "team"), ("license", "unknown"), ("source_page", "https://example.com")):
+            changed = copy.deepcopy(original)
+            changed[field] = value
+            assets.write_json(path, changed)
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, "music"):
+                assets.verify_catalog(self.root)
+        changed = copy.deepcopy(original)
+        changed["audio"]["path"] = "../elsewhere.ogg"
+        assets.write_json(path, changed)
+        with self.assertRaisesRegex(ValueError, "unapproved"):
+            assets.verify_catalog(self.root)
+
+    def test_reacquisition_rejects_changed_upstream_bytes_without_overwriting(self):
+        manifest = assets.verify_music(self.root)
+        before = {key: (self.root / manifest[key]["path"]).read_bytes() for key in assets.MUSIC_DOWNLOADS}
+
+        def download_changed(url, destination):
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(b"changed upstream response")
+            return url
+
+        with patch.object(assets, "download", side_effect=download_changed):
+            with self.assertRaisesRegex(ValueError, "checksum"):
+                assets.acquire_music(self.root)
+        for key, contents in before.items():
+            self.assertEqual((self.root / manifest[key]["path"]).read_bytes(), contents)
 
     def test_interior_roles_have_pixel_geometry_and_matching_dimensions(self):
         catalog = assets.verify_catalog(self.root, "original")["assets"]
@@ -124,6 +223,8 @@ class AssetTests(unittest.TestCase):
         self.assertEqual(regenerated["assets"]["terrain.grass"], reference)
         for role in INTERIOR_SIZES:
             self.assertEqual(regenerated["assets"][role], entries[role])
+        self.assertIn("music.plaza", entries)
+        self.assertEqual(regenerated["assets"]["music.plaza"], entries["music.plaza"])
 
     def test_interior_manifest_matches_deterministic_generated_bytes(self):
         manifest = json.loads((self.root / "assets/original_manifest.json").read_text())
@@ -214,9 +315,12 @@ class AssetTests(unittest.TestCase):
         for role in INTERIOR_SIZES:
             self.assertIn("assets/original/" + role.replace(".", "_") + ".svg", files)
         self.assertIn("assets/fonts/OFL.txt", files)
+        self.assertIn("assets/audio/sunset-walk.ogg", files)
         for forbidden in ("development", "unregistered", "gut", "test.gd", "references", ".godot/", "catalogs/development"):
             self.assertFalse(any(forbidden in name for name in files), forbidden)
         self.assertEqual(json.loads((stage / "assets/active_catalog.json").read_text())["asset_set"], "original")
+        self.assertEqual(json.loads((stage / "assets/active_catalog.json").read_text())["assets"]["music.plaza"],
+                         json.loads((game / "assets/catalogs/original.json").read_text())["assets"]["music.plaza"])
 
     def test_staging_rejects_unknown_target_and_asset_set(self):
         for target, asset_set in (("windows", "original"), ("web", "automatic")):
@@ -262,6 +366,8 @@ class AssetTests(unittest.TestCase):
         self.assertEqual(catalog["assets"]["character.player"]["region"], [0, 0, 16, 16])
         self.assertEqual(catalog["assets"]["character.player"]["origin"], "reference")
         original = json.loads((self.root / "game/assets/catalogs/original.json").read_text())
+        self.assertIn("music.plaza", catalog["assets"])
+        self.assertEqual(catalog["assets"]["music.plaza"], original["assets"]["music.plaza"])
         for role in INTERIOR_SIZES:
             self.assertIn(role, catalog["assets"])
             self.assertEqual(catalog["assets"][role], original["assets"][role])

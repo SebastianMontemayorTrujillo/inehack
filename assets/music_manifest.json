@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "role": "music.plaza",
+  "title": "Sunset Walk / Ambient / Quiet / Sweet / Loop",
+  "author": "KiluaBoy",
+  "author_url": "https://opengameart.org/users/kiluaboy",
+  "source_page": "https://opengameart.org/node/87082",
+  "license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "retrieved_at_utc": "2026-10-27T18:31:05+00:00",
+  "license_verification": "The primary OpenGameArt page names KiluaBoy and links CC0 1.0; verified on 2026-10-27. Attribution is retained voluntarily.",
+  "modifications": "Filename changed from SunsetWalk.ogg to sunset-walk.ogg. Audio bytes unchanged: no transcoding, trimming, normalization, fades or remix. Godot runtime loop metadata is separate from the audio.",
+  "usage": "Approved third-party background music in both catalogs; not team-original music or a Kenney development reference.",
+  "audio": {
+    "path": "game/assets/audio/sunset-walk.ogg",
+    "url": "https://opengameart.org/sites/default/files/SunsetWalk.ogg",
+    "resolved_url": "https://opengameart.org/sites/default/files/SunsetWalk.ogg",
+    "sha256": "1d230721e6200276065b913e44943d0e0503af88fc2dd793be1249738e06d98c",
+    "bytes": 1828550,
+    "codec": "vorbis",
+    "channels": 2,
+    "sample_rate": 44100,
+    "duration_seconds": 76.8
+  },
+  "license_file": {
+    "path": "game/assets/audio/CC0-1.0.txt",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt",
+    "resolved_url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt",
+    "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+    "bytes": 7048
+  }
+}

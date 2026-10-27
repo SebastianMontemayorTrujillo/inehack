@@ -1,5 +1,7 @@
 # SPEC: evidence-quests
 
+**Campaign amendment · 27 October 2026:** The published personal poster, or a guided Aguascalientes/Baja California proportion default, supplies a frozen print job and downloadable Carta PDF. Exact data, bases, NS, neutral questions and limitations remain visible. No Latas/INEhack branding or official endorsement appears in the campaign. See [contract](docs/campaign_finale.md).
+
 **Classroom amendment · 25 October 2026:** Both routes use six canonical, plain-language decisions, including two conceptual transfer checks. Exact CCPC mathematics and original formula fixtures remain optional. Reading, unknown classification and count/proportion comparisons produce two sourced persistent artifacts; division is not required to finish. See [design](docs/classroom_redesign.md), [tasks](tasks/todo.md#classroom-revision) and [current evidence](docs/verification.md).
 
 Version 2 · 25 October 2026 · Owner: main, authored content/game rules.

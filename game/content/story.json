@@ -1,5 +1,30 @@
 {
-  "schema_version": "2.0.0",
+  "schema_version": "3.0.0",
+  "campaign": {
+    "intro": "Ya escuchamos distintas necesidades. Ahora compartamos lo aprendido: una campaña ciudadana que invite a informarse y votar.",
+    "review": "Revisa el cartel que enviaremos a la imprenta de Luz. Usa datos históricos del INE; no representa una campaña oficial.",
+    "send_label": "Enviar a la imprenta de Luz",
+    "replace_label": "Reemplazar el envío con mi cartel actual",
+    "sent": "Listo: envié el diseño a Luz dentro de nuestra historia. Sal de esta casa, camina a la imprenta de la izquierda y usa la prensa para imprimirlo.",
+    "objective": "Vuelve a la imprenta de Luz",
+    "press_intro": "Inés envió tu diseño. La prensa está lista para crear un cartel que invite a informarnos y participar.",
+    "print_label": "Imprimir cartel",
+    "ending_title": "FIN · La campaña comienza contigo",
+    "ending": "Terminaste Voces de la Plaza. Tu cartel está impreso en el juego. Puedes descargar el PDF, compartirlo en tu clase y abrir una conversación sobre el voto informado.",
+    "download_label": "Descargar cartel PDF",
+    "reload_note": "Los diseños se conservan solo durante la sesión. Habla con Inés para enviar otro cartel; puedes recrear el tuyo con Mateo o usar el ejemplo.",
+    "completed_reload": "Ya terminaste el recorrido. El diseño anterior no se guarda en este dispositivo: conserva el PDF que descargaste o reinicia para crear otra campaña.",
+    "error": "No pudimos preparar el PDF. Tu envío anterior se conserva. Revisa que el juego esté completo e inténtalo otra vez."
+  },
+  "dialogue": {
+    "continue_label": "Continuar",
+    "close_label": "Seguir explorando",
+    "before_luz": "Primero prepara el boletín con Luz. Sal por la puerta inferior y camina hasta la imprenta, la casa de la izquierda.",
+    "before_mateo": "Primero revisa el cartel con Mateo. Sal por la puerta inferior y camina hasta el archivo, la casa del centro.",
+    "revisit": "Ya preparamos este material. Podemos revisarlo sin perder tus avances.",
+    "luz_queued": "Inés me envió el cartel. Acércate a la prensa a mi derecha y pulsa E para imprimirlo.",
+    "luz_waiting": "Para imprimir tu campaña, termina el cartel con Mateo y la reunión con Inés. Ella enviará el diseño a esta imprenta."
+  },
   "title": "Voces de la Plaza",
   "exhibit": "Las voces que construyen la plaza",
   "message": "Comprender los datos nos ayuda a conversar con información. Participar nos permite aportar a las decisiones colectivas y dar seguimiento a lo que ocurre después.",

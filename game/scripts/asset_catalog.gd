@@ -31,7 +31,12 @@ func texture(role: String) -> Texture2D:
 	return loaded
 
 func sound(role: String) -> AudioStream:
-	return load(str(assets[role].path)) as AudioStream if assets.has(role) else null
+	if not assets.has(role):
+		return null
+	var stream := load(str(assets[role].path)) as AudioStream
+	if stream is AudioStreamOggVorbis:
+		stream.loop = bool(assets[role].get("loop", false))
+	return stream
 
 func character_frame(role: String, direction: String, frame: int) -> Texture2D:
 	if not assets.has(role) or not assets[role].get("animations") is Dictionary:

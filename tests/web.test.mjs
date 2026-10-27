@@ -12,6 +12,79 @@ import * as logic from '../web/logic.mjs';
 const canonicalStory = () => JSON.parse(readFileSync(new URL('../game/content/story.json', import.meta.url)));
 const canonicalData = () => JSON.parse(readFileSync(new URL('../game/content/ccpc.json', import.meta.url)));
 
+test('campaign requires every chapter, defaults to the sourced example, and only prints after dispatch', async () => {
+  const { createCampaignSession } = await import('../web/poster.mjs');
+  const calls = [];
+  const session = createCampaignSession({ data: canonicalData(), story: canonicalStory(),
+    createPDF: async (...args) => { calls.push(args); return new TextEncoder().encode('%PDF-test'); } });
+  const progress = sanitizeProgress(null);
+  assert.equal(session.print(progress), false);
+  for (const chapter of ['printing', 'comparison', 'consultation']) {
+    assert.equal(await session.queue(progress), false);
+    progress.completedChapters.push(chapter);
+  }
+  assert.equal(await session.queue(progress), true);
+  assert.deepEqual(session.selection, { first: 'state_01', second: 'state_02', metric: 'rate', question: 'missing' });
+  assert.equal(session.download(), null, 'No file before using the press');
+  assert.equal(await session.queue(progress), false, 'Replacing a queue must be explicit');
+  assert.equal(session.print(progress), true);
+  assert.equal(progress.campaign_printed, true);
+  assert.equal(session.print(progress), true, 'Printing is idempotent');
+  assert.equal(await session.queue(progress, null, true), false, 'A completed campaign cannot silently change');
+  assert.equal(calls.length, 1);
+  const bytes = session.download(); bytes[0] = 0;
+  assert.equal(new TextDecoder().decode(session.download()), '%PDF-test', 'Downloads cannot mutate retained bytes');
+});
+
+test('campaign snapshots a publication before async generation; cancel, failure and reset preserve the right queue', async () => {
+  const { createCampaignSession } = await import('../web/poster.mjs');
+  const data = canonicalData(); const story = canonicalStory();
+  const progress = sanitizeProgress({ version: 3, completedChapters: ['printing', 'comparison', 'consultation'] });
+  let finish;
+  const session = createCampaignSession({ data, story, createPDF: () => new Promise(resolve => { finish = resolve; }) });
+  const selection = { first: 'state_19', second: 'state_02', metric: 'count', question: 'voices', ballot: 'private' };
+  const pending = session.queue(progress, selection);
+  assert.equal(session.busy, true);
+  selection.first = 'state_01';
+  finish(new TextEncoder().encode('%PDF-original')); await pending;
+  assert.deepEqual(session.selection, { first: 'state_19', second: 'state_02', metric: 'count', question: 'voices' });
+  const replacement = session.queue(progress, selection, true);
+  session.cancel(); finish(new TextEncoder().encode('%PDF-cancelled'));
+  assert.equal(await replacement, false);
+  assert.equal(session.selection.first, 'state_19');
+  const failure = session.queue(progress, selection, true); finish(new Uint8Array());
+  await assert.rejects(failure, /PDF/);
+  assert.equal(session.selection.first, 'state_19', 'Failed replacement preserves publication');
+  const success = session.queue(progress, selection, true); finish(new TextEncoder().encode('%PDF-replaced')); await success;
+  assert.equal(session.selection.first, 'state_01');
+  assert.equal(session.print(progress), true);
+  assert.equal(new TextDecoder().decode(session.download()), '%PDF-replaced');
+  session.clear();
+  assert.equal(session.selection, null); assert.equal(session.download(), null);
+  progress.campaign_printed = false;
+  const resetPending = session.queue(progress); session.clear(); finish(new TextEncoder().encode('%PDF-late'));
+  assert.equal(await resetPending, false); assert.equal(session.ready, false);
+});
+
+test('version 3 migrates old progress and allowlists only completion and bounded audio settings', () => {
+  for (const version of [1, 2]) {
+    const saved = sanitizeProgress({ version, campaign_printed: true,
+      completedChapters: version === 1 ? [1, 2, 3] : ['printing', 'comparison', 'consultation'] });
+    assert.equal(saved.version, 3); assert.equal(saved.campaign_printed, false);
+    assert.equal(saved.settings.muted, false); assert.equal(saved.settings.music_volume, 0.2);
+  }
+  const saved = sanitizeProgress({ version: 3, completedChapters: ['printing', 'comparison', 'consultation'],
+    campaign_printed: true, selection: { first: 'state_19' }, pdf: [37, 80], queue: 'private', ballot: 'private',
+    settings: { music_volume: 0.35, muted: true, ballot: 'private' } });
+  assert.equal(saved.campaign_printed, true);
+  assert.equal(saved.settings.music_volume, 0.35); assert.equal(saved.settings.muted, true);
+  assert.equal(/private|state_19|pdf|queue|ballot/.test(JSON.stringify(saved)), false);
+  assert.equal(sanitizeProgress({ version: 3, campaign_printed: true }).campaign_printed, false);
+  for (const [volume, expected] of [[-1, 0], [4, 1], [NaN, 0.2], [null, 0.2], ['0.9', 0.2]]) {
+    assert.equal(sanitizeProgress({ version: 3, settings: { music_volume: volume } }).settings.music_volume, expected);
+  }
+});
+
 test('poster workshop contract requires shared labels, limits and exactly three named discussion questions', () => {
   const shared = canonicalStory();
   assert.deepEqual(normalizeStory(shared).poster_workshop, shared.poster_workshop);
@@ -132,7 +205,7 @@ test('poster composition neither alters consultation outcomes nor enters the pro
   const poster = composePoster(data, story, selection);
   assert.deepEqual(['A', 'B', 'C', 'unmarked', 'decline'].map(choice => resolveConsultation(choice, 'baseline', story)), before);
   const progress = sanitizeProgress({ version: 2, completedChapters: ['printing', 'comparison'], poster, selection });
-  assert.deepEqual(Object.keys(progress).sort(), ['assisted', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
+  assert.deepEqual(Object.keys(progress).sort(), ['assisted', 'campaign_printed', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
   assert.equal(JSON.stringify(progress).includes('state_19'), false);
 });
 
@@ -326,8 +399,8 @@ test('persistence whitelists chapter completion, settings and hints only, never 
     hints: ['denominator', 'denominator', 'vote:B'], vote: 'B', outcome: { A: 8, B: 6, C: 3 },
     reflection: 'private', attempts: { B: 1 },
   });
-  assert.deepEqual(progress, { version: 2, completedChapters: ['printing', 'consultation'], legacyCompleted: ['printing', 'consultation'],
-    settings: { textSize: 'large', reducedMotion: true }, hints: [], assisted: [] });
+  assert.deepEqual(progress, { version: 3, completedChapters: ['printing', 'consultation'], legacyCompleted: ['printing', 'consultation'], campaign_printed: false,
+    settings: { textSize: 'large', reducedMotion: true, muted: false, music_volume: 0.2 }, hints: [], assisted: [] });
   let saved;
   const storage = { setItem: (key, value) => { saved = value; }, getItem: () => saved };
   assert.equal(writeProgress(storage, { ...progress, vote: 'B', outcome: 'B' }), true);
@@ -352,12 +425,14 @@ test('Godot link supports the source checkout and packages hosted at root or a s
   assert.equal(gameHref('/index.html'), './game/index.html');
   assert.equal(gameHref('/voces/index.html'), './game/index.html');
   for (const path of ['/web/', '/web/index.html']) assert.equal(creditsHref(path), '../game/THIRD_PARTY_NOTICES.txt');
+  for (const path of ['/web/', '/web/index.html']) assert.equal(logic.musicHref(path), '../game/assets/audio/sunset-walk.ogg');
   for (const path of ['/build/web/', '/build/web/index.html', '/', '/index.html', '/voces/index.html']) {
     assert.equal(creditsHref(path), './licenses/THIRD_PARTY_NOTICES.txt');
+    assert.equal(logic.musicHref(path), './assets/audio/sunset-walk.ogg');
   }
 });
 
-test('schema 2 is required: canonical prompts, choices, hints, explanations and views remain shared', () => {
+test('schema 3 is required: canonical prompts, choices, hints, explanations and views remain shared', () => {
   const shared = canonicalStory();
   shared.activities[0].prompt = 'Pregunta editada por quien escribe la historia';
   shared.activities[0].hint = 'Una pista compartida';
@@ -372,7 +447,8 @@ test('schema 2 is required: canonical prompts, choices, hints, explanations and 
 
 test('missing or unsupported shared content is unavailable, never an old hard-coded quiz', () => {
   for (const mutate of [
-    s => { s.schema_version = '1.0.0'; }, s => { s.activities.pop(); },
+    s => { s.schema_version = '1.0.0'; }, s => { s.schema_version = '2.0.0'; }, s => { s.activities.pop(); },
+    s => { delete s.campaign; }, s => { s.campaign.ending_title = ''; }, s => { s.dialogue.revisit = ''; },
     s => { s.activities[0].rule = 'eval(alert(1))'; }, s => { s.activities[0].view = 'unknown-view'; },
     s => { s.activities[0].choices[0].id = 'state_99'; }, s => { s.activities[0].prompt = ''; },
     s => { s.activities[1].id = s.activities[0].id; }, s => { s.activities[0].explanation = ''; },
@@ -477,5 +553,5 @@ test('old completion is honored but no old answer, transfer or mastery migrates 
   assert.deepEqual(fresh.legacyCompleted, ['printing']);
   assert.deepEqual(fresh.hints, ['unknown-transfer']);
   assert.deepEqual(fresh.assisted, ['unknown-transfer']);
-  assert.deepEqual(Object.keys(fresh).sort(), ['assisted', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
+  assert.deepEqual(Object.keys(fresh).sort(), ['assisted', 'campaign_printed', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
 });

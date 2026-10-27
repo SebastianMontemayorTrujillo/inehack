@@ -50,7 +50,11 @@ static func fixture_counts(record: Variant) -> bool:
 	return int(record.ln) == int(record.sv) + int(record.nv) + int(record.ns)
 
 static func validate_story(story: Dictionary) -> bool:
-	if story.get("schema_version") != "2.0.0" or not text_fields(story, ["title", "exhibit", "message", "opening", "audience", "fiction_label", "bridge"]):
+	if story.get("schema_version") != "3.0.0" or not text_fields(story, ["title", "exhibit", "message", "opening", "audience", "fiction_label", "bridge"]):
+		return false
+	if not text_fields(story.get("campaign"), ["intro", "review", "send_label", "replace_label", "sent", "objective", "press_intro", "print_label", "ending_title", "ending", "download_label", "reload_note", "completed_reload", "error"]):
+		return false
+	if not text_fields(story.get("dialogue"), ["continue_label", "close_label", "before_luz", "before_mateo", "revisit", "luz_queued", "luz_waiting"]):
 		return false
 	if not same_ids(story.get("activities"), ACTIVITY_CONTRACT.keys()) or not same_ids(story.get("chapters"), CHAPTERS) or not same_ids(story.get("houses"), HOUSE_IDS):
 		return false
@@ -224,8 +228,13 @@ static func safe_progress(raw: Dictionary) -> Dictionary:
 			if id in CHAPTERS and id not in hints:
 				hints.append(id)
 	var settings: Dictionary = raw.get("settings", {}) if raw.get("settings") is Dictionary else {}
-	return {"schema_version": 1, "completed": completed, "hints": hints,
+	var volume: Variant = settings.get("music_volume", 0.2)
+	if not (volume is float or volume is int) or not is_finite(float(volume)):
+		volume = 0.2
+	return {"schema_version": 2, "completed": completed, "hints": hints,
+		"campaign_printed": raw.get("schema_version") == 2 and raw.get("campaign_printed") == true and first_missing(completed, 3) == -1,
 		"settings": {"muted": settings.get("muted", false) == true,
+		"music_volume": clampf(float(volume), 0.0, 1.0),
 		"large_text": settings.get("large_text", false) == true,
 		"reduced_motion": settings.get("reduced_motion", false) == true}}
 

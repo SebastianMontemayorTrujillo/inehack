@@ -11,11 +11,11 @@ static func build(app: Node, root: Control) -> void:
 	var hud: Control = app.world_controls
 	var title := label(app, hud, "VOCES DE LA PLAZA", Rect2(40, 16, 590, 40), 32, InterfaceStyle.CREAM, true)
 	title.name = "GameTitle"
-	label(app, hud, "VILLA BRISA · UNA REUNIÓN POR PREPARAR", Rect2(40, 62, 600, 28), 17, MUTED)
-	for i in 3:
+	label(app, hud, "VILLA BRISA · INFORMAR PARA PARTICIPAR", Rect2(40, 62, 600, 28), 17, MUTED)
+	for i in 4:
 		var badge := PanelContainer.new()
-		badge.position = Vector2(680 + i * 192, 20)
-		badge.size = Vector2(176, 60)
+		badge.position = Vector2(644 + i * 151, 20)
+		badge.size = Vector2(143, 60)
 		var box := InterfaceStyle.panel(Color("183f3b"), Color("5c7c69"), 1, 6)
 		box.set_content_margin_all(8)
 		badge.add_theme_stylebox_override("panel", box)
@@ -64,9 +64,10 @@ static func build(app: Node, root: Control) -> void:
 	app.backdrop.hide()
 
 static func refresh(app: Node, missing: int) -> void:
-	var names := ["Boletín", "Cartel", "Reunión"]
+	var names := ["Boletín", "Cartel", "Reunión", "Imprimir"]
+	if missing == -1 and not app.progress.campaign_printed: missing = 3
 	for i in app.progress_labels.size():
-		var complete: bool = app.Rules.CHAPTERS[i] in app.progress.completed
+		var complete: bool = app.progress.campaign_printed if i == 3 else app.Rules.CHAPTERS[i] in app.progress.completed
 		var state := "Listo" if complete else "Ahora" if i == missing else "Pendiente"
 		var text: Label = app.progress_labels[i]
 		text.text = "%d · %s\n%s" % [i + 1, names[i], state]

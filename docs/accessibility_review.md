@@ -1,5 +1,12 @@
 # Classroom HTML: final scoped Orca review
 
+**Historical evidence notice · 27 October campaign revision:** The speech cards,
+music controls and print finale change the HTML/content covered by this report.
+The 25 October Orca observations below identify the earlier build; their source
+hashes do not certify the campaign revision. New keyboard, axe and responsive
+checks are recorded in `browser-results.json` and `browser-campaign-results.json`.
+No fresh Orca, native browser zoom, PDF/UA or formal accessibility claim is made.
+
 25 October 2026. **The refreshed assembled HTML route passed the scoped actual
 Orca smoke:** seven activity-feedback cases, two chapter-publication cases and
 twelve optional-workshop cases. The run began **20:04:30 UTC**, lasted **261.71

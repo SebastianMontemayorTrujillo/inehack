@@ -1,5 +1,7 @@
 # Capability map for Voces de la Plaza
 
+**Approved campaign amendment · 27 October 2026:** [The finale](docs/campaign_finale.md) extends the same six modules with libre music, translucent bottom NPC conversations, ordered learning, a citizen campaign PDF and a fourth print objective. Inés dispatches the design inside the story; the player walks to Luz's first-house press to print and reach FIN. Independent HTML navigation provides the equivalent ending and actual PDF download.
+
 **27 October interface revision:** A shared theme and bounded HUD distinguish location, objective, passive progress and nearby interaction. Paper panels dim the world, contain keyboard/mouse interaction and restore controls on close. See [interface contract](docs/interface_polish.md), `SPEC-play-session.md` and RV17.
 
 **26 October user amendment:** Godot world movement is WASD-only. Walking crosses physical doors/exits; remote travel buttons, Escape exits and automatic poster/prerequisite travel are removed. The final authored poster receives a spacious paper-and-ink layout with a strong finding, labelled bars and discussion question. See `SPEC-play-session.md`, `SPEC-evidence-quests.md` and RV14–RV16. The HTML route remains independently navigable.

@@ -20,6 +20,17 @@ HOUSE = (116, 248, 800, 294)
 # CharacterBody2D velocity is global pixels/s; its parent world is scaled 2.5.
 SPEED = 65 / 2.5
 SETTINGS = (205, 711)
+DEFAULT_SETTINGS = {'large_text': False, 'muted': False, 'reduced_motion': False, 'music_volume': 0.2}
+
+
+def dialogue_bounds(image):
+    """Recognize all four edges of the prescribed bottom conversation panel."""
+    gold = (228, 186, 92)
+    for top in (420, 360):
+        if (all(image.getpixel((x, y)) == gold for y in (top, 775) for x in (60, 640, 1220))
+                and all(image.getpixel((x, y)) == gold for x in (40, 1239) for y in (top + 20, 600, 756))):
+            return (40, top, 1240, 776)
+    return None
 
 
 def poster_bounds(image):
@@ -63,13 +74,16 @@ def focus_bounds(image):
     # Full edges of the actual #9b4d2d focus outline must be visible. The new
     # poster toolbar has narrow buttons; its red paper rules are not focus.
     spacious = image.getpixel((110, 120)) == (246, 240, 218)
-    if not spacious:
+    dialogue = dialogue_bounds(image)
+    if not spacious and not dialogue:
         rows = [y for y in range(160, 667) if sum(image.getpixel((x, y)) == (155, 77, 45)
                                                 for x in range(184, 1088)) > 700]
         assert rows and rows[-1] - rows[0] >= 32, 'Focused control is clipped or outside the scroll viewport'
         return [rows[0], rows[-1]]
     pixels = image.load()
-    points = {(x, y) for y in range(60, 740) for x in range(124, 1156) if pixels[x, y] == (155, 77, 45)}
+    region = (64, dialogue[1] + 24, 1216, 752) if dialogue else (124, 60, 1156, 740)
+    colors = {(155, 77, 45), (228, 186, 92)} if dialogue else {(155, 77, 45)}
+    points = {(x, y) for y in range(region[1], region[3]) for x in range(region[0], region[2]) if pixels[x, y] in colors}
     outlines = []
     while points:
         pending = [points.pop()]
@@ -89,7 +103,7 @@ def focus_bounds(image):
         vertical = [x for x, count in columns.items() if count >= height * .5]
         if horizontal and vertical and max(horizontal) - min(horizontal) >= height - 12 and max(vertical) - min(vertical) >= width - 12:
             outlines.append([min(rows), max(rows)])
-    assert len(outlines) == 1, f'Expected one fully visible focused poster button, found {outlines}'
+    assert len(outlines) == 1, f'Expected one fully visible focused button, found {outlines}'
     return outlines[0]
 
 
@@ -112,8 +126,11 @@ def main():
     phases = []
     poster_checks = []
     movement_checks = []
+    dialogue_checks = []
+    finale_checks = []
+    checkpoints = []
     executable = ROOT/'build/linux/voces-de-la-plaza.x86_64'
-    sources = sorted((ROOT/'game/scripts').glob('*.gd')) + [ROOT/'game/project.godot', ROOT/'game/content/story.json', ROOT/'game/content/ccpc.json']
+    sources = sorted((ROOT/'game/scripts').glob('*.gd')) + [ROOT/'game/project.godot'] + sorted((ROOT/'game/content').glob('*.json'))
     source_hashes = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
     tested_files = [executable, executable.with_suffix('.pck'), Path(__file__).resolve(), *sources]
     fingerprints = {str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in tested_files}
@@ -222,8 +239,35 @@ def main():
                 time.sleep(.05)
                 picture = screen()
             poster_checks.append({'check': name + ' displays the new panel title'})
-        picture.save(EVIDENCE/f'native-{name}.png')
+        path = EVIDENCE/f'native-{name}.png'
+        picture.save(path)
+        checkpoints.append({'name': name, 'elapsed_seconds': round(time.monotonic() - started, 3),
+                            'path': str(path.relative_to(ROOT)), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
         return picture
+
+    def dialogue(name, large=False, visible_focus=False):
+        picture = capture(name)
+        bounds = dialogue_bounds(picture)
+        assert bounds == (40, 360 if large else 420, 1240, 776), (name, bounds)
+        assert picture.getpixel((50, 160)) != plaza_pixel, 'Conversation stays in its house'
+        check = {'check': name, 'bounds': bounds}
+        if visible_focus:
+            check['visible_focus_rows'] = focus_bounds(picture)
+        dialogue_checks.append(check)
+        return picture
+
+    def dialogue_freezes_world(name, before, large=False):
+        picture = dialogue(name, large)
+        # The upper world remains visible and undimmed; the panel owns input.
+        upper = (40, 156, 1240, 350)
+        assert ImageChops.difference(before.crop(upper), picture.crop(upper)).getbbox() is None
+        hold('d', .3)
+        click(45, 710)  # Panel padding covers Diario without activating a dialogue action.
+        dialogue(name + '-input-contained', large)
+        key('Escape')
+        stationary(name + ' blocks movement and world controls', before, capture(name + '-closed'))
+        key('e')
+        dialogue(name + '-reopened', large)
 
     def compare(name, before, after, changed=False, crop=BODY):
         regions = [poster_bounds(item) for item in (before, after)] if crop == POSTER else [crop, crop]
@@ -255,19 +299,20 @@ def main():
         files = list((run_dir/'data').rglob('voces_progress_v1.json'))
         return json.loads(files[0].read_text()) if files else {}
 
-    def private_progress(completed):
+    def private_progress(completed, printed=False, settings=None):
         saved = progress()
         assert saved.get('completed') == completed, saved
-        assert set(saved) == {'schema_version', 'completed', 'hints', 'settings'}, saved
-        assert saved['schema_version'] == 1 and saved['hints'] == [], saved
-        assert set(saved['settings']) == {'large_text', 'muted', 'reduced_motion'}, saved
+        assert set(saved) == {'schema_version', 'completed', 'hints', 'settings', 'campaign_printed'}, saved
+        assert saved['schema_version'] == 2 and saved['hints'] == [], saved
+        assert saved['campaign_printed'] is printed, saved
+        assert saved['settings'] == (DEFAULT_SETTINGS if settings is None else settings), saved
         return saved
 
     def workshop():
         key('Escape')
         archive_before = capture('poster-archive-before')
         click(140, 765)
-        intro = capture('poster-intro', changed_title_from=archive_before)
+        intro = dialogue('poster-intro')
         choose(2)  # Archive intro: begin, then the appended workshop.
         capture('poster-defaults', changed_title_from=intro)
         key('Tab'); key('Tab'); option(0, 1)  # Duplicate pair must stay in the editor.
@@ -339,6 +384,11 @@ def main():
         key('Escape')
         plaza = capture('plaza')
         plaza_pixel = plaza.getpixel((50, 160))
+        for index in range(4):
+            left = 644 + index * 151
+            assert all(plaza.getpixel(point) == (92, 124, 105) for point in [(left + 20, 20), (left, 40), (left + 142, 40)]), f'Badge {index + 1} bounds'
+            assert any(plaza.getpixel((left + 20, y)) == (92, 124, 105) for y in range(79, 94)), f'Badge {index + 1} extends into status'
+        finale_checks.append({'check': 'All four passive progress badges have complete visible borders'})
         assert max(abs(a - b) for a, b in zip(avatar_position(plaza), [240, 176])) <= .4
         for direction in ['Left', 'Right', 'Up', 'Down']:
             before = screen()
@@ -382,8 +432,8 @@ def main():
             if index > 0:
                 approach_host()
                 before = screen()
-                key('e'); capture(f'house-{index + 1}-prerequisite')
-                choose(index)  # Seguir explorando; meeting's project preview is optional.
+                key('e'); dialogue(f'house-{index + 1}-prerequisite')
+                choose()  # Both early visits offer Seguir explorando.
                 key('Escape')
                 stationary(f'House {index + 1} prerequisite gives directions without travel', before, capture(f'house-{index + 1}-prerequisite-closed'))
                 assert progress().get('completed', []) == []
@@ -392,10 +442,12 @@ def main():
         for chapter, answers in enumerate([[1, 1, 1], [2, 1, 1]]):
             enter_house(chapter)
             approach_host()
+            before = screen()
             if chapter == 0:
                 key('e')
             else:
                 click(140, 765)
+            dialogue_freezes_world(f'intro-{chapter + 1}', before)
             choose()  # Begin from introduction.
             for step, answer in enumerate(answers):
                 capture(f'quest-{chapter+1}-{step+1}')
@@ -413,30 +465,89 @@ def main():
         phases.append('both evidence quests completed through window controls')
         enter_house(2)
         approach_host()
+        meeting_room = screen()
         key('e')
-        capture('consultation-intro')
-        capture('poster-carried-intro')
-        key('Tab'); key('Tab'); capture('consultation-poster')
+        dialogue_freezes_world('consultation-intro', meeting_room)
+        dialogue('poster-carried-intro')
+        key('Tab'); key('Tab'); dialogue('consultation-poster', visible_focus=True)
         focused('poster-carried-acknowledgment')
         key('shift+Tab'); key('Return')  # Begin; the appended poster button remains optional.
         capture('consultation-options')
         choose(4)  # Unmarked fictional ballot, same ending.
         capture('consultation-result')
         choose(2)  # First follow-up after optional scenario exploration.
-        capture('ending')
+        dialogue('campaign-intro')
+        private_progress(['printing', 'comparison', 'consultation'])
+        choose()  # Revisar el cartel para la imprenta.
+        capture('campaign-review')
+        assert screen().getpixel((110, 120)) == (246, 240, 218), 'Campaign review uses the large paper panel'
+        choose()  # Enviar a la imprenta de Luz.
+        dialogue('campaign-sent')
         private_progress(['printing', 'comparison', 'consultation'])
         key('Escape')
+        sent_room = capture('campaign-sent-room')
+        stationary('Sending the campaign keeps Inés and player in place', meeting_room, sent_room)
+        finale_checks.append({'check': 'Consultation and dispatch leave campaign_printed false; no automatic travel'})
+        leave_house(2)
+        enter_house(0)
+        capture('campaign-printshop-return')
+        before = screen()
+        key('e')
+        stationary('Press cannot be activated remotely from the printshop entrance', before, screen())
+        private_progress(['printing', 'comparison', 'consultation'])
+        walk_to(x=283, y=110)
+        press_position = avatar_position(screen())
+        key('e')
+        capture('campaign-press')
+        choose()  # Imprimir cartel.
+        time.sleep(.7)  # Let the authored reveal finish before recording the ending.
+        ending = capture('ending')
+        assert ending.getpixel((110, 120)) == (246, 240, 218), 'FIN uses the large paper panel'
+        private_progress(['printing', 'comparison', 'consultation'], printed=True)
+        finale_checks.append({'check': 'Walked to Luz and pressed E at the local printer before Imprimir cartel', 'position': press_position})
+        visible_before = set(tool('search', '--onlyvisible', '--pid', str(game.pid)).splitlines())
+        choose()  # Descargar cartel PDF.
+        deadline = time.monotonic() + 8
+        while True:
+            windows = set(tool('search', '--onlyvisible', '--pid', str(game.pid)).splitlines()) - visible_before
+            if windows:
+                break
+            assert time.monotonic() < deadline, 'Download must open a native save window'
+            time.sleep(.1)
+        assert len(windows) == 1, ('Expected one native FileDialog', windows)
+        save_window = windows.pop()
+        tool('windowfocus', save_window)
+        capture('campaign-save-dialog')
+        finale_checks.append({'check': 'Download opens a native FileDialog', 'title': tool('getwindowname', save_window),
+                              'geometry': tool('getwindowgeometry', '--shell', save_window)})
+        key('Escape')  # Cancellation is an intentional user action; no file is required here.
+        assert save_window not in tool('search', '--onlyvisible', '--pid', str(game.pid)).splitlines(), 'Cancelled FileDialog remained visible'
+        tool('windowfocus', window)
+        capture('campaign-download-cancelled')
+        private_progress(['printing', 'comparison', 'consultation'], printed=True)
+        finale_checks.append({'check': 'Cancelling PDF save preserves printed completion'})
+        key('Escape')
+        completed_hud = capture('campaign-complete-hud')
+        compare('Fourth badge changes only after printing', sent_room, completed_hud, changed=True, crop=(1097, 20, 1240, 80))
+        phases.append('Inés review/send, physical return to Luz, nearby press, fourth completion step, FIN and native PDF save dialog cancellation')
         open_settings()
         for _ in range(3):
             key('Tab'); key('space')
         capture('settings-large')
-        saved = progress()
-        assert all(saved['settings'].values()), saved
+        large_settings = dict(DEFAULT_SETTINGS, large_text=True, muted=True, reduced_motion=True)
+        private_progress(['printing', 'comparison', 'consultation'], printed=True, settings=large_settings)
+        key('Tab'); key('Right')
+        private_progress(['printing', 'comparison', 'consultation'], printed=True, settings=dict(large_settings, music_volume=.25))
+        key('Left')
+        private_progress(['printing', 'comparison', 'consultation'], printed=True, settings=large_settings)
         key('Escape')
         capture('house-large')
+        key('e'); capture('ending-large')
+        key('Tab'); capture('ending-large-download-focused')
+        key('Escape')
         phases.append('ending, private save, enlarged text, mute and reduced motion')
-        leave_house(2); enter_house(1); approach_host()
-        click(140, 765); choose(2)
+        leave_house(0); enter_house(1); approach_host()
+        click(140, 765); dialogue('poster-large-intro', large=True); choose(2)
         for control in ['first', 'second', 'metric', 'question']:
             key('Tab'); focused(f'poster-large-{control}')
         for control in ['metric', 'second', 'first']:
@@ -445,7 +556,7 @@ def main():
         focused('poster-large-duplicate-error')
         choose(5)  # Cancel from the first selector, retaining the publication.
         phases.append('Tab and Shift+Tab keep every enlarged workshop selector visibly focused')
-        key('j'); choose(2)
+        key('j'); choose(3)  # Final-completion journal adds Ver el final before the workshop controls.
         capture('poster-large-preview')
         key('Tab'); focused('poster-large-preview-edit')
         before_source = screen()
@@ -461,11 +572,11 @@ def main():
         open_settings()
         for _ in range(3):
             key('Tab'); key('space')  # Restore baseline text/settings before comparing reset pixels.
-        choose(); choose()  # Reset, then confirm.
+        choose(2); choose()  # Pass the volume slider, then reset and confirm.
         key('Escape')
         assert capture('reset-plaza').getpixel((50, 160)) == plaza_pixel, 'Reset did not return to the plaza'
         saved = private_progress([])
-        assert not any(saved['settings'].values()), saved
+        assert saved['settings'] == DEFAULT_SETTINGS, saved
         key('j')
         compare('Reset clears published poster and progress in journal', empty_journal, capture('journal-reset'))
         key('Tab'); key('Tab')
@@ -480,11 +591,12 @@ def main():
                   'test_sha256':fingerprints[str(Path(__file__).resolve())],
                   'poster_checks':poster_checks,
                   'movement_checks':movement_checks,
+                  'dialogue_checks':dialogue_checks, 'finale_checks':finale_checks, 'checkpoints':checkpoints,
                   'runtime_errors':errors,
                   'poster_input':{'first':'state_19','second':'state_02','metric':'rate','question':'voices'},
                   'limits':['Automated operator, not a participant pilot', 'Screenshots require visual review; not formal accessibility certification']}
         (EVIDENCE/'native-window.json').write_text(json.dumps(report, indent=2)+'\n')
-        print('Native window journey passed: WASD-only movement, automatic doors/exits, no teleport, six questions, poster saved in place, Inés reached on foot, ending, settings, private save and reset.')
+        print('Native window journey passed: WASD-only movement, six questions, poster workflow, bottom dialogue, Inés dispatch, walk to Luz, printed FIN, native save dialog cancellation, schema-2 private save, settings and reset.')
     except Exception as error:
         try:
             capture('failure')
@@ -493,6 +605,7 @@ def main():
         (EVIDENCE/'native-window.json').write_text(json.dumps({'status':'failed', 'error':str(error),
             'elapsed_seconds':round(time.monotonic() - started, 3), 'source_sha256':source_hashes,
             'tested_files':fingerprints, 'phases':phases, 'poster_checks':poster_checks, 'movement_checks':movement_checks,
+            'dialogue_checks':dialogue_checks, 'finale_checks':finale_checks, 'checkpoints':checkpoints,
             'runtime_errors':runtime_errors(EVIDENCE/'native-window.log')}, indent=2)+'\n')
         raise
     finally:

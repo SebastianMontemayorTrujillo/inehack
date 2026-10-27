@@ -239,7 +239,7 @@ func test_settings_blocks_world_clicks_and_j_until_escape() -> void:
 	assert_false(game.overlay.visible, "Escape closes settings after blocked mouse/J input")
 	assert_eq(viewport.gui_get_focus_owner(), settings, "Escape restores the usable settings trigger")
 	# Each of the formerly blocked buttons must work normally after dismissal.
-	var expected_controls := ["Créditos y licencias", "Texto ampliado", "Conocer las propuestas"]
+	var expected_controls := ["Créditos y licencias", "Texto ampliado", "Seguir explorando"]
 	for index in world_buttons.size():
 		var target := world_buttons[index]
 		var before_count: int = get_signal_emit_count(target, "pressed")

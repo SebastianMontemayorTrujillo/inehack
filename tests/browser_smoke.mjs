@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdir, writeFile, access } from 'node:fs/promises';
+import { mkdir, writeFile, access, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { chromium } from '../.tools/browser/node_modules/playwright/index.mjs';
@@ -20,7 +20,7 @@ const json = async file => {
   return response.json();
 };
 const [data, story] = await Promise.all([json('ccpc.json'), json('story.json')]);
-assert.equal(story.schema_version, '2.0.0', 'Test the revised content, not an old export');
+assert.equal(story.schema_version, '3.0.0', 'Test the revised content, not an old export');
 await mkdir(evidence, { recursive: true });
 const browser = await chromium.launch({ executablePath, headless: true, args: ['--no-sandbox', '--enable-unsafe-swiftshader'] });
 const errors = [];
@@ -171,15 +171,21 @@ try {
   const requests = [];
   page.on('request', request => requests.push({ url: request.url(), method: request.method() }));
   await page.goto(htmlURL.href); await loaded(page);
+  assert.equal(await page.locator('#background-music').evaluate(node => node.paused), true, 'No autoplay before interaction');
+  assert.equal(await page.locator('#background-music').evaluate(node => node.volume), 0.2);
   await screenshot(page, 'html-desktop.png');
   for (const id of ['printshop', 'archive', 'hall']) assert.equal(await page.locator(`[data-house="${id}"]`).isEnabled(), true);
   await enter(page, 'hall');
+  await page.waitForFunction(() => !document.querySelector('#background-music').paused && document.querySelector('#background-music').currentTime > 0);
   assert.equal(await page.locator('.projects article').count(), 3);
   assert.equal(await page.locator('#ballot').isVisible(), false);
   assert.match(await page.locator('#blocked-consultation').innerText(), /boletín.*cartel/i);
+  assert.match(await page.locator('#speech-hall').innerText(), /Primero.*Luz/);
+  assert.equal((await page.locator('#speech-hall').innerText()).includes(story.chapters.find(chapter => chapter.id === 'consultation').intro), false);
   await page.keyboard.press('Escape'); await assertFocus(page, '[data-house="hall"]');
   await enter(page, 'archive');
   assert.equal(await page.locator('#blocked-comparison').isVisible(), true);
+  assert.match(await page.locator('#speech-archive').innerText(), /Primero.*Luz/);
   assert.equal(await page.locator('#open-poster-workshop').isVisible(), false, 'Workshop is optional after the comparison mission');
   await activate(page, '#house-archive [data-leave]'); await assertFocus(page, '[data-house="archive"]');
 
@@ -219,7 +225,7 @@ try {
   assert.equal(await page.locator('#house-hall').isVisible(), true);
   assert.equal(await page.locator('#ballot').isVisible(), false, 'Carrying never opens the ballot');
   assert.match(await page.locator('#poster-meeting').innerText(), /Más registros: NUEVO LEON/);
-  assert.match(await page.locator('#poster-meeting').innerText(), /Inés:/, 'Inés acknowledges the carried poster within the meeting artifact');
+  assert.match(await page.locator('#poster-meeting .speech-card').innerText(), /Inés/, 'Inés acknowledges the carried poster within the meeting artifact');
   assert.ok((await page.locator('#poster-meeting').innerText()).includes(story.poster_workshop.questions.find(q => q.id === 'voices').text));
   assert.ok((await page.locator('#poster-meeting').innerText()).includes(story.poster_workshop.memory_note));
   await screenshot(page, 'html-poster-meeting.png');
@@ -263,10 +269,23 @@ try {
     for (const id of ['A', 'B', 'C']) assert.equal(await page.locator(`#result-content [data-count="${id}"]`).innerText(), String(result.counts[id]));
     assert.equal(await page.locator('#ballot input:checked').count(), 0);
     await choose(page, 'followup', 'budget'); await activate(page, '#reflection-form button[type="submit"]');
-    await assertFocus(page, '#ending-title');
+    if (choice === 'A') {
+      await assertFocus(page, '#campaign-title');
+      assert.equal(await page.locator('#house-hall').isVisible(), true);
+      assert.equal(await page.locator('#ending').isVisible(), false, 'The consultation leads to dispatch, not premature completion');
+      await activate(page, '#campaign-send');
+      await page.locator('#campaign-status').filter({ hasText: 'El diseño está listo' }).waitFor();
+      await enter(page, 'printshop'); await activate(page, '#campaign-print');
+      await assertFocus(page, '#ending-title');
+      const file = page.waitForEvent('download'); await activate(page, '#download-campaign');
+      const download = await file; await download.saveAs(join(evidence, 'html-campaign.pdf'));
+      assert.equal((await readFile(join(evidence, 'html-campaign.pdf'))).subarray(0, 5).toString(), '%PDF-');
+    }
+    if (choice !== 'A') await assertFocus(page, '#ending-title');
     const saved = await storage(page);
     assert.deepEqual(saved.completedChapters, ['printing', 'comparison', 'consultation']);
-    assert.deepEqual(Object.keys(saved).sort(), ['assisted', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
+    assert.deepEqual(Object.keys(saved).sort(), ['assisted', 'campaign_printed', 'completedChapters', 'hints', 'legacyCompleted', 'settings', 'version']);
+    assert.equal(saved.campaign_printed, true);
     assert.equal(new URL(page.url()).search, '');
     assert.equal(await page.locator('#result-content').innerText(), '', 'Leaving discards option-linked outcomes');
   }
@@ -279,6 +298,8 @@ try {
   }
   assert.equal(await page.locator('#plaza').isVisible(), true);
   assert.equal(await page.locator('#ending').isVisible(), true);
+  assert.equal(await page.locator('#download-campaign').isVisible(), false, 'No regenerated personalized download after reload');
+  assert.equal(await page.locator('#campaign-reload-note').innerText(), story.campaign.completed_reload);
   assert.match(await page.locator('#progress-summary').innerText(), /3 de 3/);
   assert.equal(await page.locator('#result-content').innerText(), '');
   for (const width of [320, 768, 1024, 1440]) {
@@ -426,7 +447,8 @@ try {
   const legacy = await legacyContext.newPage(); await legacy.goto(htmlURL.href); await loaded(legacy);
   assert.match(await legacy.locator('#legacy-notice').innerText(), /no.*actividades nuevas/i);
   assert.deepEqual((await storage(legacy)).legacyCompleted, ['printing', 'comparison', 'consultation']);
-  assert.equal(await legacy.locator('#ending').isVisible(), true); await legacyContext.close();
+  assert.equal(await legacy.locator('#ending').isVisible(), false, 'Legacy consultation completion does not invent a printed campaign');
+  await enter(legacy, 'hall'); assert.equal(await legacy.locator('#campaign-dispatch').isVisible(), true); await legacyContext.close();
 
   const failedContext = await browser.newContext(); const failed = await failedContext.newPage();
   await failed.route('**/story.json', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{"schema_version":"1.0.0"}' }));
@@ -490,7 +512,7 @@ try {
     failClosedContent: 'passed', storageUnavailable: 'passed', semanticChecks: 'passed', textContrast: 'passed (rendered solid backgrounds)', widths: [320, 768, 1024, 1440],
     text200Percent: 'passed (CSS text enlargement; native browser zoom not tested)',
     classroomResources: process.env.SKIP_GODOT === '1' ? 'not run (source QA only)' : 'passed',
-    axe: axeResult, screenReader: 'see separate assistive-technology evidence', godotBoot, errors, gameErrors };
+    axe: axeResult, screenReader: 'not rerun for schema-3 HTML; prior Orca observations remain historical', godotBoot, errors, gameErrors };
   await writeFile(join(evidence, 'browser-results.json'), JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result, null, 2));
 } finally { await browser.close(); }

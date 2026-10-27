@@ -16,7 +16,7 @@ def fingerprint_sources():
     paths = set()
     for directory in ["game/scripts", "game/scenes", "game/tests", "game/content", "game/assets", "web", "tests"]:
         paths.update(path for path in (ROOT / directory).rglob("*") if "development" not in path.parts
-                     and path.is_file() and path.suffix in [".gd", ".tscn", ".json", ".html", ".css", ".mjs", ".py", ".svg", ".wav", ".ttf", ".txt"])
+                     and path.is_file() and path.suffix in [".gd", ".tscn", ".json", ".html", ".css", ".mjs", ".py", ".svg", ".wav", ".ogg", ".ttf", ".txt"])
     paths.update(ROOT / path for path in ["game/project.godot", "game/export_presets.cfg", "tools/export_game.py", "tools/verify.py"])
     return [{"path": path.relative_to(ROOT).as_posix(), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()} for path in sorted(paths)]
 
@@ -46,7 +46,7 @@ def main():
     source_start = fingerprint_sources()
     results = []
     results.append(run("python-tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests"]))
-    results.append(run("node-tests", ["node", "--test", "--test-isolation=none", "tests/web.test.mjs"]))
+    results.append(run("node-tests", ["node", "--test", "--test-isolation=none", *[str(path.relative_to(ROOT)) for path in sorted((ROOT / "tests").glob("*.test.mjs"))]]))
     results.append(run("godot-tests", ["./tools/godot", "--headless", "--path", "game", "-s", "addons/gut/gut_cmdln.gd", "-gdir=res://tests", "-gexit"]))
     if args.build:
         for target in ["web", "linux"]:
@@ -56,12 +56,15 @@ def main():
         results.append(run("compiled-pack-journeys", ["./tools/godot", "--headless", "--main-pack", "build/linux/voces-de-la-plaza.pck", "--script", str(ROOT / "tests/native_journey.gd")], 30))
     if args.browser:
         results.append(run("browser-smoke", ["node", "tests/browser_smoke.mjs"], 180))
+        results.append(run("browser-campaign", ["node", "tests/browser_campaign.mjs"], 180))
     if args.native_window:
         # The WASD journey physically walks every route; no teleport shortcuts.
         results.append(run("native-window-tests", [sys.executable, "tests/native_window_smoke.py"], 480))
+        results.append(run("native-pdf-save", [sys.executable, "tests/native_pdf_save_smoke.py"], 300))
     if args.godot_browser:
-        # Allow the canvas harness's 600-second watchdog to write its own result.
-        results.append(run("godot-browser-journey", ["node", "tests/godot_browser_smoke.mjs"], 630))
+        # The fourth mission adds a physical return, PDF download and dialogue
+        # checks. Allow its 900-second watchdog to retain a failure receipt.
+        results.append(run("godot-browser-journey", ["node", "tests/godot_browser_smoke.mjs"], 930))
     tested = fingerprint_sources()
     if tested != source_start:
         raise RuntimeError("Sources changed during verification; freeze the revision and rerun")

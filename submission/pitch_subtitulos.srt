@@ -1,128 +1,136 @@
 1
-00:00:00,000 --> 00:00:05,501
-Equipo Latas presenta Voces de la Plaza, una aventura de educación cívica para
-bachillerato y personas adultas.
+00:00:00,000 --> 00:00:05,001
+Equipo Latas presenta Voces de la Plaza, una aventura cívica para bachillerato y
+personas adultas.
 
 2
-00:00:06,335 --> 00:00:14,915
+00:00:06,635 --> 00:00:14,752
 Villa Brisa prepara una reunión. Luz, Mateo e Inés nos reciben en tres casas.
 
 3
-00:00:15,484 --> 00:00:19,984
-Caminamos con WASD y cruzamos la puerta del archivo de Mateo. Las tres casas abren
-desde el inicio.
+00:00:15,206 --> 00:00:19,206
+WASD nos lleva al archivo. Las tareas siguen el orden Luz, Mateo e Inés.
 
 4
-00:00:20,510 --> 00:00:25,010
-La ruta HTML cuenta la misma historia con texto ampliable, gráficas y controles de
-teclado.
+00:00:19,644 --> 00:00:23,643
+HTML ofrece la misma historia con navegación propia, texto ampliable y teclado.
 
 5
-00:00:25,352 --> 00:00:28,852
+00:00:23,979 --> 00:00:26,979
 Primera misión: preparar un boletín que diga qué sabemos.
 
 6
-00:00:29,053 --> 00:00:35,055
+00:00:27,180 --> 00:00:32,680
 INE, CCPC federal 2024: cerca de 60 de cada 100 registros con información conocida
 muestran participación.
 
 7
-00:00:35,286 --> 00:00:38,787
+00:00:32,876 --> 00:00:35,876
 Leemos las barras. No necesitamos hacer divisiones para avanzar.
 
 8
-00:00:38,944 --> 00:00:43,944
-El boletín conserva conteos exactos, fuente y año. Los registros sin información
-se muestran aparte.
+00:00:36,046 --> 00:00:40,546
+El boletín conserva conteos, fuente y año. Los registros sin información se
+muestran aparte.
 
 9
-00:00:44,288 --> 00:00:49,288
-Si falta información, no afirmamos que alguien no participó. Pedir apoyo se
-distingue de responder sin ayuda.
+00:00:40,882 --> 00:00:45,383
+Si falta información, no afirmamos que alguien no participó. Podemos completar con
+apoyo.
 
 10
-00:00:49,473 --> 00:00:53,473
+00:00:45,563 --> 00:00:49,563
 Otro caso: 60 participaron, 30 no y 10 no se sabe. Este ejemplo es inventado.
 
 11
-00:00:53,769 --> 00:00:57,270
-Publicamos el boletín con su fuente. Queda disponible para volver a leerlo.
+00:00:49,891 --> 00:00:53,392
+Publicamos el boletín con su fuente. Podemos volver a leerlo.
 
 12
-00:00:57,461 --> 00:01:01,462
-En el archivo de Mateo revisamos un cartel que confunde cantidades y porcentajes.
+00:00:53,571 --> 00:00:57,070
+Mateo muestra un cartel que confunde cantidades y porcentajes.
 
 13
-00:01:01,651 --> 00:01:06,151
-Segunda misión: corregir el cartel. Baja California tiene más registros con
-participación.
+00:00:57,260 --> 00:01:01,260
+Baja California tiene más registros con participación. Corregimos el cartel.
 
 14
-00:01:06,408 --> 00:01:11,408
-De cada 100 registros con información, Aguascalientes tiene mayor proporción. Las
-bases son distintas.
+00:01:01,518 --> 00:01:06,018
+Aguascalientes tiene mayor proporción entre registros con información. Las bases
+son distintas.
 
 15
-00:01:11,657 --> 00:01:16,157
-En otro ejemplo inventado, una cantidad mayor puede representar una parte menor
-del grupo.
+00:01:06,266 --> 00:01:10,267
+En este ejemplo inventado, más participantes no significa un porcentaje mayor.
 
 16
-00:01:16,374 --> 00:01:21,373
-Corregimos el cartel: más registros y mayor proporción no son lo mismo. Podemos
-revisar ambas medidas.
+00:01:10,544 --> 00:01:14,545
+Cantidad y proporción son comparaciones diferentes. El cartel conserva la fuente.
 
 17
-00:01:21,573 --> 00:01:26,573
-Ahora creamos nuestro cartel: elegimos dos estados, qué comparar y una pregunta
-para la reunión.
+00:01:14,733 --> 00:01:19,232
+Personalizar es opcional: dos de 32 entidades, cantidad o proporción y una
+pregunta neutral.
 
 18
-00:01:26,815 --> 00:01:32,816
-Nuestro cartel cambia con los datos elegidos. Conserva fuente, bases y límites;
-podemos revisarlo antes de publicarlo.
+00:01:19,467 --> 00:01:24,468
+El cartel cambia con los datos elegidos. Revisamos fuente, bases, desconocidos y
+límites.
 
 19
-00:01:32,992 --> 00:01:37,992
-Inés recibe nuestro cartel y la pregunta. La evidencia abre la conversación; no
-decide por quién votar.
+00:01:24,622 --> 00:01:28,622
+Guardamos el cartel y abrimos la casa de Inés. La evidencia no decide por quién
+votar.
 
 20
-00:01:38,143 --> 00:01:43,144
-Con Inés escuchamos tres proyectos. La consulta y sus cifras son inventadas,
-separadas del CCPC.
+00:01:28,772 --> 00:01:33,272
+Inés presenta tres proyectos. La consulta y sus cifras son inventadas, separadas
+del CCPC.
 
 21
-00:01:43,324 --> 00:01:48,325
-Elegir A, B o C, dejar sin marca o no participar permite el mismo final. Ninguna
-preferencia se califica.
+00:01:33,453 --> 00:01:37,953
+A, B, C, sin marcar o no participar: todas habilitan la campaña. No se califica la
+elección.
 
 22
-00:01:48,546 --> 00:01:52,546
-Este resultado es inventado. Las necesidades que no ganan siguen mereciendo
-atención.
+00:01:38,155 --> 00:01:41,655
+Resultado inventado: las necesidades pendientes siguen mereciendo atención.
 
 23
-00:01:52,690 --> 00:01:57,691
-Después de decidir podemos preguntar qué se hizo con el presupuesto y cuándo
-revisaremos los avances.
+00:01:41,798 --> 00:01:45,799
+Elegimos una pregunta de seguimiento: recursos, avances o necesidades pendientes.
 
 24
-00:01:57,916 --> 00:02:02,917
-Regresamos a la plaza con el boletín y el cartel. La elección ficticia y su
-resultado no se guardan.
+00:01:46,046 --> 00:01:50,546
+Inés revisa nuestro cartel. Si no lo personalizamos, ofrece el ejemplo guiado
+AGS/BC.
 
 25
-00:02:02,960 --> 00:02:07,460
-Hay una guía para facilitar la actividad de forma individual, en parejas o con
-proyector.
+00:01:50,687 --> 00:01:54,686
+Enviar a Luz prepara el PDF dentro de la ficción; no manda un mensaje externo.
 
 26
-00:02:07,485 --> 00:02:12,486
-La hoja para imprimir reúne datos, fuentes y preguntas para conversar sin recoger
-preferencias políticas.
+00:01:54,854 --> 00:01:58,854
+Volvemos a la imprenta: Imprimir cartel. En Godot caminamos hasta la prensa.
 
 27
-00:02:12,678 --> 00:02:17,678
-Demostración automatizada y sin audio. El pilotaje con docentes y estudiantes
-sigue pendiente.
+00:01:59,055 --> 00:02:03,055
+FIN: La campaña comienza contigo. Descargar el cartel es una acción aparte.
+
+28
+00:02:03,202 --> 00:02:07,202
+PDF Carta ciudadano: fuente INE/CCPC, sin marcas de equipo ni sello oficial.
+
+29
+00:02:07,259 --> 00:02:11,258
+Guía para uso individual, parejas o proyector. El tiempo aún no tiene pilotaje.
+
+30
+00:02:11,278 --> 00:02:15,277
+La hoja reúne datos y reflexión sin recoger preferencias. Podemos trabajar en
+papel.
+
+31
+00:02:15,466 --> 00:02:19,966
+Demo automatizada, sin audio. Juego con música CC0 opcional; sin pilotaje ni
+eficacia demostrada.

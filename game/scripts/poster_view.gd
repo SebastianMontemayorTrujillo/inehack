@@ -52,7 +52,7 @@ static func acknowledge(app: Node) -> void:
 	if app.meeting_poster.is_empty(): return
 	var result := Poster.compose(app.bundle, app.story, app.meeting_poster)
 	if result.is_empty(): return
-	app._text("Inés: «Trajiste un cartel sobre %s y %s: %s»" % [result.records[0].geography_name, result.records[1].geography_name, result.finding])
+	app._text("Cartel publicado sobre %s y %s: %s" % [result.records[0].geography_name, result.records[1].geography_name, result.finding])
 	app._text("Tu pregunta abre la conversación: " + result.question)
 	app._text(app.story.poster_workshop.limit)
 	app._button("Abrir mi cartel y su fuente", app._published_poster)

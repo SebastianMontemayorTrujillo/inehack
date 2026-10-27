@@ -117,6 +117,9 @@ def export(root=ROOT, target="web", asset_set="original"):
         content = root / "game/content"
         if content.exists():
             shutil.copytree(content, root / "build/web/content", dirs_exist_ok=True)
+        audio = root / "game/assets/audio"
+        if audio.exists():
+            shutil.copytree(audio, root / "build/web/assets/audio", dirs_exist_ok=True, ignore=shutil.ignore_patterns("*.import"))
         for name in ["classroom.html", "classroom-handout.html", "classroom-handout.pdf"]:
             resource = root / "submission" / name
             if not resource.is_file():
@@ -124,7 +127,7 @@ def export(root=ROOT, target="web", asset_set="original"):
             shutil.copy2(resource, root / "build/web" / name)
     license_dir = root / ("build/web/licenses" if target == "web" else "build/linux/licenses")
     license_dir.mkdir(parents=True, exist_ok=True)
-    for name in ["GODOT_LICENSE.txt", "GODOT_COPYRIGHT.txt", "THIRD_PARTY_NOTICES.txt", "assets/fonts/OFL.txt"]:
+    for name in ["GODOT_LICENSE.txt", "GODOT_COPYRIGHT.txt", "THIRD_PARTY_NOTICES.txt", "assets/fonts/OFL.txt", "assets/audio/CC0-1.0.txt"]:
         source = root / "game" / name
         if source.is_file():
             shutil.copy2(source, license_dir / source.name)

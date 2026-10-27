@@ -21,3 +21,44 @@ export function composePoster(data, story, selection) {
     story.comparison_artifact[metric].replace('{place}', records.find(record => record.id === result).geography_name);
   return { records, metric, finding, question: discussion.text };
 }
+
+// Only an explicit dispatch may replace a queue. Generation and publication are
+// separate so cancellation, failure, navigation and reset cannot commit late work.
+export function createCampaignSession({ data, story, createPDF }) {
+  let queued = null;
+  let busy = false;
+  let printed = false;
+  let generation = 0;
+  const complete = progress => ['printing', 'comparison', 'consultation'].every(id => progress.completedChapters.includes(id));
+  const cancel = () => { generation++; busy = false; };
+  return {
+    get ready() { return queued !== null; },
+    get busy() { return busy; },
+    get selection() { return queued ? { ...queued.selection } : null; },
+    async queue(progress, published = null, replace = false) {
+      if (!complete(progress) || progress.campaign_printed || busy || (queued && !replace)) return false;
+      const source = published ?? { first: 'state_01', second: 'state_02', metric: 'rate', question: 'missing' };
+      const selection = Object.freeze(Object.fromEntries(['first', 'second', 'metric', 'question'].map(key => [key, source[key]])));
+      if (!composePoster(data, story, selection)) throw new Error('No se pudo preparar el PDF con este cartel.');
+      const token = ++generation;
+      busy = true;
+      try {
+        const bytes = await createPDF(structuredClone(data), structuredClone(story), { ...selection });
+        if (token !== generation) return false;
+        if (!(bytes instanceof Uint8Array) || bytes.length < 5 || new TextDecoder().decode(bytes.subarray(0, 5)) !== '%PDF-') {
+          throw new Error('No se pudo preparar el PDF.');
+        }
+        queued = { selection, bytes: new Uint8Array(bytes) };
+        return true;
+      } finally { if (token === generation) busy = false; }
+    },
+    print(progress) {
+      if (!queued || busy || !complete(progress) || (progress.campaign_printed && !printed)) return false;
+      printed = true; progress.campaign_printed = true;
+      return true;
+    },
+    download() { return printed && queued ? new Uint8Array(queued.bytes) : null; },
+    cancel,
+    clear() { cancel(); queued = null; printed = false; },
+  };
+}

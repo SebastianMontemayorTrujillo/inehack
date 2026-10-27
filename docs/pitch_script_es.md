@@ -1,40 +1,40 @@
 # Voces de la Plaza · guion de pitch
 
-**Equipo Latas · Edición de aula · 25 de octubre de 2026.** Guion para presentar las tres casas, los datos y el uso docente. Las marcas temporales son un presupuesto de hasta tres minutos, incluidos pausas y créditos; no una duración medida. La locución es opcional. Los subtítulos y la transcripción deben corresponder al video producido, sea narrado o silencioso. El [registro de verificación](verification.md) identifica el alcance técnico y los medios entregados.
+**Equipo Latas · Cierre de campaña · 27 de octubre de 2026.** Presupuesto editorial de **hasta 150 segundos**, incluidos transiciones y cierre; no es una duración medida. La grabación conserva la composición existente: entrada real en el canvas Godot y recorrido real de HTML, con subtítulos incrustados, SRT y transcripción. El [registro de verificación](verification.md) identifica el alcance técnico.
 
-El taller opcional está implementado en Godot y HTML y cuenta con capturas reales. Las marcas de este guion son una propuesta editorial. El [recibo de codificación](../build/evidence/pitch-encoding.json), vinculado al archivo y a sus entradas, es la referencia para identificar la grabación final, su duración medida, resolución, subtítulos y alcance; este cronograma no sustituye ese recibo.
+Los medios anteriores son históricos. La producción final espera el recorrido nativo nuevo aprobado y los exports actuales. El [recibo de codificación](../build/evidence/pitch-encoding.json) identifica la grabación, duración medida, resolución, fuentes y PDF realmente descargado. La música tranquila CC0 «Sunset Walk», de KiluaBoy, pertenece al juego; el pitch es silencioso y no permite evaluar comodidad auditiva. No contiene imágenes ni respuestas del alumnado.
 
-## Guion de locución propuesto
+## Guion editorial
 
 <!-- NARRATION_START -->
 
-### 00:00–00:25 · Una reunión por preparar
+### 00:00–00:15 · Tres casas abiertas
 
-Villa Brisa quiere mejorar su plaza. Hay tres propuestas y recursos para empezar una. Voces de la Plaza propone una aventura para bachillerato, con jóvenes que se acercan a su primer voto, y para personas adultas principiantes. Antes de decidir, ayudamos a preparar información clara.
+Latas presenta Voces de la Plaza, una aventura cívica para bachillerato y personas adultas principiantes. Las tres casas abren desde el inicio; las conversaciones siguen el orden Luz, Mateo e Inés. En Godot caminamos con WASD; HTML tiene navegación propia.
 
-### 00:25–00:55 · Luz y lo que no sabemos
+### 00:15–00:45 · Luz y lo que no sabemos
 
 Visitamos tres casas. En la imprenta de Luz usamos datos del INE sobre participación federal de 2024. En el agregado nacional, cerca de sesenta de cada cien registros con información conocida tienen marca de voto. Los registros sin clasificación se muestran aparte: no sabemos si participaron. El boletín conserva cifras exactas, fuente y límites.
 
-### 00:55–01:15 · Mateo y una comparación justa
+### 00:45–01:10 · Mateo y una comparación justa
 
 En el archivo de Mateo, Baja California tiene más registros con marca, pero Aguascalientes tiene mayor proporción. Leemos sin juzgar a las comunidades. Las seis actividades ofrecen apoyo y ejemplos nuevos; calcular es opcional.
 
-### 01:15–01:40 · Un cartel propio, opcional
+### 01:10–01:29 · Un cartel propio, opcional
 
-El taller permite elegir dos de las treinta y dos entidades, cantidad o proporción y una pregunta neutral. Revisamos el cartel con datos, bases, desconocidos, fuente y límites antes de llevarlo a Inés. Se conserva solo durante la sesión. No añade una prueba ni modifica la consulta.
+El taller permite elegir dos de 32 entidades, cantidad o proporción y una pregunta neutral. Revisamos datos, bases, desconocidos, fuente y límites. Guardar conserva la publicación durante la sesión. Si omitimos el taller, Inés ofrece la comparación guiada AGS/BC por proporción.
 
-### 01:40–02:05 · Inés y las necesidades distintas
+### 01:29–01:48 · Consulta ficticia y seguimiento
 
-En casa de Inés, sombra y bancas, lectura o jardín son proyectos de una consulta ficticia. Sus cifras son inventadas. Elegir cualquiera, dejar sin marcar o no participar permite el mismo final. Ninguna preferencia se califica. Después preguntamos por los recursos, avances o necesidades pendientes.
+Inés presenta sombra y bancas, lectura y jardín. Los conteos son inventados. Elegir A, B o C, dejar sin marcar o no participar, y una pregunta neutral de seguimiento, habilitan la campaña. Ninguna preferencia se califica ni se guarda.
 
-### 02:05–02:30 · Una actividad para el aula
+### 01:48–02:15 · Inés, Luz, impresión y FIN
 
-La guía propone veinte minutos, con tiempo adicional para el taller opcional, y una hoja con fuentes y reflexión. Podemos trabajar individualmente, en parejas o con proyector, sin recoger identidad ni preferencias. El taller está disponible en Godot y HTML; Linux ofrece una copia local.
+Inés revisa el diseño y lo encarga a Luz dentro de la ficción. Volvemos a la primera casa; en Godot caminamos hasta la prensa. **Imprimir cartel** completa la aventura: **FIN · La campaña comienza contigo**. Descargar el PDF Carta es aparte. Dice «Tu voto cuenta. Infórmate y participa.»: campaña ciudadana con fuente INE/CCPC, sin marcas de equipo, sello oficial ni resultado ficticio.
 
-### 02:30–02:50 · Evidencia y siguiente paso
+### 02:15–02:30 · Reutilización y límites
 
-Latas propone entregar una edición identificada; la persona facilitadora prepara el equipo y recorre la actividad. Sus observaciones servirían para revisar la siguiente edición. Aún no hay pilotaje ni evaluación formal con lector de pantalla; no atribuimos mejoras de aprendizaje ni efectos electorales.
+Guía y hoja permiten trabajo individual, en parejas, con proyector o en papel. Los tiempos son propuestos; todavía no hay pilotaje con docentes y estudiantes ni certificación formal. El juego tiene música CC0 opcional; esta demostración no tiene audio. No atribuimos eficacia educativa ni efectos electorales.
 
 <!-- NARRATION_END -->
 
@@ -42,16 +42,17 @@ Latas propone entregar una edición identificada; la persona facilitadora prepar
 
 | Tiempo objetivo | Imagen y texto legible | Fuente y límite |
 | --- | --- | --- |
-| 00:00–00:25 | Villa Brisa y las tres casas; audiencia. | Capturas reales del recorrido de la edición de aula. |
-| 00:25–00:55 | Boletín: «Nacional · CCPC federal 2024 · 59.67% entre 92,004,694 clasificados». Panel aparte: «6.43% sin clasificación de 98,330,348 totales». | INE, ZIP/diccionario 2024; `ccpc-2024-v1`, `national`. Tasas redondeadas. Bases distintas; no unir en un pastel de 100%. |
-| 00:55–01:15 | Cartel guiado: AGS 626,084 / 1,067,306 = 58.66%; BC 1,396,335 / 2,968,011 = 47.05%. «Con marca / registros clasificados». | INE, CCPC federal 2024, `state_01`/`state_02`. Mantener separados los ejemplos inventados de las seis actividades. |
-| 01:15–01:40 | Escena del taller: seleccionar dos entidades y una medida, abrir la vista previa, revisar una selección y llevar el cartel a Inés. Mostrar pregunta neutral, fuente y bases. | Captura nativa disponible `native-poster-preview.png`; el recibo del video identifica los controles y escenas realmente grabados. El cartel se conserva durante la sesión, no como archivo guardado. |
-| 01:40–02:05 | Casa de reunión, tres proyectos de igual jerarquía; las cinco acciones. «Consulta ficticia». | Contenido compartido. Usar una acción de demostración; no grabar elecciones del alumnado. |
-| 02:05–02:30 | Guía «2 + 13 + 5 minutos, tiempo propuesto»; cartel opcional con tiempo adicional; hoja con hallazgo/límite/seguimiento; ruta HTML. | Materiales de aula. No insertar cifras de aprendizaje o resultados inventados. |
-| 02:30–02:50 | Secuencia propuesta: Latas prepara; facilitación prueba; observaciones por versión; Latas revisa y actualiza. | Separar materiales disponibles, comprobaciones técnicas y evaluación educativa futura. |
-| 02:50–03:00 | Reserva para pausas y créditos legibles. | Medir el archivo final completo: máximo tres minutos y 1080p según el checklist de entrega. |
+| 00:00–00:15 | Plaza y entrada con W al archivo; después portada HTML. | Export actual; distinguir las dos rutas. El orden del aprendizaje no cierra las casas. |
+| 00:15–00:45 | Boletín: 59.67% entre 92,004,694 clasificados. NS: 6.43% de 98,330,348 totales. | INE, ZIP/diccionario 2024, `national`. Bases distintas; no unir en un pastel del 100%. Ejemplo 60/30/10 rotulado inventado. |
+| 00:45–01:10 | AGS 626,084 / 1,067,306 = 58.66%; BC 1,396,335 / 2,968,011 = 47.05%. | `state_01`/`state_02`; con marca / clasificados. Ejemplo A:20/40 y B:60/200 separado como ficción. |
+| 01:10–01:29 | Selección, cambio de medida, vista previa y publicación del cartel. | Operaciones reales HTML. Godot guarda sin cambiar de lugar y exige caminar a Inés. No atribuir vistas nuevas a capturas antiguas. |
+| 01:29–01:48 | Proyectos de igual jerarquía, cinco acciones, resultado inventado y seguimiento. | Acción de demostración «no participar», sin elecciones del alumnado. La consulta no produce FIN por sí sola. |
+| 01:48–02:15 | Inés: revisión y envío; regreso a la imprenta; «Imprimir cartel», FIN y descarga real. | Preparar PDF antes de confirmar el encargo. Conservar hash de los bytes descargados. El envío es ficción; descargar o imprimir físicamente es opcional. |
+| 02:15–02:30 | Guía, hoja y regreso al final neutral. | Recursos congelados. Recargar conserva el final, sin reconstruir el PDF personal. Sin pilotaje ni eficacia demostrada. |
 
-Conservar las ideas centrales en texto legible y subtítulos/transcripción que correspondan al audio o a la grabación silenciosa elegida. No acelerar las tablas hasta impedir su lectura; si hace falta recortar, conservar las bases y fuente en la imagen y simplificar la locución. Revisar tiempo, codificación y acceso del archivo real por separado.
+`tools/record_pitch.mjs --self-test` comprueba 31 escenas, las seis actividades canónicas y **127.5 segundos de pausas legibles**; las transiciones consumen parte del margen hasta 150. La grabación atraviesa encargo, prensa, FIN y descarga con controles reales, sin sembrar progreso terminado. El recibo conserva las identidades de fuentes, exports, video fuente, salida, subtítulos, transcripción y PDF descargado.
+
+Conservar texto legible en la banda inferior: subtítulos de hasta dos líneas, sin solapamiento, a máximo 23 caracteres por segundo y dentro de la duración codificada. Revisar todas las muestras codificadas y cada cue contra SRT, transcripción y recibo. MP4: 1920 × 1080, 30 fps, H.264/yuv420p, silencioso y de máximo 150 segundos. Revisar muestras no equivale a haber observado cada cuadro. El video silencioso no evalúa el audio del juego.
 
 Este guion no demuestra por sí mismo una grabación, un envío o una publicación. El recibo de codificación y los subtítulos/transcripción de la grabación final prevalecen para describir el archivo entregado. La evidencia técnica no implica conformidad WCAG o adopción institucional.
 

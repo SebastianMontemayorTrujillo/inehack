@@ -10,6 +10,11 @@ from pathlib import Path
 import struct
 import wave
 
+if __package__:
+    from .assets import MUSIC_ENTRY
+else:
+    from assets import MUSIC_ENTRY
+
 ROOT = Path(__file__).resolve().parents[1]
 INK = "#283c45"
 PAPER = "#fff0cd"
@@ -247,6 +252,8 @@ def generate(root=ROOT):
         entries["sound." + name] = {"path": "res://assets/original/" + filename, "origin": "team-original", "channels": 1, "sample_rate": 22050, "duration_seconds": round(sum(duration for _, duration in notes), 3)}
     for weight in ("regular", "bold"):
         entries["font." + weight] = {"path": f"res://assets/fonts/AtkinsonHyperlegible-{weight.title()}.ttf", "origin": "dependency", "license": "OFL-1.1", "license_path": "res://assets/fonts/OFL.txt"}
+    # Catalog the approved dependency; generation never writes its audio bytes.
+    entries["music.plaza"] = MUSIC_ENTRY.copy()
     catalog_path = root / "game/assets/catalogs/original.json"
     catalog_path.parent.mkdir(parents=True, exist_ok=True)
     catalog_path.write_text(json.dumps({"schema_version": 1, "asset_set": "original", "assets": entries}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -272,7 +279,7 @@ def main():
         else:
             from assets import record_original
         record_original(ROOT)
-    print(f"Authored {len(entries) - 2} original SVG/WAV roles; 2 OFL font roles.")
+    print(f"Authored {len(entries) - 3} original SVG/WAV roles; 2 OFL font roles and 1 acquired CC0 music role.")
 
 
 if __name__ == "__main__":
