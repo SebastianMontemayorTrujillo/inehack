@@ -1,5 +1,7 @@
 # Architecture and implementation contracts
 
+**Alcance vigente, 31 de octubre:** la [arquitectura Godot en español](arquitectura_godot_es.md) sustituye para esta entrega las obligaciones de la ruta HTML independiente. El exportador publica solo Godot; el README, los iniciadores y el paquete actual se verifican por separado. Los contratos previos se conservan como historial.
+
 **Sequential/pink campaign revision, 27 October:** The [approved contract](sequential_campaign_design.md) separates host lessons from artifact inspection/operation. Main resolves one nearby interaction for input and the HUD prompt; `room.gd` supplies spatial targets without floor labels. Shared question IDs/evaluators and save versions remain. Campaign palette/layout and the final reveal are presentation changes; final acceptance must identify new exports and not reuse older scores.
 
 **Campaign revision, 27 October:** [The finale contract](campaign_finale.md) supersedes earlier three-step ending, audio and persistence descriptions. Story schema 3 supplies speech and campaign copy; saves are Godot 2 / HTML 3. Only the nearby press finishes the fourth objective. Shared font/layout resources produce local Carta PDFs; queued jobs and selections remain session-only. Music is a separately credited CC0 dependency.

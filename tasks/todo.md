@@ -1,5 +1,13 @@
 # Implementation tasks and verification
 
+## Entrega exclusiva de Godot · 31 de octubre de 2026
+
+- [x] **RV27 · Un solo producto** — Export web limpio con envoltorio español y entrada a Godot; rutas retiradas devuelven 404 y no entran al ZIP. Se mantienen Godot web/Linux, datos, recorrido y privacidad. Nuevo PCK web `7c14ee2f…a06d` comprobado mediante arranque y recorrido reales.
+- [x] **RV28 · Acceso del jurado** — README en español, guía de despliegue y scripts JUGAR. Desde ZIP extraído a una ruta con espacios se reprodujeron 41 pruebas Python y se ejecutaron los iniciadores Linux y web, MIME/HTTP, cinco decisiones y arranque real. Windows/macOS tienen instrucciones, no pruebas afirmadas.
+- [x] **RV29 · Presentación y edición humana** — Plan de siete minutos/diez diapositivas, storyboard 2:15 y recomendaciones humanas priorizadas; cifras, fuentes, licencias y enlaces cotejados. Las revisiones humanas sugeridas no se presentan como realizadas.
+- [x] **RV30 · Revisión final y demo Godot** — 41 Python + 73 GUT = 114 pruebas, 2,022 aserciones y cero huérfanos. Linux real 465.678 s; navegador con captura 833.943 s; dos guardados PDF 149.476 s. Video de 135 s, 20 cortes, 26 subtítulos, 42 fotogramas y 20 páginas revisados. Elección C observada, sin atribuirle la etiqueta automática sin-marcar; cinco decisiones acreditadas aparte. Umbrales de errores, píxeles y revelación sin relajar.
+- [x] **RV31 · Paquete actual en español** — 579 archivos, 578 entradas de manifiesto; ZIP Godot aprobado por integridad/CRC/huellas, pruebas Python e iniciadores desde extracción limpia. Revisión independiente sin P1/P2 pendientes. Referencia de datos extraída sin cambios del anexo y logs incluidos. El recibo externo `build/evidence/clean-candidate.json` identifica el ZIP exacto. Firma, alojamiento y envío siguen como acciones del equipo.
+
 ## Sequential interaction and pink campaign · 27 October 2026
 
 - [x] **RV21 · Clear targets and progression** — One nearest target supplies prompt/input/button; host-only lessons, final-only press, clean floors and focused directions implemented. Real Linux/canvas journeys each pass 114 movement and 8 prompt checks, including all early houses, distinct objects, no travel shortcuts and safe closing. Source regressions cover range/panel states and optional review; existing save formats remain compatible.

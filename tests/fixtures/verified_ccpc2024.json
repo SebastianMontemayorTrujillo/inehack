@@ -1,0 +1,96 @@
+{
+  "purpose": "Research reproduction utility, not game implementation or an impact evaluation.",
+  "source_url": "https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip",
+  "sha256": "c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2",
+  "matches_source_inspected_2026_10_23": true,
+  "csv_files": 32,
+  "schema_fields": [
+    "AELEC",
+    "FELECCION",
+    "EDOCVE",
+    "EDONOM",
+    "MPIOCVE",
+    "MPIONOM",
+    "SECCION",
+    "TIPOSEC",
+    "DEF",
+    "DEL",
+    "SEXO",
+    "EDAD",
+    "LN",
+    "SV",
+    "NV",
+    "NS"
+  ],
+  "bad_sum_rows": 0,
+  "groups": {
+    "national": {
+      "LN": 98330348,
+      "SV": 54899228,
+      "NV": 37105466,
+      "NS": 6325654,
+      "rows": 9773730,
+      "classified_denominator": 92004694,
+      "turnout_pct": 59.67002944436726,
+      "unknown_pct": 6.4330637780311735
+    },
+    "state_1": {
+      "LN": 1097171,
+      "SV": 626084,
+      "NV": 441222,
+      "NS": 29865,
+      "rows": 91826,
+      "classified_denominator": 1067306,
+      "turnout_pct": 58.66021553331472,
+      "unknown_pct": 2.722000490352005
+    },
+    "state_2": {
+      "LN": 3197817,
+      "SV": 1396335,
+      "NV": 1571676,
+      "NS": 229806,
+      "rows": 284211,
+      "classified_denominator": 2968011,
+      "turnout_pct": 47.046153130834085,
+      "unknown_pct": 7.186339931271864
+    },
+    "age_18_19": {
+      "LN": 3563347,
+      "SV": 1890751,
+      "NV": 1440154,
+      "NS": 232442,
+      "rows": 274166,
+      "classified_denominator": 3330905,
+      "turnout_pct": 56.763882488392795,
+      "unknown_pct": 6.523136814910251
+    },
+    "age_20_24": {
+      "LN": 11313719,
+      "SV": 5114171,
+      "NV": 5453940,
+      "NS": 745608,
+      "rows": 696462,
+      "classified_denominator": 10568111,
+      "turnout_pct": 48.39247998057552,
+      "unknown_pct": 6.590299794435411
+    },
+    "age_25_29": {
+      "LN": 11138666,
+      "SV": 4917363,
+      "NV": 5489271,
+      "NS": 732032,
+      "rows": 698158,
+      "classified_denominator": 10406634,
+      "turnout_pct": 47.25219509017037,
+      "unknown_pct": 6.571989859467911
+    }
+  },
+  "two_state_combined_pct": 50.11797090538364,
+  "two_state_unweighted_pct": 52.853184332074406,
+  "limits": [
+    "Arithmetic checks do not establish uniqueness, completeness or source accuracy.",
+    "SV/(SV+NV) is a classified nominal-list-record rate; NS is unknown, not abstention.",
+    "Special polling stations and voting from abroad are excluded by the source dictionary.",
+    "Descriptive aggregates do not establish causes, motives, individual behaviour or intervention effects."
+  ]
+}

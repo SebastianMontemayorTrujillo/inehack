@@ -97,6 +97,16 @@ def stage_project(root=ROOT, target="web", asset_set="original", *, verify_downl
 
 def export(root=ROOT, target="web", asset_set="original"):
     stage = stage_project(root, target, asset_set)
+    if target == "web":
+        shell = root / "tools/godot_web_shell_es.html"
+        if not shell.is_file():
+            raise ValueError("Falta la página de arranque en español: tools/godot_web_shell_es.html")
+        shutil.copy2(shell, stage / "shell_es.html")
+        presets = stage / "export_presets.cfg"
+        text = presets.read_text(encoding="utf-8")
+        if 'html/custom_html_shell=""' not in text:
+            raise ValueError("No se encontró la opción de página de arranque web")
+        presets.write_text(text.replace('html/custom_html_shell=""', 'html/custom_html_shell="res://shell_es.html"'), encoding="utf-8")
     wrapper = root / "tools/godot"
     if not wrapper.is_file():
         raise ValueError("tools/godot is not installed; run Main's bootstrap first")
@@ -108,23 +118,21 @@ def export(root=ROOT, target="web", asset_set="original"):
     output.parent.mkdir(parents=True, exist_ok=True)
     run_godot(base + ["--export-release", "Web" if target == "web" else "Linux", str(output)], root, environment, f"{target}-export.log")
     if target == "web":
-        for source in sorted((root / "web").rglob("*")):
-            relative = source.relative_to(root / "web")
-            if source.is_file() and not (set(relative.parts) & (EXCLUDED | {"node_modules", "game", "content"})):
-                destination = root / "build/web" / relative
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(source, destination)
-        content = root / "game/content"
-        if content.exists():
-            shutil.copytree(content, root / "build/web/content", dirs_exist_ok=True)
-        audio = root / "game/assets/audio"
-        if audio.exists():
-            shutil.copytree(audio, root / "build/web/assets/audio", dirs_exist_ok=True, ignore=shutil.ignore_patterns("*.import"))
-        for name in ["classroom.html", "classroom-handout.html", "classroom-handout.pdf"]:
-            resource = root / "submission" / name
-            if not resource.is_file():
-                raise ValueError(f"Missing classroom resource {name}; run node tools/render_submission.mjs --handout-only")
-            shutil.copy2(resource, root / "build/web" / name)
+        destination = root / "build/web"
+        if destination.is_symlink():
+            raise ValueError("La carpeta de publicación no puede ser un enlace simbólico")
+        # Los datos, música y escenas ya están dentro del PCK de Godot.
+        # Retirar también residuos de exports anteriores evita volver a publicar
+        # la antigua ruta interactiva independiente.
+        for path in destination.iterdir():
+            if path.name == "game":
+                continue
+            if path.is_dir() and not path.is_symlink():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+        shutil.copy2(root / "tools/pagina_inicio_es.html", destination / "index.html")
+        shutil.copy2(root / "tools/LEEME_WEB_es.md", destination / "LEEME.md")
     license_dir = root / ("build/web/licenses" if target == "web" else "build/linux/licenses")
     license_dir.mkdir(parents=True, exist_ok=True)
     for name in ["GODOT_LICENSE.txt", "GODOT_COPYRIGHT.txt", "THIRD_PARTY_NOTICES.txt", "assets/fonts/OFL.txt", "assets/audio/CC0-1.0.txt"]:

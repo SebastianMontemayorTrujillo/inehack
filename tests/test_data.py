@@ -13,8 +13,9 @@ from tools.build_data import FIELDS, build_bundle, rate
 class DataTests(unittest.TestCase):
     def test_shipped_aggregates_match_independent_research_fixtures(self):
         root = Path(__file__).resolve().parents[1]
-        with ZipFile(root / "INEhack_Research_Annex.zip") as archive:
-            fixtures = json.loads(archive.read("ccpc/verified_ccpc2024.json"))
+        reference = (root / "tests/fixtures/verified_ccpc2024.json").read_bytes()
+        self.assertEqual(hashlib.sha256(reference).hexdigest(), "6cb28e8551e5fe5f03aac1edd02376799921f56a3d56cc09846a1a121898e6d9")
+        fixtures = json.loads(reference)
         actual = json.loads((root / "game/content/ccpc.json").read_text())
         records = {r["id"]: r for r in actual["records"]}
         self.assertEqual(actual["source"]["sha256"], fixtures["sha256"])

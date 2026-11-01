@@ -1,0 +1,13 @@
+# Datos, créditos y licencias
+
+Los CCPC corresponden a la elección federal de 2024. El juego utiliza 33 agregados (nacional y 32 entidades) reproducidos anteriormente desde 32 CSV y 9,773,730 filas. Esa reproducción es evidencia fechada; la revisión final no se presenta como una nueva adquisición. [Portal oficial CCPC del INE](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/).
+
+La participación clasificada es SV/(SV+NV). La clasificación desconocida se muestra como NS, separada, con base LN. Se suman conteos antes de dividir; no se promedian porcentajes de entidades. Se conservan bases, año, fuente y limitaciones. Los agregados no explican los motivos individuales ni permiten calificar el valor cívico de una comunidad. La consulta de Villa Brisa es ficticia y sus cifras no se atribuyen al INE.
+
+La referencia independiente de las pruebas se incluye como `tests/fixtures/verified_ccpc2024.json`, copiada sin cambiar bytes de `ccpc/verified_ccpc2024.json` del anexo original. SHA-256 de la referencia: `6cb28e8551e5fe5f03aac1edd02376799921f56a3d56cc09846a1a121898e6d9`; SHA-256 del anexo conservado en el repositorio: `1e57663a0dd176bab94a07436071a4d0f436eab0478370d62ac60b1e38651ccf`. No se generó desde la implementación actual; sus comprobaciones numéricas se conservan y su huella queda fijada en la prueba. Así se puede revisar el código entregado sin distribuir documentos históricos ajenos al producto actual.
+
+El arte y los efectos son originales, con trazabilidad en `assets/original_manifest.json`. Las referencias Kenney son CC0 y su manifiesto conserva las fuentes; no se incluyen paquetes de referencia como arte final. La música **Sunset Walk** pertenece a **KiluaBoy**, bajo **CC0**, y no se atribuye al equipo: [fuente del recurso](https://opengameart.org/node/87082), `assets/music_manifest.json` y `game/assets/audio/CC0-1.0.txt`.
+
+Las fuentes Atkinson Hyperlegible conservan su licencia OFL en `game/assets/fonts/OFL.txt`. Godot conserva MIT, copyright y avisos de dependencias en `game/GODOT_LICENSE.txt`, `GODOT_COPYRIGHT.txt` y `THIRD_PARTY_NOTICES.txt`. Los mismos avisos acompañan los exports. Estos textos legales y las declaraciones de autoría se preservan en su idioma original.
+
+El cartel es una campaña ciudadana de carácter educativo, con INE/CCPC como fuente histórica. No incorpora un sello oficial, marcas de Latas/INEhack, preferencias de la consulta ni una declaración de respaldo institucional. Las firmas y declaraciones del equipo deben provenir de personas reales; los formularios incluidos siguen sin firmar.

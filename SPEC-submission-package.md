@@ -1,5 +1,7 @@
 # SPEC: submission-package
 
+**Contrato vigente · 31 de octubre:** ZIP exclusivo de Godot web/Linux y materiales actuales en español, README del jurado con ejecución y despliegue, iniciadores probados, plan de exposición y video de Godot de hasta 150 segundos con cortes identificados. Excluir la aplicación narrativa alternativa y sus informes de la aceptación actual. Conservar los originales de investigación en el repositorio. La revisión final identifica sus pruebas y límites; el 95/100 previo es histórico. Firma, publicación y envío siguen separados.
+
 **Sequential/pink campaign amendment · 27 October 2026:** RV21–RV26 require updated exports and materials showing clear host/object targeting, simplified shared questions, the original pink poster and skippable FIN reveal. Publish a fresh internal rubric report with actual evidence/deductions, preserving earlier scores as historical. Rebuild the local candidate only after source/output/media fingerprints match; signing/hosting/sending remain separate.
 
 **Campaign amendment · 27 October 2026:** Include the revised four-step journey, libre music provenance/license, local Carta PDF capability and citizen example, updated teaching/media artifacts, and exact native/canvas/HTML/save receipts. Campaign artwork omits Latas/INEhack branding; submission metadata remains Latas. Prior Orca/rubric evidence stays explicitly historical. See [campaign contract](docs/campaign_finale.md) and [current verification](docs/verification.md).

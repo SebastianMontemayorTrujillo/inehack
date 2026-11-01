@@ -1,5 +1,7 @@
 # Capability map for Voces de la Plaza
 
+**Alcance vigente · 31 de octubre de 2026:** por instrucción del equipo, la entrega contiene únicamente la aventura Godot (navegador y Linux) y materiales actuales en español. Se retira la ruta narrativa HTML independiente del despliegue, de la aceptación actual y del ZIP. Las secciones previas que exigían esa equivalencia quedan como historia del diseño. Ver [entrega Godot](docs/entrega_solo_godot_es.md), [arquitectura vigente](docs/arquitectura_godot_es.md) y RV27–RV31.
+
 **Sequential/pink campaign amendment · 27 October 2026:** [Approved interaction/design contract](docs/sequential_campaign_design.md): host-only learning, final-only press, clean floors and nearby target prompts; simpler shared questions; original pink citizen poster and skippable print reveal with explicit FIN. All houses remain enterable and WASD-only travel remains. Fresh evidence and rubric assessment are RV21–RV26; earlier scores are historical.
 
 **Approved campaign amendment · 27 October 2026:** [The finale](docs/campaign_finale.md) extends the same six modules with libre music, translucent bottom NPC conversations, ordered learning, a citizen campaign PDF and a fourth print objective. Inés dispatches the design inside the story; the player walks to Luz's first-house press to print and reach FIN. Independent HTML navigation provides the equivalent ending and actual PDF download.

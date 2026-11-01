@@ -1,5 +1,5 @@
 // Local, reproducible print deliverables. Browser layout preserves selectable text.
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -13,9 +13,44 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const deckOnly = process.argv.includes('--deck-only');
 await mkdir(output, { recursive: true });
 const handoutOnly = process.argv.includes('--handout-only');
-const reviewDirectory = path.join(root, 'build/media-review-sequential-2026-10-27');
-if (process.argv.slice(2).some(arg => !['--deck-only', '--handout-only'].includes(arg))) throw new Error('Supported options: --deck-only or --handout-only');
+const reviewDirectory = path.join(root, 'build/media-review-godot-2026-10-31');
+const freezeArgument = process.argv.find(arg => arg.startsWith('--freeze='));
+if (process.argv.slice(2).some(arg => !['--deck-only', '--handout-only'].includes(arg) && !arg.startsWith('--freeze='))) throw new Error('Opciones: --deck-only, --handout-only, --freeze=recibo.json');
 if (deckOnly && handoutOnly) throw new Error('Use either --deck-only or --handout-only');
+assert.ok(freezeArgument, 'Esperar el freeze documental. Usar --freeze=build/media-review-godot-2026-10-31/docs-freeze.json');
+const freezePath = path.resolve(root, freezeArgument.slice('--freeze='.length));
+const freezeBytes = await readFile(freezePath);
+const freeze = JSON.parse(freezeBytes);
+assert.equal(freeze.status, 'frozen', 'El recibo debe declarar status: frozen');
+const documentSources = ['docs/deck_outline_es.md', 'docs/storyline_and_dissemination_es.md', 'docs/facilitator.md', 'docs/classroom_handout.md', 'docs/pitch_script_es.md'];
+for (const filename of documentSources) {
+  const item = freeze.inputs?.find(item => item.path === filename);
+  assert.ok(item?.sha256, 'Falta documento en freeze: ' + filename);
+  assert.equal(sha(await readFile(path.join(root, filename))), item.sha256, 'Documento posterior al freeze: ' + filename);
+}
+async function verifyFreeze() {
+  assert.equal(sha(await readFile(freezePath)), sha(freezeBytes), 'El recibo de freeze cambió durante el render');
+  for (const filename of documentSources) {
+    assert.equal(sha(await readFile(path.join(root, filename))), freeze.inputs.find(item => item.path === filename).sha256, 'Documento cambiado durante el render: ' + filename);
+  }
+}
+await mkdir(reviewDirectory, { recursive: true });
+const archiveDirectory = path.join(reviewDirectory, 'history', new Date().toISOString().replaceAll(':', '-'));
+await mkdir(archiveDirectory, { recursive: true });
+const archived = [];
+for (const name of ['narrativa.html', 'voces_narrativa_y_difusion.pdf', 'presentacion.html', 'voces_presentacion.pdf', 'classroom.html', 'classroom.pdf', 'classroom-handout.html', 'classroom-handout.pdf']) {
+  const filename = path.join(output, name);
+  try {
+    const bytes = await readFile(filename);
+    await copyFile(filename, path.join(archiveDirectory, name));
+    archived.push({ path: path.relative(root, filename), sha256: sha(bytes), archive: path.relative(root, path.join(archiveDirectory, name)) });
+  } catch (error) { if (error.code !== 'ENOENT') throw error; }
+}
+await writeFile(path.join(archiveDirectory, 'manifest.json'), JSON.stringify({ created_at_utc: new Date().toISOString(), artifacts: archived }, null, 2) + '\n');
+function godotOnly(text, label) {
+  assert.ok(!/ruta HTML|HTML semántico|HTML independiente|HTML: navegación|HTML tiene navegación|aventura, HTML/i.test(text), label + ': el contenido de esta edición debe tratar solo Godot web/Linux');
+  return text;
+}
 const browserExecutable = process.env.BROWSER_EXECUTABLE || '/home/seb/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome';
 const escape = value => String(value).replace(/\p{Dash_Punctuation}/gu, '-').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 function inline(text, links = {}) {
@@ -84,7 +119,7 @@ const classroomStyle = [
 '@media print{body{background:#fff;color:#111;font:11pt/1.17 Arial,sans-serif}.no-print,.skip{display:none!important}',
 'main{margin:0;padding:0;max-width:none}a{color:inherit}.table-wrap{overflow:visible;margin:0}',
 'table{font-size:11pt;margin:5pt 0}td,th{padding:3pt;border-color:#777}th{background:#eee}',
-'p{margin:0 0 5pt}h1{font:700 16pt/1.1 Arial,sans-serif;margin:0 0 6pt}h2{font:700 13pt/1.1 Arial,sans-serif;margin:9pt 0 5pt}',
+'p{margin:0 0 4.5pt}h1{font:700 16pt/1.1 Arial,sans-serif;margin:0 0 6pt}h2{font:700 13pt/1.1 Arial,sans-serif;margin:9pt 0 5pt}',
 '.paper{width:calc(8.5in - 28mm);height:calc(11in - 28mm);break-after:page;position:relative}',
 '.paper:last-child{break-after:auto}.paper+.paper{border:0;margin:0;padding:0}',
 '.paper .page-content{display:flow-root}.paper .page-content>:first-child{margin-top:0}',
@@ -94,7 +129,7 @@ function classroomPage(title, content, handout = false) {
   const navigation = handout
     ? '<a href="./classroom.html">Guía docente</a><a href="./classroom-handout.pdf" download>Descargar hoja en PDF</a><button type="button" id="print-document">Imprimir esta hoja</button>'
     : '<a href="./classroom-handout.html">Abrir e imprimir la hoja</a><a href="./classroom-handout.pdf" download>Descargar hoja en PDF</a><button type="button" id="print-document">Imprimir la guía</button>';
-  return '<!doctype html><html lang="es-MX"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escape(title) + '</title><style>' + classroomStyle + '</style></head><body><a class="skip" href="#contenido">Saltar al contenido</a><nav class="toolbar no-print" aria-label="Materiales de aula"><a href="./index.html">Volver a la aventura</a>' + navigation + '</nav><main id="contenido" tabindex="-1">' + content + '</main><script>document.getElementById("print-document").addEventListener("click",()=>window.print());</script></body></html>';
+  return '<!doctype html><html lang="es-MX"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escape(title) + '</title><style>' + classroomStyle + '</style></head><body><a class="skip" href="#contenido">Saltar al contenido</a><nav class="toolbar no-print" aria-label="Materiales de aula">' + navigation + '</nav><main id="contenido" tabindex="-1">' + godotOnly(content, title) + '</main><script>document.getElementById("print-document").addEventListener("click",()=>window.print());</script></body></html>';
 }
 function verifyPdfPageCount(filename, expected) {
   const info = execFileSync('pdfinfo', [path.join(output, filename)], { encoding: 'utf8' });
@@ -130,18 +165,22 @@ async function buildClassroomResources() {
     if (issues.length) throw new Error(issues.join('; '));
     await page.pdf({ path: path.join(output, 'classroom-handout.pdf'), preferCSSPageSize: true, printBackground: true, tagged: true });
     verifyPdfPageCount('classroom-handout.pdf', 2);
+    await page.goto(pathToFileURL(path.join(output, 'classroom.html')).href);
+    await page.evaluate(() => document.fonts.ready);
+    await page.pdf({ path: path.join(output, 'classroom.pdf'), preferCSSPageSize: true, printBackground: true, tagged: true });
   } finally { await browser.close(); }
   for (const item of sources) assert.equal(sha(await readFile(path.join(root, item.path))), item.sha256, 'Classroom source changed during generation: ' + item.path);
+  await verifyFreeze();
   // Preserve the exact generator used for these frozen resources even if later
   // screenshot/capture integration requires further media-only script edits.
   await writeFile(path.join(reviewDirectory, 'classroom-renderer-source.mjs'), await readFile(fileURLToPath(import.meta.url)));
-  const artifacts = await Promise.all(['classroom.html', 'classroom-handout.html', 'classroom-handout.pdf'].map(async name => {
+  const artifacts = await Promise.all(['classroom.html', 'classroom.pdf', 'classroom-handout.html', 'classroom-handout.pdf'].map(async name => {
     const bytes = await readFile(path.join(output, name));
     return { path: 'submission/' + name, sha256: sha(bytes), bytes: bytes.length };
   }));
   await writeFile(path.join(reviewDirectory, 'classroom-generation.json'), JSON.stringify({
-    status: 'generated; visual review pending', revision: 'sequential-pink', created_at_utc: new Date().toISOString(),
-    sources, artifacts, handout_pages: 2, generator_snapshot: 'build/media-review-sequential-2026-10-27/classroom-renderer-source.mjs',
+    status: 'generated; visual review pending', revision: 'godot-only-2026-10-31', created_at_utc: new Date().toISOString(),
+    sources, artifacts, handout_pages: 2, freeze: { path: path.relative(root, freezePath), sha256: sha(freezeBytes) }, archive: path.relative(root, archiveDirectory), generator_snapshot: 'build/media-review-godot-2026-10-31/classroom-renderer-source.mjs',
   }, null, 2) + '\n');
   console.log('Generated submission/classroom.html, classroom-handout.html and classroom-handout.pdf');
 }
@@ -166,9 +205,15 @@ assert.equal(sha(await input('build/linux/voces-de-la-plaza.pck')), native.pack_
 for (const [filename, expected] of Object.entries(native.source_sha256)) {
   assert.equal(sha(await input(filename)), expected, 'Native source changed after the journey: ' + filename);
 }
+const canvas = JSON.parse(await input('build/evidence/godot-web-journey.json'));
+assert.equal(canvas.status, 'passed', 'Esperar QA Godot web final');
+assert.ok(canvas.recording?.path && canvas.recording.sha256, 'Esperar la captura real del QA Godot de esta edición');
+for (const key of ['browser_errors', 'page_errors', 'request_failures', 'reference_mismatches']) assert.deepEqual(canvas[key], [], 'Errores de QA Godot web: ' + key);
+for (const [filename, expected] of Object.entries(canvas.source_sha256)) assert.equal(sha(await input(filename)), expected, 'Fuente posterior al QA web: ' + filename);
+for (const [name, expected] of Object.entries(canvas.artifacts)) assert.equal(sha(await input('build/web/game/' + name)), expected, 'Export posterior al QA web: ' + name);
 for (const filename of ['docs/deck_outline_es.md', 'docs/storyline_and_dissemination_es.md', 'tools/render_submission.mjs']) await input(filename);
 const narrative = await readFile(path.join(root, 'docs/storyline_and_dissemination_es.md'), 'utf8');
-const body = narrative.split('<!-- INICIO DEL CONTENIDO PARA PDF: PÁGINA 1 -->')[1].split('<!-- FIN DEL CONTENIDO PARA PDF -->')[0];
+const body = godotOnly(narrative.split('<!-- INICIO DEL CONTENIDO PARA PDF: PÁGINA 1 -->')[1].split('<!-- FIN DEL CONTENIDO PARA PDF -->')[0], 'Narrativa');
 const blocks = body.split(/<div style="page-break-after: always;"><\/div>/);
 if (blocks.length !== 4) throw new Error('Expected four narrative sections');
 const narrativeHtml = `<!doctype html><html lang="es-MX"><meta charset="utf-8"><title>Voces de la Plaza · Narrativa y difusión</title><style>
@@ -181,6 +226,7 @@ const slides = outline.split(/^## Diapositiva /m).slice(1).map((section, index) 
   if (!heading || Number(heading[1]) !== index + 1 || !screen) throw new Error('Invalid deck outline section ' + (index + 1));
   const lines = [...screen[1].matchAll(/«([^»]+)»/g)].map(match => match[1]);
   if (lines.length < 3) throw new Error('Missing visible copy on slide ' + (index + 1));
+  godotOnly(lines.join(' '), 'Diapositiva ' + (index + 1));
   return { title: heading[2], lines };
 });
 if (slides.length !== 10) throw new Error('Expected ten slides in the outline');
@@ -191,9 +237,10 @@ const portal = 'https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/
 const sourceNote = 'Fuente: <a href="' + portal + '">INE · CCPC federal 2024</a>. Tasas redondeadas; bases indicadas.';
 const captures = {
   0: ['native-plaza.png', 'Villa Brisa · Captura real del recorrido Linux'],
-  3: ['native-house-1-complete.png', 'Imprenta de Luz · Boletín terminado'],
+  3: ['native-quest-1-1.png', 'Godot Linux · Luz y la lectura del boletín nacional'],
   4: ['native-comparison-artifact-after.png', 'Tablón de Mateo · Comparación corregida con fuente'],
-  5: ['native-consultation-intro.png', 'Inés · Conversación antes de la consulta ficticia'],
+  5: ['native-consultation-options.png', 'Godot Linux · Contexto de la consulta inventada'],
+  6: ['native-ending-large.png', 'Godot Linux · Texto ampliado y acciones del final'],
   8: ['native-poster-preview.png', 'Archivo de Mateo · Vista previa del cartel opcional'],
   9: ['native-ending.png', 'Prensa de Luz · FIN y acciones del cartel ciudadano'],
 };
@@ -205,6 +252,11 @@ const images = Object.fromEntries(await Promise.all(Object.entries(captures).map
   assert.equal(sha(bytes), checkpoint?.sha256, 'Capture is not authenticated by the current native run: ' + filename);
   return [index, figure(bytes, caption)];
 })));
+const webCapture = canvas.screenshots.find(item => item.phase === 'ending-large');
+assert.ok(webCapture?.path && webCapture.sha256, 'Falta captura autenticada del final web ampliado');
+const webCaptureBytes = await input(webCapture.path);
+assert.equal(sha(webCaptureBytes), webCapture.sha256, 'Captura web distinta del recibo QA');
+images[6] = '<div class="platform-pair">' + figure(webCaptureBytes, 'Godot web · Final con texto ampliado') + images[6] + '</div>';
 const footnotes = [
   'Una actividad de educación cívica en español de México · Datos públicos, historia original.',
   'Dos misiones CCPC, consulta ficticia y vuelta a Luz para imprimir. Meta: 10-15 minutos, sin pilotaje.',
@@ -212,7 +264,7 @@ const footnotes = [
   sourceNote + ' Las tarjetas 60/30/10 son un ejemplo inventado.',
   sourceNote + ' Los agregados no explican motivos individuales.',
   'Ficción didáctica. No reproduce todos los procedimientos de una elección constitucional.',
-  'La ruta HTML ofrece el mismo contenido sin ejecutar el lienzo Godot.',
+  'Godot web y Linux. WASD para caminar; E/Enter y botón contextual cerca. Texto ampliable, silencio y movimiento reducido.',
   'Tiempo de planeación, sin pilotaje. Prever tiempo adicional si se ofrece el taller opcional.',
   sourceNote + ' Personalizar es opcional; Inés también ofrece el cartel guiado.',
   'Campaña ciudadana sin marcas de equipo ni sello oficial. Fuente histórica INE/CCPC; descarga opcional.',
@@ -225,7 +277,7 @@ function slideBody(slide, index) {
     return '<p>' + escape(slide.lines[0]) + '</p><div class="statistics">' + slide.lines.slice(1, 3).map((line, n) => {
       const value = line.match(/\d+(?:\.\d+)?%/);
       if (!value) throw new Error('Missing national percentage in outline');
-      return '<div><p class="stat">' + escape(value[0]) + '</p><p>' + escape(line.replace(' (' + value[0] + ')', '')) + '</p><p class="base">Base: ' + number(bases[n]) + ' registros</p></div>';
+      return '<div><p class="stat">' + escape(value[0]) + '</p><p>' + escape(line.replace(/^\d+(?:\.\d+)?%:\s*/, '').replace(' (' + value[0] + ')', '')) + '</p><p class="base">Base: ' + number(bases[n]) + ' registros</p></div>';
     }).join('') + '</div><p class="lead">' + escape(slide.lines[3]) + '. La información desconocida se conserva aparte.</p>';
   }
   if (index === 7) return '<div class="timing">' + slide.lines.slice(0, 3).map(line => '<div><p class="stat">' + escape(line.split(':')[0]) + '</p><p>' + escape(line.split(':').slice(1).join(':').trim()) + '</p></div>').join('') + '</div>' + slide.lines.slice(3).map(line => '<p class="lead">' + escape(line) + '</p>').join('');
@@ -239,6 +291,7 @@ const deckStyle = [
 'h1{font:44px/1.12 Georgia,serif;margin:0 0 26px}h2{font:31px/1.15 Georgia,serif;margin:0 0 12px}',
 'p{margin:0 0 18px}.lead{font-size:29px}.layout{display:flex;gap:28px;align-items:flex-start}.copy{flex:1;min-width:0}',
 '.with-image .copy{flex:0 0 420px}.with-image figure{flex:1;min-width:0;margin:0}img{width:100%;height:auto;max-height:418px;object-fit:contain;object-position:top;display:block}',
+'.platform-pair{display:flex;gap:16px;flex:1;min-width:0}.platform-pair figure{width:calc(50% - 8px)}',
 'figcaption{font-size:16px;margin-top:8px;color:#425f56}.with-image .copy p{font-size:24px}.with-image .copy .lead{font-size:28px}',
 'footer{position:absolute;bottom:25px;left:60px;right:60px;border-top:1px solid #a8b9aa;padding-top:10px;font-size:15px;line-height:1.3;display:flex;gap:24px}',
 'footer .note{flex:1}footer .folio{white-space:nowrap}a{color:inherit}',
@@ -249,32 +302,8 @@ const deckStyle = [
 const browser = await chromium.launch({ executablePath: browserExecutable, args: ['--no-sandbox'] });
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  const preview = process.env.PREVIEW_URL || 'http://127.0.0.1:8765/build/web/';
-  for (const filename of ['index.html', 'app.mjs', 'logic.mjs', 'styles.css']) {
-    const expected = await input('web/' + filename);
-    const response = await fetch(new URL(filename, preview));
-    assert.equal(response.status, 200, 'Exported HTML resource missing: ' + filename);
-    assert.equal(sha(Buffer.from(await response.arrayBuffer())), sha(expected), 'Stale HTML export: ' + filename);
-  }
-  await page.goto(preview, { waitUntil: 'networkidle' });
-  await page.waitForFunction(() => /Archivo CCPC 2024.*cargad/.test(document.querySelector('#data-status')?.textContent || ''));
-  const exportedStory = await page.evaluate(async () => {
-    const response = await fetch('./content/story.json');
-    if (!response.ok) throw new Error('Exported story is unavailable');
-    return response.json();
-  });
-  const canonicalStory = JSON.parse(await readFile(path.join(root, 'game/content/story.json'), 'utf8'));
+  const canonicalStory = JSON.parse(await input('game/content/story.json'));
   assert.equal(canonicalStory.schema_version, '3.0.0', 'Campaign media requires story schema 3');
-  if (JSON.stringify(exportedStory) !== JSON.stringify(canonicalStory)) throw new Error('The web export does not match the current shared story');
-  await page.evaluate(async () => { await document.fonts.ready; window.scrollTo(0, 0); });
-  const settings = await page.locator('details.settings').boundingBox();
-  if (!settings) throw new Error('The exported HTML overview is unavailable');
-  const overviewHeight = Math.ceil(settings.y + settings.height + 16);
-  const overview = await page.screenshot({ clip: { x: 0, y: 0, width: 1440, height: overviewHeight } });
-  const overviewPath = 'build/evidence/submission-html-overview.png';
-  await writeFile(path.join(root, overviewPath), overview);
-  await input(overviewPath);
-  images[6] = figure(overview, 'Ruta HTML · Portada del export final');
   const deckHtml = '<!doctype html><html lang="es-MX"><head><meta charset="utf-8"><title>Voces de la Plaza · Presentación</title><style>' + deckStyle + '</style></head><body><main>' + slides.map((slide, i) => '<section class="slide ' + (images[i] ? 'with-image' : '') + '" aria-label="Diapositiva ' + (i + 1) + '"><p class="kicker">' + kickers[i] + '</p><h1>' + escape(slide.title) + '</h1><div class="layout"><div class="copy">' + slideBody(slide, i) + '</div>' + (images[i] || '') + '</div><footer><span class="note">' + footnotes[i] + '</span><span class="folio">' + (i + 1) + ' / 10</span></footer></section>').join('') + '</main></body></html>';
   if (!deckOnly) await writeFile(path.join(output, 'narrativa.html'), narrativeHtml);
   await writeFile(path.join(output, 'presentacion.html'), deckHtml);
@@ -302,17 +331,18 @@ try {
     console.log('Generated submission/' + filename);
   }
   for (const item of renderInputs) assert.equal(sha(await readFile(path.join(root, item.path))), item.sha256, 'Source changed during rendering: ' + item.path);
+  await verifyFreeze();
   const artifactPaths = targets.flatMap(([name, filename]) => ['submission/' + name + '.html', 'submission/' + filename]);
   const artifacts = await Promise.all(artifactPaths.map(async filename => {
     const bytes = await readFile(path.join(root, filename));
     return { path: filename, sha256: sha(bytes), bytes: bytes.length };
   }));
   const receipt = JSON.stringify({
-    status: 'rendered; visual review pending', revision: 'sequential-pink', created_at_utc: new Date().toISOString(), story_schema: canonicalStory.schema_version,
-    native_pack_sha256: native.pack_sha256, inputs: renderInputs, artifacts,
+    status: 'rendered; visual review pending', revision: 'godot-only-2026-10-31', created_at_utc: new Date().toISOString(), story_schema: canonicalStory.schema_version,
+    freeze: { path: path.relative(root, freezePath), sha256: sha(freezeBytes) }, archive: path.relative(root, archiveDirectory),
+    native_pack_sha256: native.pack_sha256, godot_web_pack_sha256: canvas.artifacts['index.pck'], inputs: renderInputs, artifacts,
     limits: ['Rendering and hash checks do not establish a participant pilot or accessibility certification'],
   }, null, 2) + '\n';
   await mkdir(reviewDirectory, { recursive: true });
   await writeFile(path.join(reviewDirectory, 'document-generation.json'), receipt);
-  await writeFile(path.join(root, 'build/evidence/document-render-inputs.json'), receipt);
 } finally { await browser.close(); }

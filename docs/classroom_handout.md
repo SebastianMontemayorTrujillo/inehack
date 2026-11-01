@@ -4,7 +4,7 @@
 
 **Cara 1 de 2 · Datos y seis actividades**
 
-Villa Brisa prepara una reunión y un cartel ciudadano. Puedes pedir apoyo; no necesitas divisiones. Un registro reúne información de una persona. Esta hoja es para ti: no escribas tu nombre ni preferencias políticas.
+Acompaña la aventura Godot en navegador o Linux. Villa Brisa prepara una reunión y un cartel ciudadano. Puedes pedir apoyo; no necesitas divisiones. Un registro reúne información de una persona. Esta hoja es para ti: no escribas tu nombre ni preferencias políticas.
 
 ## Casa 1 · Luz, a la izquierda
 
@@ -76,7 +76,7 @@ Elegir suma uno al proyecto y al total; sin marcar, solo al total; no participar
 
 ## Misión final · Volver a la imprenta
 
-Habla con Luz, Mateo e Inés en orden; la prensa solo imprime al final. Tras el seguimiento, Inés envía tu cartel o el guiado AGS/BC. Vuelve a la casa izquierda: **Imprimir cartel → FIN**. Godot: WASD y E cerca; HTML: navegación propia. Puedes omitir la breve impresión.
+Habla con Luz, Mateo e Inés en orden; la prensa solo imprime al final. Tras el seguimiento, Inés envía tu cartel o el guiado AGS/BC. Vuelve a la casa izquierda: **Imprimir cartel → FIN**. Camina con WASD y cruza puertas; E/Enter o el botón contextual interactúan cerca. Puedes omitir la breve impresión.
 
 **FIN · La campaña comienza contigo:** descargar, ampliar o explorar. PDF Carta rosa y blanco opcional; no hace falta impresora. **«Tu voto cuenta. Infórmate y participa.»** Fuente INE/CCPC, año, datos, bases, NS y límites; sin marcas de equipo, sello oficial ni resultado ficticio.
 
@@ -100,4 +100,4 @@ ______________________________________________________________________
 
 Copia local: `ccpc-2024-v1`. Excluye casillas especiales y voto desde el extranjero; no da resultados por candidatura. Villa Brisa, la consulta y los ejemplos nuevos son ficción.
 
-**Voces de la Plaza · 27 de octubre de 2026.** Sin pilotaje; revisa equipo y acceso antes de clase.
+**Voces de la Plaza · Edición editorial del 31 de octubre de 2026.** Sin pilotaje; revisa equipo y acceso antes de clase.

@@ -1,43 +1,34 @@
 # Reutilización propuesta en educación cívica
 
-Voces de la Plaza puede apoyar una sesión introductoria sobre información honesta, comparación justa, pluralidad y seguimiento de acuerdos. Público principal: bachillerato, aproximadamente 15–18 años; también personas adultas que comienzan su formación cívica. No se ha medido aprendizaje, duración con participantes ni adopción institucional. La relación con un programa concreto debe revisarse con quien lo coordina.
+**Edición editorial del 31 de octubre de 2026 · Godot web y Linux.** Voces de la Plaza puede apoyar una sesión introductoria sobre información honesta, comparación justa, pluralidad y seguimiento. Público principal: bachillerato, aproximadamente 15–18 años; también personas adultas principiantes. La aplicación a un programa concreto es una propuesta por revisar con quien lo coordina. No se han medido aprendizaje, duración con participantes ni adopción institucional.
 
-## Formatos y requisitos
+## Formatos y preparación
 
-| Formato | Preparación | Uso propuesto y límite comprobable |
+| Formato | Preparación | Uso propuesto y límite |
 | --- | --- | --- |
-| HTML semántico | Servir `build/web/` por HTTP/HTTPS. Mantener sus archivos y `content/` juntos. | Recorrido completo sin cargar Godot; teclado, fuentes, seis actividades, consulta y cierre. Chromium fue comprobado; otros navegadores requieren revisión. No necesita cuentas, servidor de aplicación, API en vivo ni telemetría. |
-| Aventura Godot web | El mismo sitio, subcarpeta `game/`; navegador con WebAssembly/WebGL. | Tres interiores originales y las mismas actividades. El archivo WASM ocupa aproximadamente 38 MiB sin comprimir: ofrecer la ruta HTML cuando esa descarga sea inconveniente. No se requiere un alojamiento con hilos compartidos. |
-| Linux | Copiar juntos `voces-de-la-plaza.x86_64`, su `.pck` y `licenses/`; dar permiso de ejecución si la copia lo pierde. | Respaldo sin conexión, probado en Ubuntu 26.04.1 x86_64. Binario de unos 71 MiB. No se certifica compatibilidad con cualquier equipo Linux. |
-| Papel/proyector | Imprimir `classroom-handout.pdf`, dos caras, y preparar la guía docente. | Datos, seis preguntas y reflexión independientes del dispositivo. Puede leerse en voz alta o ampliarse. Una impresión física en destino sigue siendo una comprobación local. |
+| Godot web | Desplegar los archivos estáticos del paquete conforme al README para organizadores; probar navegador y descarga de PDF. | La aventura requiere soporte gráfico y WebAssembly. No prometer cualquier navegador, lectura semántica del lienzo, apertura por doble clic ni funcionamiento web sin conexión. |
+| Godot Linux | Copiar completo el directorio del ejecutable, PCK y avisos; seguir el README y probar en el equipo de destino. | Respaldo local para Linux compatible; un arranque en un equipo no certifica cualquier distribución o hardware. |
+| Guía y hoja | Revisar la guía y preparar la hoja de dos caras, con ampliación o lectura acompañada según necesidad. | Apoyan una sesión con Godot; papel y proyección no demuestran acceso autónomo al juego. |
 
-La guía propone 20 minutos, incluyendo conversación; es tiempo de planeación. En parejas se alterna la lectura y el manejo. En proyector se anuncia una acción ficticia de demostración sin recoger preferencias del grupo. Cada participante puede pedir apoyo y terminar sin declarar una opción política.
+La guía propone 20 minutos: 2 de introducción, 13 de aventura y 5 de conversación opcional. La meta del juego es 10–15 minutos; extender la sesión si hace falta y reservar tiempo adicional para el taller. Son tiempos de planeación, sin pilotaje. Se puede usar un equipo por persona, alternar lectura y manejo en parejas o proyectar una demostración anunciada. No sondear preferencias del grupo.
 
-El taller opcional del archivo permite elegir dos de las 32 entidades incluidas y decidir si se cuenta una historia de cantidades o proporciones. No requiere editar el código ni calcular divisiones. La pareja revisa el hallazgo, la fuente y lo que no se sabe; después elige una pregunta neutral para abrir la reunión. El cartel publicado se conserva solo en la sesión actual y no modifica los votos ficticios. Puede omitirse para mantener el recorrido breve.
+La ruta es Luz → Mateo → Inés → regreso a la prensa de Luz → FIN; descargar el PDF es opcional. WASD mueve al personaje y cruza puertas; E/Enter o el botón contextual actúan cerca. Todas las casas admiten entrada. El taller opcional permite comparar dos de 32 entidades por cantidad o proporción y elegir una pregunta neutral, sin cambiar la consulta.
 
-## Instalación local y mantenimiento
+## Transferencia y mantenimiento propuestos
 
-Para una preparación con Python disponible, desde la carpeta del candidato:
+1. Una persona mantenedora de Latas prepararía un paquete identificado por versión con fuentes, requisitos, README, guía y hoja.
+2. Una persona facilitadora receptora comprobaría el arranque, el recorrido completo y los apoyos de texto, silencio y movimiento reducido en su equipo.
+3. Tras una sesión voluntaria devolvería tiempo observado, barreras y apoyo requerido, sin nombres ni elecciones de consulta.
+4. Latas revisaría las observaciones y el equipo responsable comprobaría la siguiente edición antes de otra distribución autorizada.
 
-```sh
-python3 -m http.server 8765 --bind 127.0.0.1 --directory build/web
-```
+Integración mantiene el README de ejecución y despliegue. Antes de distribuir deben comprobarse archivos relativos, MIME y políticas del alojamiento web, funcionamiento de la descarga y acceso de solo lectura a los materiales. Este documento no acredita que exista ya un alojamiento ni una entrega externa.
 
-Abrir `http://127.0.0.1:8765/`. Este ejemplo sirve solo al mismo equipo. Una institución puede alojar la misma carpeta como archivos estáticos en su infraestructura; debe comprobar permisos de acceso, MIME de WebAssembly y las políticas de su navegador. Publicación y asignación de un dominio requieren autorización del equipo. La web no implementa caché sin conexión ni garantiza apertura con `file://`; para uso desconectado están Linux y papel.
+Las adaptaciones de diálogo deben conservar IDs y separación de ficción. Cambiar año o entidades exige reproducir datos, bases, NS y fuentes, y revisar también hoja, guion y cartel; no reemplazar porcentajes a mano. La consulta no debe recoger ni persistir elecciones. Los borradores, publicación, encargo y PDF viven en memoria; el progreso completado no reconstruye el diseño al recargar.
 
-Una persona mantenedora necesita conocimientos básicos de HTML/JavaScript y Godot/GDScript. El motor, plantillas y dependencias de comprobación están fijados en los archivos de herramientas. Los comandos, hashes y alcance observado están en [verificación](verification.md), sin convertir el número de pruebas en evidencia de aprendizaje.
+La música «Sunset Walk», de KiluaBoy, es CC0 y de terceros. Atkinson conserva su licencia OFL. El arte y efectos originales no reciben una licencia nueva por este texto; revisar derechos y avisos con sus titulares. Las cartas requeridas por la convocatoria y sus firmas siguen siendo una comprobación humana, sin presumir que estén completadas.
 
-## Adaptaciones sin perder la trazabilidad
+## Evaluación pendiente
 
-| Cambio | Fuente que se edita | Comprobación antes de distribuir |
-| --- | --- | --- |
-| Simplificar diálogo o apoyo | `game/content/story.json`; conservar IDs, reglas y separación de ficción. | Validación de esquema, seis actividades en ambas rutas y revisión de lectura con la audiencia. |
-| Cambiar entidades o año | Proceso de datos, metadatos y referencias, además del guion que los nombra. | Reproducir conteos, año/universo, bases, desconocidos y límites; actualizar también hoja, narrativa y medios. No reemplazar porcentajes a mano. |
-| Cambiar ilustraciones o sonido | Roles de los catálogos y registro de activos. | Procedencia, licencias, resolución de todos los roles y export original sin sustituciones silenciosas. |
-| Cambiar consulta ficticia | Proyectos, roster y escenarios canónicos. | Conteos deterministas, empates y cinco acciones equivalentes; no persistir elección ni resultados vinculados a ella. |
+Una revisión con una persona docente y principiantes puede observar comprensión del lenguaje, manejo espacial, lectura de cifras, barreras y tiempo. Preguntar por un hallazgo, un límite y un seguimiento; distinguir respuesta independiente de apoyo. Registrar solo lo necesario y de forma anónima. No hay resultados de alumnado que citar.
 
-Los originales creados para el equipo no se declaran CC0 ni reciben una nueva licencia por este documento. Los avisos del motor y fuentes se incluyen; el registro de activos distingue originales y referencias. La autorización de adaptación/distribución de los originales y las cartas exigidas por la convocatoria deben resolverse con sus titulares. La entrega del código facilita la revisión técnica, pero no sustituye esas autorizaciones.
-
-## Comprobación formativa propuesta
-
-Antes de una incorporación regular, una persona docente puede revisar fuentes, lenguaje, acceso y encaje de la actividad; después, si hay participantes disponibles, observar tiempo, barreras y uso de apoyo. Tres explicaciones orientan la revisión: un hallazgo, un límite del dato y una pregunta de seguimiento. Registrar solo totales anónimos y versión del material, sin identidad ni preferencia política. Una sesión pequeña ayuda a corregir el producto; no acredita eficacia educativa ni efectos electorales.
+La reducción del alcance a Godot web/Linux requiere volver a valorar acceso y viabilidad. Las observaciones históricas de otra interfaz no certifican el lienzo; no se traslada la nota interna de otra edición. Véanse la [guía](facilitator.md), la [hoja](classroom_handout.md) y la [revisión humana final](revision_humana_final_es.md).

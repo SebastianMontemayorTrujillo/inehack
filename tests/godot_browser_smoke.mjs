@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { chromium } from '../.tools/browser/node_modules/playwright/index.mjs';
@@ -35,6 +35,11 @@ const posterViews = new Set(['poster-count', 'poster-count-details', 'poster-rat
   'poster-saved', 'poster-published', 'poster-unpublished-draft', 'poster-after-cancel', 'poster-from-journal',
   'poster-large-preview', 'poster-large-preview-edit', 'poster-large-preview-footer']);
 const nativePath = name => join(evidence, `native-${name}.png`);
+const recordingDirectory = process.env.GODOT_RECORD_VIDEO_DIR ? resolve(root, process.env.GODOT_RECORD_VIDEO_DIR) : null;
+const recordingHolds = new Set(['plaza', 'prompt-host-1', 'intro-1', 'quest-1-1', 'quest-1-2', 'quest-1-3',
+  'comparison-artifact-before', 'intro-2', 'quest-2-1', 'quest-2-2', 'quest-2-3', 'comparison-artifact-after',
+  'poster-rate', 'poster-saved', 'consultation-intro', 'consultation-options', 'consultation-result',
+  'campaign-intro', 'campaign-review', 'campaign-sent', 'campaign-press', 'ending', 'ending-expanded', 'ending-footer']);
 const workshopRefs = ['poster-archive-before', 'poster-defaults', 'poster-duplicate-error', 'poster-count', 'poster-count-details',
   'poster-first', 'poster-metric', 'poster-question', 'poster-rate', 'poster-preview', 'poster-rate-details', 'poster-source', 'poster-source-details',
   'poster-saved', 'poster-saved-room', 'poster-carried-intro', 'poster-carried-acknowledgment', 'poster-published', 'poster-unpublished-draft', 'poster-cancelled-room',
@@ -228,7 +233,7 @@ async function progress(page) {
 
 async function main() {
   const started = Date.now();
-  const url = new URL('/build/web/game/', process.env.PREVIEW_URL || 'http://127.0.0.1:8765');
+  const url = new URL(process.env.GODOT_PATH || '/game/index.html', process.env.PREVIEW_URL || 'http://127.0.0.1:8765');
   assert.ok(['127.0.0.1', 'localhost'].includes(url.hostname), 'Only the local preview is in scope');
   const report = {
     status: 'running', created_at_utc: new Date().toISOString(), url: url.href, viewport,
@@ -237,9 +242,10 @@ async function main() {
     phases: [], movement_checks: [], dialogue_checks: [], prompt_checks: [], poster_checks: [], finale_checks: [], screenshots: [], progress: [], browser_errors: [], page_errors: [], error_context: [], reference_mismatches: [], warnings: [], request_failures: [],
     visual_review: 'Required separately: pixel comparison is not OCR or a semantic reading of screenshots.',
     limits: ['Automated operator, not a participant pilot or accessibility certification',
-      'One unmarked consultation path; all-five-choice coverage belongs to compiled-PCK/GUT and HTML checks'],
+      'Una consulta con boleta sin marcar; las cinco decisiones se verifican por separado en GUT y el PCK compilado'],
   };
   let browser, context, page, stage = 'preflight', closing = false, timedOut = false;
+  let recordedVideo;
   let comparisonBefore;
   let watchdog;
   const nativeNames = ['plaza', 'door-entry', 'door-return', 'house-1', 'house-2', 'house-3',
@@ -278,6 +284,10 @@ async function main() {
           && (!visibleFocus || metrics.focus_rows.length)) {
         await capture(name, png, { ...metrics, native_reference: reference || null, reference_crop: crop });
         if (reference && !titleMatches(metrics)) report.reference_mismatches.push({ phase: name, reference, ink_f1: metrics.title_ink_f1 });
+        if (recordingDirectory && recordingHolds.has(name)) {
+          report.recording.holds.push({ phase: name, elapsed_seconds: (Date.now() - started) / 1000, duration_seconds: 4 });
+          await page.waitForTimeout(4000);
+        }
         return metrics;
       }
       await page.waitForTimeout(100);
@@ -556,8 +566,15 @@ async function main() {
       headless: true, timeout: 20000, args: ['--no-sandbox', '--enable-unsafe-swiftshader'],
     });
     report.browser = browser.version();
-    context = await browser.newContext({ viewport, deviceScaleFactor: 1, serviceWorkers: 'block' });
+    if (recordingDirectory) await mkdir(recordingDirectory, { recursive: true });
+    context = await browser.newContext({ viewport, deviceScaleFactor: 1, serviceWorkers: 'block',
+      ...(recordingDirectory ? { recordVideo: { dir: recordingDirectory, size: viewport } } : {}) });
     page = await context.newPage();
+    if (recordingDirectory) {
+      recordedVideo = page.video();
+      report.recording = { method: 'Captura real de Godot operado con teclado y ratón; sin cambios en el juego',
+        page_created_elapsed_seconds: (Date.now() - started) / 1000, holds: [] };
+    }
     page.setDefaultTimeout(10000);
     page.on('pageerror', error => report.page_errors.push(error.message));
     page.on('crash', () => report.page_errors.push('Browser page crashed'));
@@ -838,6 +855,12 @@ async function main() {
     clearTimeout(watchdog);
     closing = true;
     report.elapsed_seconds = (Date.now() - started) / 1000;
+    await context?.close();
+    if (recordedVideo) {
+      const videoPath = await recordedVideo.path();
+      report.recording.path = relative(root, videoPath);
+      report.recording.sha256 = sha256(await readFile(videoPath));
+    }
     await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n');
     await browser?.close();
   }

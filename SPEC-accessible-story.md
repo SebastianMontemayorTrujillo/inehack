@@ -1,5 +1,7 @@
 # SPEC: accessible-story
 
+**31 de octubre: módulo retirado de la entrega por instrucción del usuario.** Se conserva esta especificación como antecedente. La aceptación actual corresponde al juego Godot y sus ajustes; no se trasladan las pruebas de accesibilidad de la ruta retirada al canvas. Ver `docs/entrega_solo_godot_es.md`.
+
 **Sequential/pink campaign amendment · 27 October 2026:** Match the [approved interaction/design contract](docs/sequential_campaign_design.md) through semantic navigation: directed prerequisites, separate character/press controls, six simplified shared activities, pink sourced poster and skippable/reduced-motion FIN reveal. Keep final actions available, preserve focus on close/reopen and keep session-only print jobs private. No extra persistence migration is needed.
 
 **Campaign amendment · 27 October 2026:** Provide the same ordered speech, optional libre music, Inés dispatch, Luz printing and explicit FIN through independent semantic HTML navigation. Download the actual Carta PDF locally. Migrate saves to version 3 while keeping selections/jobs/ballots memory-only; no cross-route storage synchronization. See [contract](docs/campaign_finale.md).

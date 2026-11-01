@@ -10,14 +10,21 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+DELIVERY_TESTS = ["test_assets.py", "test_data.py", "test_content.py", "test_campaign_pdf.py", "test_godot_delivery.py",
+                  "__init__.py", "native_window_smoke.py", "native_pdf_save_smoke.py", "runtime_pdf_check.py",
+                  "native_journey.gd", "godot_browser_smoke.mjs", "godot_boot_smoke.mjs", "campaign_pdf_samples.gd", "inspect_campaign_pdf.py"]
 
 
 def fingerprint_sources():
     paths = set()
-    for directory in ["game/scripts", "game/scenes", "game/tests", "game/content", "game/assets", "web", "tests"]:
+    for directory in ["game/scripts", "game/scenes", "game/tests", "game/content", "game/assets"]:
         paths.update(path for path in (ROOT / directory).rglob("*") if "development" not in path.parts
                      and path.is_file() and path.suffix in [".gd", ".tscn", ".json", ".html", ".css", ".mjs", ".py", ".svg", ".wav", ".ogg", ".ttf", ".txt"])
-    paths.update(ROOT / path for path in ["game/project.godot", "game/export_presets.cfg", "tools/export_game.py", "tools/verify.py"])
+    paths.update(ROOT / "tests" / path for path in DELIVERY_TESTS if (ROOT / "tests" / path).is_file())
+    paths.update(p for p in (ROOT / "tests/fixtures").rglob("*.json"))
+    paths.update(ROOT / path for path in ["game/project.godot", "game/export_presets.cfg", "tools/export_game.py", "tools/verify.py",
+                                         "tools/godot_web_shell_es.html", "tools/pagina_inicio_es.html", "tools/LEEME_WEB_es.md",
+                                         "tools/package_candidate.py", "tools/check_candidate.py", "JUGAR.py", "JUGAR_WEB.sh", "JUGAR_LINUX.sh", "JUGAR_WINDOWS.cmd"])
     return [{"path": path.relative_to(ROOT).as_posix(), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()} for path in sorted(paths)]
 
 
@@ -46,7 +53,6 @@ def main():
     source_start = fingerprint_sources()
     results = []
     results.append(run("python-tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests"]))
-    results.append(run("node-tests", ["node", "--test", "--test-isolation=none", *[str(path.relative_to(ROOT)) for path in sorted((ROOT / "tests").glob("*.test.mjs"))]]))
     results.append(run("godot-tests", ["./tools/godot", "--headless", "--path", "game", "-s", "addons/gut/gut_cmdln.gd", "-gdir=res://tests", "-gexit"]))
     if args.build:
         for target in ["web", "linux"]:
@@ -55,8 +61,7 @@ def main():
         results.append(run("linux-boot", ["build/linux/voces-de-la-plaza.x86_64", "--headless", "--quit-after", "10"]))
         results.append(run("compiled-pack-journeys", ["./tools/godot", "--headless", "--main-pack", "build/linux/voces-de-la-plaza.pck", "--script", str(ROOT / "tests/native_journey.gd")], 30))
     if args.browser:
-        results.append(run("browser-smoke", ["node", "tests/browser_smoke.mjs"], 180))
-        results.append(run("browser-campaign", ["node", "tests/browser_campaign.mjs"], 180))
+        results.append(run("godot-boot", ["node", "tests/godot_boot_smoke.mjs"], 180))
     if args.native_window:
         # Physical visits, full-poster scroll comparisons and both FIN text sizes
         # extend the journey. The harness keeps its strict 2.5-second reveal gate.
@@ -73,12 +78,13 @@ def main():
                for directory in ["build/web", "build/linux"] for path in sorted((ROOT / directory).rglob("*")) if path.is_file()]
     logs = ROOT / "build/evidence"
     counts = {"python": int(re.search(r"Ran (\d+) tests?", (logs / "python-tests.log").read_text())[1]),
-              "node": int(re.search(r"\btests\s+(\d+)", (logs / "node-tests.log").read_text())[1]),
               "gut": int(re.search(r"\nTests\s+(\d+)", (logs / "godot-tests.log").read_text())[1])}
     assertions = int(re.search(r"\nAsserts\s+(\d+)", (logs / "godot-tests.log").read_text())[1])
-    report = {"created_at_utc": datetime.now(timezone.utc).isoformat(), "results": results,
+    report = {"created_at_utc": datetime.now(timezone.utc).isoformat(), "delivery": "godot-only", "results": results,
               "unit_tests": counts, "gut_assertions": assertions, "tested_sources": tested, "tested_outputs": outputs,
-              "limits": ["No participant pilot; automated interaction is not human learning evidence", "Screen-reader observations are recorded separately when available"]}
+              "scope": "Entrega exclusiva de Godot; la ruta HTML independiente y sus pruebas quedan fuera del producto actual",
+              "limits": ["Sin pilotaje con participantes; la interacción automatizada no demuestra aprendizaje",
+                         "No se acredita acceso al canvas con lectores de pantalla; las observaciones HTML anteriores son históricas"]}
     (ROOT / "build/evidence/verification.json").write_text(json.dumps(report, indent=2) + "\n")
     print("Verification evidence: build/evidence/verification.json")
 

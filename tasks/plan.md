@@ -1,5 +1,9 @@
 # Implementation plan · Voces de la Plaza
 
+## Cierre exclusivo de Godot · 31 de octubre de 2026
+
+Alcance autorizado: juego Godot web/Linux, material editorial en español, revisión final, exposición de siete minutos y demo de aproximadamente 2:15 con un máximo de 150 segundos. Main implementa exportador limpio, iniciadores, README/despliegue, pruebas y paquete; documentación y medios se preparan en paralelo con ámbitos separados. Primero validar la retirada de la aplicación alternativa y el arranque real, después los recorridos/PDF, luego congelar medios y comprobar el ZIP extraído. No cambiar la lógica del juego para grabarlo. Los criterios y límites están en `docs/entrega_solo_godot_es.md`; RV27–RV31 registran resultados reales. No se requieren nuevas aprobaciones de fase para este trabajo autorizado.
+
 ## Sequential interaction and pink campaign revision · 27 October 2026
 
 Approved execution: keep all houses enterable while enforcing Luz → Mateo → Inés → nearby press → FIN. Early Mateo/Inés speech directs players to Luz on the left; after Luz, Inés directs them to Mateo in the center. Only hosts start lessons; the press is exclusively the final-poster machine. Remove floor text, move directions into a focused HUD, and show one nearby [E] prompt from the same resolved target that input activates. Keep WASD-only travel and independent semantic HTML navigation.

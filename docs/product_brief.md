@@ -1,41 +1,29 @@
-# Voces de la Plaza · product brief
+# Voces de la Plaza · síntesis del producto
 
-**Sequential/pink campaign revision, 27 October 2026:** The [current interaction/design contract](sequential_campaign_design.md) makes the left/center/right learning sequence explicit, separates conversations from objects, removes floor prose and adds one nearby E prompt. Six simpler shared questions retain their learning goals. The original pink citizen poster and skippable print reveal lead to a dedicated FIN screen with download, enlarged evidence and exploration; previous institutional/rubric claims remain dated until fresh review.
+**Equipo Latas · Edición editorial del 31 de octubre de 2026 · Godot en navegador y Linux.** Esta síntesis describe el alcance solicitado para la entrega actual. Las especificaciones y evidencias anteriores conservan su valor histórico y sus límites; no certifican por sí mismas una exportación o paquete nuevos.
 
-**Campaign revision, 27 October 2026:** Calm CC0 music and bottom translucent conversations accompany the ordered Luz–Mateo–Inés route. After the consultation, Inés sends the published personal poster or a guided example to Luz. Walking back to the first-house press and printing marks FIN; both routes produce an actual Carta PDF for a citizen initiative, with INE/CCPC as source and no Latas/INEhack campaign branding. See [the finale contract](campaign_finale.md).
+## Producto y público
 
-**Classroom revision, 25 October 2026:** primary use is introductory ethics/civic classes for high-school beginners approaching their first vote; adults new to civic education remain a secondary audience. The [classroom redesign](classroom_redesign.md) is implemented with six shared conceptual questions, three enterable houses and a story that connects evidence, fair comparison, plural needs and follow-up. The [verification record](verification.md) identifies the tested candidate; the [rubric review](rubric_review.md) distinguishes internal assessment from the committee's decision.
+Una aventura original de educación cívica en español para bachillerato, aproximadamente 15–18 años, y personas adultas principiantes. En la Villa Brisa ficticia, Luz necesita un boletín honesto, Mateo una comparación justa e Inés preparar una reunión sobre la plaza. El objetivo propuesto es que quien juega explique un hallazgo real, reconozca un límite y formule una pregunta de seguimiento.
 
-Decision baseline: 24 October 2026. The user approved the development plan and said “Implement plan”, authorizing specifications and implementation across the six modules. Confirmed: Reto 3 registration, Linux fallback, simplepixels visual direction, 45–65 focused person-hours. Main implements/integrates code and data; web/assets have parallel owners. Current verified scope is recorded in [verification.md](verification.md).
+La meta del juego es 10–15 minutos. La guía plantea una clase de 20 minutos con lectura acompañada y conversación opcional; la duración real y el aprendizaje no han sido observados con participantes. Hay seis actividades conceptuales, apoyo y reintentos; las divisiones son opcionales. No se exige experiencia previa con videojuegos, pero la facilidad de uso necesita validación.
 
-## Product and audience
+## Experiencia y datos
 
-A civic data adventure in Mexican Spanish for high-school and adult beginners, with a 10–15 minute design target. In fictional Villa Brisa, Luz needs an honest bulletin, Mateo needs a fair comparison poster, and Inés is preparing a meeting about the plaza. The player visits their three houses, publishes two CCPC exhibits, explores a synthetic consultation and chooses a follow-up question. Six short evidence decisions replace required arithmetic; equations remain optional. A teacher guide supports a planned 20-minute class, and a two-sided source/discussion sheet supports paper use. Duration and learning effects have not been measured with participants.
+Un pueblo, tres personajes que conversan y tres casas que admiten entrada. El aprendizaje sigue Luz → Mateo → Inés. WASD mueve al personaje y cruza puertas; E/Enter o el botón contextual interactúan cerca. Una visita temprana orienta hacia la primera tarea pendiente. Los paneles conservan el lugar del personaje y la prensa se reserva para el cartel final.
 
-After the archive, an optional workshop lets the learner select two actual states, count or proportion, and a neutral question to compose a public poster. Previewing and revising changes the story being told without changing the evidence. Inés receives the published poster and uses its question to open discussion; it does not determine the fictional project or its votes.
+Las dos misiones usan INE/CCPC federal 2024. La nacional distingue participación entre clasificados (59.67% de 92,004,694) de sin clasificación (6.43% de 98,330,348 totales). Las bases son distintas. NS no significa abstención ni voto nulo. La comparación Aguascalientes/Baja California muestra que más registros con marca no implica mayor proporción. Fuente, año, conteos, bases y límites acompañan los mensajes.
 
-Core message: “Comprender los datos nos ayuda a conversar con información. Participar nos permite aportar a las decisiones colectivas y dar seguimiento a lo que ocurre después.” Review final civic copy against actual content; this is an authored message, not a measured outcome.
+La consulta es inventada y presenta sombra y bancas, lectura y jardín. Elegir cualquiera, dejar sin marcar o no participar permite el mismo final. No se califica ni persiste una preferencia. Después de una pregunta de seguimiento, Inés encarga el cartel dentro de la ficción y se camina de vuelta a la prensa de Luz. Imprimir cartel lleva a FIN, con revelación omisible de hasta 2.5 segundos.
 
-## Approved scope
+Se puede ampliar o descargar un PDF ciudadano Carta vertical, rosa y blanco, con datos, bases, NS y fuente histórica; sin marcas de Latas/INEhack, sello oficial ni resultados ficticios. Descargar es opcional. El taller permite elegir dos de las 32 entidades y una pregunta neutral; si se omite se usa el ejemplo guiado. Diseño, encargo y PDF viven en memoria y no se reconstruyen con el progreso guardado.
 
-One compact top-down 2D town; three speaking characters; two complete CCPC quests; source journal/exhibit; local settings/progress/reset; synthetic consultation and complete ending. Deliver the Godot adventure inside a web microsite, an independently usable semantic HTML equivalent, and a tested Linux offline fallback. The simplepixels direction describes the approved visual approach, not permission to copy another game's work.
+## Entrega y límites
 
-Reference development assets are CC0 Kenney tiny-town, roguelike-characters, ui-pack and interface-sounds. Final art/SFX remain original and resolve through role IDs. The approved music exception is KiluaBoy's CC0 Sunset Walk; it is recorded separately as a third-party dependency. Atkinson fonts retain their OFL notice. Preserve the asset owner's provenance register.
+El alcance editorial presenta la aventura Godot web y su respaldo Linux, guía, hoja, diez diapositivas, narrativa de cuatro páginas y plan de vídeo de 2:15 con máximo 150 segundos. El README para organizadores, exportaciones, medios y paquete final corresponden a integración y a sus responsables; este documento no los declara regenerados.
 
-No combat, farming economy, relationships, accounts, live-data requirement, runtime AI, multiplayer, political profiling, remote telemetry, or historical/subgroup expansion. Do not silently cut to one quest: protect the approved two-quest route and reconcile a material scope reduction with the user if necessary.
+Hay controles de texto, silencio, volumen y movimiento reducido. La música «Sunset Walk», de KiluaBoy, es CC0 y de terceros, no composición de Latas. El arte y efectos finales originales, fuentes Atkinson y motor conservan sus avisos. La interacción espacial y el lienzo requieren comprobar acceso con la audiencia; no se promete compatibilidad universal ni certificación.
 
-## Success and limits
+No se han medido aprendizaje o efectos electorales, ni se acredita adopción institucional. La rúbrica local tiene pesos 35/30/20/15. El 95/100 del 27 de octubre es una valoración interna de otro alcance y no una nota actual. Firmas, alojamiento autorizado, envío y publicación permanecen separados de la preparación local.
 
-A player can explain one real participation pattern, distinguish counts from rates and NS from NV, identify a limit of the observation, and name a meaningful way to participate or follow up. Both presentation routes support this outcome without required dragging, audio, color-only meaning, or a timer. Target length and usability require a timed actual playthrough; neither is verified by writing these docs.
-
-CCPC determines charts, valid interpretations, and feedback. Use 2024 federal-election national/state data; the synthetic consultation is visibly separate. Completion and learning rewards never depend on casting a ballot or selecting a winner. No ballot choice is persisted. No historical aggregate can establish individual motives, party preference, causal effects, or the effect of this prototype.
-
-Rubric evidence: thematic fit 35; clarity/solidity 30; originality/creativity 20; institutional feasibility 15. Facilitation and dissemination show proposed reuse; institutional adoption, learning gains, retention, or turnout impact are not established.
-
-## Delivery status
-
-Godot 4.7.2 and matching templates are installed with official SHA-512 verification; GUT 9.7.1 is installed. CCPC raw SHA-256 matched; 9,773,730 rows from 32 CSV produced 33 national/state aggregates. Current test counts, exported journeys, assistive observations and exact source/output identities live in [verification](verification.md).
-
-The local Latas candidate contains web/HTML and Linux builds, a four-page narrative, ten-slide presentation, two-page classroom sheet and silent captioned 1080p demonstration with transcript. [Handoff](handoff.md) records current measurements and clean-package scope. Signed letters, authorized hosting, external submission, formal screen-reader evaluation and a participant pilot remain distinct pending actions; no learning effect is established.
-
-See [capability map](../CAPABILITY_MAP.md), [architecture](architecture.md), [plan](../tasks/plan.md), and [pending tasks](../tasks/todo.md). Preparation of submission artifacts is approved; signatures, external sending and release remain separate actions.
+Fuentes y apoyos: [historia](../game/content/story.json), [CCPC](../game/content/ccpc.json), [arquitectura](arquitectura_godot_es.md), [verificación final Godot](verificacion_final_godot_es.md), [presentación](presentacion_final_es.md), [vídeo](guion_video_godot_es.md), [revisión humana](revision_humana_final_es.md), [guía](facilitator.md) y [reutilización](institutional_reuse.md). Antecedentes: `docs/architecture.md` y `docs/verification.md` (consultados en repositorio).

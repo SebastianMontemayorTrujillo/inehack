@@ -1,12 +1,37 @@
-"""Assemble the local review candidate without tools, raw data or reference packs."""
+"""Construye la entrega local exclusiva de Godot con materiales actuales en español."""
 from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 
+if __package__:
+    from .verify import DELIVERY_TESTS
+else:
+    from verify import DELIVERY_TESTS
+
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDE = {".git", ".tools", ".godot", "__pycache__", "development", "node_modules", "gut"}
+DOCS = [
+    "entrega_solo_godot_es.md", "arquitectura_godot_es.md", "datos_y_creditos_es.md",
+    "verificacion_final_godot_es.md", "revision_final_godot_es.md",
+    "presentacion_final_es.md", "guion_video_godot_es.md", "revision_humana_final_es.md",
+    "deck_outline_es.md", "storyline_and_dissemination_es.md", "facilitator.md",
+    "classroom_handout.md", "pitch_script_es.md", "institutional_reuse.md", "product_brief.md",
+    "glossary_es_MX.md", "fuentes_convocatoria_es.md",
+]
+TOOL_FILES = [
+    "assets.py", "bootstrap.py", "build_data.py", "build_campaign_font.py",
+    "create_original_assets.py", "export_game.py", "verify.py", "package_candidate.py",
+    "check_candidate.py", "godot", "browser-package.json", "pdf-requirements.txt",
+    "godot_web_shell_es.html", "pagina_inicio_es.html", "LEEME_WEB_es.md",
+    "render_submission.mjs", "record_pitch_godot.mjs",
+]
+OUTPUTS = [
+    "voces_narrativa_y_difusion.pdf", "voces_presentacion.pdf", "classroom-handout.pdf", "classroom.pdf",
+    "cartel_ciudadano_ejemplo.pdf", "voces_demo_godot.mp4", "demo_godot.srt",
+    "demo_godot_transcripcion.txt", "team.json",
+]
 
 
 def checksum(path):
@@ -14,82 +39,96 @@ def checksum(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def validate_evidence():
+    evidence = ROOT / "build/evidence"
+    verification = json.loads((evidence / "verification.json").read_text())
+    require(verification.get("delivery") == "godot-only", "Falta la verificación de esta entrega exclusiva de Godot")
+    for item in verification["tested_sources"] + verification["tested_outputs"]:
+        require(checksum(ROOT / item["path"]) == item["sha256"], f"Cambió un archivo verificado: {item['path']}")
+    native = json.loads((evidence / "native-window.json").read_text())
+    canvas = json.loads((evidence / "godot-web-journey.json").read_text())
+    pdf = json.loads((evidence / "native-pdf-save.json").read_text())
+    review = json.loads((evidence / "godot-only-review.json").read_text())
+    require(review["status"] == "passed", "La revisión final independiente tiene bloqueos pendientes")
+    require(native["status"] == canvas["status"] == pdf["status"] == "passed", "Faltan recorridos Godot/PDF aprobados")
+    require(native["pack_sha256"] == checksum(ROOT / "build/linux/voces-de-la-plaza.pck"), "El recorrido Linux pertenece a otro PCK")
+    require(canvas["served_pack_sha256"] == checksum(ROOT / "build/web/game/index.pck"), "El recorrido del navegador pertenece a otro PCK")
+    require(native["test_sha256"] == checksum(ROOT / "tests/native_window_smoke.py"), "El recorrido Linux usa otro arnés")
+    require(canvas["test_sha256"] == checksum(ROOT / "tests/godot_browser_smoke.mjs"), "El recorrido web usa otro arnés")
+    require(pdf["pdfs"][0]["sha256"] == checksum(ROOT / "submission/cartel_ciudadano_ejemplo.pdf"), "El ejemplo no coincide con el PDF guardado")
+    video = json.loads((evidence / "godot-demo-encoding.json").read_text())
+    require(video["status"] == "passed" and video["duration_seconds"] <= 150, "Falta la revisión del video Godot de hasta 150 segundos")
+    require(video["output"]["path"] == "submission/voces_demo_godot.mp4", "Nombre incorrecto del video Godot")
+    require(video["output"]["sha256"] == checksum(ROOT / video["output"]["path"]), "Cambió el video revisado")
+    require(any(row["path"] == "build/web/game/index.pck" for row in video["inputs"]), "El video no identifica su export Godot")
+    for row in video["inputs"]:
+        require(checksum(ROOT / row["path"]) == row["sha256"], f"El video utiliza una entrada anterior: {row['path']}")
+    return verification
+
+
 def main():
     team = json.loads((ROOT / "submission/team.json").read_text())
-    if not team.get("team_name") or team.get("track") != "Reto 3":
-        raise ValueError("A confirmed team name and track are required")
-    required = ["build/web/index.html", "build/web/game/index.pck", "build/web/game/index.wasm",
-                "build/linux/voces-de-la-plaza.x86_64", "build/linux/voces-de-la-plaza.pck",
-                "submission/voces_narrativa_y_difusion.pdf", "submission/voces_presentacion.pdf",
-                "submission/voces_pitch_borrador.mp4", "submission/classroom-handout.pdf",
-                "build/web/classroom.html", "build/evidence/browser-results.json", "build/evidence/native-window.json",
-                "build/evidence/godot-web-journey.json"]
-    for relative in required:
-        if not (ROOT / relative).is_file():
-            raise ValueError(f"Candidate missing required local output: {relative}")
-    verification_path = ROOT / "build/evidence/verification.json"
-    verification = json.loads(verification_path.read_text())
-    for source in verification["tested_sources"] + verification["tested_outputs"]:
-        if checksum(ROOT / source["path"]) != source["sha256"]:
-            raise ValueError(f"Source changed since verification: {source['path']}; rerun tools/verify.py")
-    native = json.loads((ROOT / "build/evidence/native-window.json").read_text())
-    canvas = json.loads((ROOT / "build/evidence/godot-web-journey.json").read_text())
-    if native["status"] != "passed" or native["pack_sha256"] != checksum(ROOT / "build/linux/voces-de-la-plaza.pck"):
-        raise ValueError("Native-window evidence does not match the current export")
-    if canvas["status"] != "passed" or canvas["served_pack_sha256"] != checksum(ROOT / "build/web/game/index.pck"):
-        raise ValueError("Canvas-journey evidence does not match the current export")
-    pitch = json.loads((ROOT / "build/evidence/pitch-encoding.json").read_text())
-    if pitch["output_sha256"] != checksum(ROOT / "submission/voces_pitch_borrador.mp4"):
-        raise ValueError("Pitch recording hash mismatch")
-    for source in pitch["inputs"]:
-        if source["sha256"] != checksum(ROOT / source["source"]):
-            raise ValueError(f"Pitch shows an older input: {source['source']}")
+    require(team.get("team_name") == "Latas" and team.get("track") == "Reto 3", "Equipo/reto incorrectos")
+    verification = validate_evidence()
     files = set()
-    files.add(ROOT / ".tools/toolchain.json")
-    files.add(ROOT / "submission/team.json")
-    for relative in ["docs", "tasks", "tools", "tests", "game", "web", "assets", "build/web", "build/linux", "submission/forms"]:
+    for relative in ["game", "assets", "build/web", "build/linux", "submission/forms"]:
         for path in (ROOT / relative).rglob("*"):
             if path.is_file() and not (set(path.relative_to(ROOT).parts) & EXCLUDE):
-                if path.is_symlink():
-                    raise ValueError(f"Unexpected symlink: {path}")
+                require(not path.is_symlink(), f"Enlace simbólico inesperado: {path}")
                 files.add(path)
-    for pattern in ["README.md", "AGENTS.md", "CAPABILITY_MAP.md", "SPEC-*.md", ".gitignore", ".gitattributes", "data/*.json",
-                    "submission/*.pdf", "submission/*.mp4", "submission/*.html", "submission/*.srt", "submission/*.txt",
-                    "build/evidence/*.json", "build/evidence/*.log", "build/evidence/*review*.md", "build/evidence/godot-*.png", "build/evidence/native-*.png", "build/evidence/html-*.png", "build/evidence/pink-poster-*.png", "build/evidence/pink-poster-*.pdf",
-                    "build/evidence/native-campaign*.pdf", "build/evidence/native-campaign*.txt", "build/evidence/godot-web-campaign.pdf", "build/evidence/godot-web-campaign.txt",
-                    "build/evidence/assistive-workshop-final/*", "build/evidence/assistive-*/assistive-run.json",
-                    "build/pdf-review-*/review.md", "build/pitch-recording/*/*review.md", "build/media-review-sequential-*/*review.json",
-                    "build/evidence/sequential-*-attempt-*/*.json", "build/evidence/sequential-*-attempt-*/*.log",
-                    "build/evidence/sequential-*-attempt-*/native-ending*.png"]:
-        files.update(p for p in ROOT.glob(pattern) if p.is_file())
-    # Preserve the small research originals required by the recorded references.
-    for pattern in ["INEhack_*.md", "INEhack_*.docx", "INEhack_Research_Annex.zip", "Rúbrica*.pdf"]:
-        files.update(ROOT.glob(pattern))
-    # The clean-unpack receipt identifies the finished ZIP and lives beside it;
-    # including it would create a recursive archive/hash dependency.
-    files.discard(ROOT / "build/evidence/clean-candidate.json")
-    files.discard(ROOT / "build/evidence/clean-candidate.log")
+    explicit = ["README.md", "JUGAR.py", "JUGAR_WEB.sh", "JUGAR_LINUX.sh", "JUGAR_WINDOWS.cmd",
+                ".gitattributes", ".gitignore", ".tools/toolchain.json", "deploy/nginx_godot.conf"]
+    explicit += ["docs/" + name for name in DOCS]
+    explicit += ["tools/" + name for name in TOOL_FILES]
+    explicit += ["tests/" + name for name in DELIVERY_TESTS if (ROOT / "tests" / name).is_file()]
+    explicit += ["submission/" + name for name in OUTPUTS]
+    for relative in explicit:
+        path = ROOT / relative
+        require(path.is_file() and not path.is_symlink(), f"Falta un archivo de entrega: {relative}")
+        files.add(path)
+    for pattern in ["tests/fixtures/*.json", "data/*.json", "Rúbrica*.pdf",
+                    "build/evidence/godot-only-*.json", "build/evidence/godot-only-*.log",
+                    "build/evidence/godot-only-*.png", "build/evidence/native-*.png",
+                    "build/evidence/godot-web-*.png", "build/evidence/native-campaign*.pdf",
+                    "build/evidence/godot-web-campaign.pdf", "build/media-review-godot-2026-10-31/*review.json"]:
+        files.update(path for path in ROOT.glob(pattern) if path.is_file())
+    for name in ["verification.json", "native-window.json", "native-pdf-save.json", "godot-web-journey.json",
+                 "godot-demo-encoding.json", "godot-only-review.json", "python-tests.log", "godot-tests.log",
+                 "linux-boot.log", "compiled-pack-journeys.log", "godot-boot.log"]:
+        path = ROOT / "build/evidence" / name
+        require(path.is_file(), f"Falta el recibo {name}")
+        files.add(path)
+    # No incluir recibos de otra versión ni la aplicación retirada.
+    require(not any(p.relative_to(ROOT).as_posix().startswith("web/") for p in files), "Se incluyó la ruta retirada")
+    require(not (ROOT / "build/web/app.mjs").exists(), "Quedan residuos de la ruta retirada")
     dataset = json.loads((ROOT / "game/content/ccpc.json").read_text())
-    manifest = {"schema_version": "1.0.0", "title": "Voces de la Plaza", "track": "Reto 3",
-                "status": "local-review-candidate", "created_at_utc": datetime.now(timezone.utc).isoformat(),
-                "team_name": team["team_name"], "working_tree": "uncommitted", "godot_version": "4.7.2.stable",
-                "data": {"source_sha256": dataset["source"]["sha256"], "rows": dataset["validation"]["rows"], "aggregates": len(dataset["records"])},
-                "tests": {**verification["unit_tests"], "gut_assertions": verification["gut_assertions"]},
-                "external_readiness": {"signed_letters": "pending-team; official blank forms included", "hosting": "pending-authorization", "deadline_timezone": "unconfirmed", "user_pilot": "not-run", "formal_screen_reader_evaluation": "not-run; scoped Orca observations in docs/accessibility_review.md"},
-                "files": [{"path": p.relative_to(ROOT).as_posix(), "bytes": p.stat().st_size, "sha256": checksum(p)} for p in sorted(files)]}
-    report = ROOT / "submission/release_manifest.json"
-    report.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
-    files.add(report)
+    manifest = {
+        "schema_version": "2.0.0", "delivery": "godot-only", "title": "Voces de la Plaza",
+        "team_name": team["team_name"], "track": "Reto 3", "status": "candidato-local-revisado",
+        "created_at_utc": datetime.now(timezone.utc).isoformat(), "language": "es",
+        "godot_version": "4.7.2.stable", "working_tree": "sin commit solicitado",
+        "data": {"source_sha256": dataset["source"]["sha256"], "rows": dataset["validation"]["rows"], "aggregates": len(dataset["records"])},
+        "tests": {**verification["unit_tests"], "gut_assertions": verification["gut_assertions"]},
+        "external_readiness": {"signed_letters": "pendientes del equipo", "hosting": "no realizado", "submission": "no realizada",
+                               "participant_pilot": "no realizado", "screen_reader_canvas": "no acreditado"},
+        "files": [{"path": path.relative_to(ROOT).as_posix(), "bytes": path.stat().st_size, "sha256": checksum(path)} for path in sorted(files)],
+    }
+    manifest_path = ROOT / "submission/release_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+    files.add(manifest_path)
     output = ROOT / "submission/Latas_Reto_3.zip"
     with ZipFile(output, "w", ZIP_DEFLATED, compresslevel=6) as archive:
         for path in sorted(files):
             archive.write(path, path.relative_to(ROOT).as_posix())
     with ZipFile(output) as archive:
-        bad = archive.testzip()
-        if bad:
-            raise ValueError(f"Candidate integrity failed: {bad}")
-    print(f"Candidate: {output.relative_to(ROOT)} · {len(files)} files · {output.stat().st_size / 1024 ** 2:.1f} MiB")
-    print("Local review candidate for Latas: signed letters, hosting and external readiness remain pending.")
+        require(archive.testzip() is None, "Falló la integridad CRC del ZIP")
+    print(f"Entrega Godot: {output.relative_to(ROOT)} · {len(files)} archivos · {output.stat().st_size / 1024 ** 2:.1f} MiB")
+    print("Materiales en español. Firma, alojamiento y envío pendientes del equipo.")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 # Guía docente · Voces de la Plaza
 
+**Edición editorial del 31 de octubre de 2026 · Aventura Godot en navegador y Linux.** Comprobar el paquete de destino con el README para organizadores que mantiene integración. Esta edición del texto no acredita una nueva exportación ni una sesión de aula.
+
 Una actividad para bachillerato, aproximadamente de 15–18 años, y para personas adultas que comienzan educación cívica. En Villa Brisa, un pueblo ficticio, Luz, Mateo e Inés preparan una reunión para mejorar la plaza. Dos misiones usan datos reales del INE; una consulta inventada permite conversar sobre necesidades y seguimiento. La misión final prepara un cartel ciudadano con Inés y vuelve a la imprenta de Luz para imprimirlo dentro de la historia.
 
 **Propósito:** explicar un hallazgo real, reconocer algo que los datos no permiten saber y formular una pregunta de seguimiento. No se necesita experiencia con videojuegos ni resolver divisiones.
@@ -11,8 +13,8 @@ El taller opcional de carteles requiere prever tiempo adicional. Si se omite, In
 ## Preparar la sesión
 
 1. Tener la [hoja de trabajo](classroom_handout.md) y un lápiz. Se imprime en dos caras, en blanco y negro, y también permite realizar la actividad sin computadora. La hoja queda con quien la usa.
-2. Recorrer en el equipo del aula a Luz (casa izquierda), Mateo (centro), Inés (derecha) y la prensa de Luz. Probar las actividades, el encargo y los controles del final. Elegir la aventura, la ruta HTML independiente o la copia Linux disponible. Si el equipo no permite completar el recorrido, usar la hoja.
-3. Comprobar tamaño del texto, teclado, foco visible, zoom, silencio, volumen de música y movimiento reducido. La música tranquila CC0 es opcional y la información esencial aparece escrita. Ofrecer lectura acompañada o papel con letra ampliada según las necesidades. El [registro de verificación](verification.md) detalla el alcance de las comprobaciones técnicas.
+2. Recorrer en el equipo del aula a Luz (casa izquierda), Mateo (centro), Inés (derecha) y la prensa de Luz. Probar las actividades, el encargo y los controles del final. Elegir la aventura Godot en navegador o la copia Linux local. Mantener disponible el respaldo Linux si la conexión falla. Si el equipo no permite completar el recorrido, usar la hoja.
+3. Comprobar tamaño del texto, teclado, foco visible, zoom, silencio, volumen de música y movimiento reducido. La música tranquila CC0 es opcional y la información esencial aparece escrita. Ofrecer lectura acompañada o papel con letra ampliada según las necesidades. El [registro de verificación](verificacion_final_godot_es.md) detalla el alcance de las comprobaciones técnicas.
 4. Explicar que los datos del INE describen participación federal de 2024, no a este salón. Villa Brisa y su consulta son ficticias; ninguna preferencia se califica.
 
 ## Elegir una modalidad
@@ -36,7 +38,7 @@ El taller opcional de carteles requiere prever tiempo adicional. Si se omite, In
 
 Las tres casas permiten entrar desde el inicio. Una visita temprana a Mateo o Inés indica cómo llegar a Luz, a la izquierda; después de Luz, Inés dirige al archivo central. Cada personaje inicia sus actividades. El tablón permite revisar el cartel y la urna presenta los proyectos; la prensa se reserva para el cartel final. Las seis actividades preparan el boletín y la comparación antes de la consulta, paso tres de cuatro.
 
-En Godot, WASD cruza puertas y salidas. El encabezado indica el lugar y la siguiente tarea; el suelo queda sin instrucciones escritas. Cerca de una persona u objeto aparece una indicación [E], igual a la acción del botón contextual. E/Enter o ese botón actúan solo allí. El diálogo ocupa una franja inferior translúcida; cerrar un panel conserva el lugar. HTML y la hoja mantienen el orden con navegación propia.
+En Godot, WASD cruza puertas y salidas. El encabezado indica el lugar y la siguiente tarea; el suelo queda sin instrucciones escritas. Cerca de una persona u objeto aparece una indicación [E], igual a la acción del botón contextual. E/Enter o ese botón actúan solo allí. El diálogo ocupa una franja inferior translúcida; cerrar un panel conserva el lugar. La hoja acompaña la lectura y la reflexión; no demuestra acceso autónomo al lienzo de Godot. Revisar las barreras del manejo espacial y ofrecer acompañamiento.
 
 ## Clave de las seis actividades
 
@@ -55,7 +57,7 @@ Ante un error, ofrecer «Mirar otra vez» o «Ver un ejemplo». Si hace falta, e
 
 ## Opcional · Crea tu cartel para la reunión
 
-Después de las seis actividades, invitar a preparar un mensaje propio en el Archivo de Mateo. El taller permite elegir dos de las 32 entidades del conjunto CCPC federal 2024, comparar sus datos y llevar un cartel a la reunión con Inés. Está disponible en la aventura y en la ruta HTML.
+Después de las seis actividades, invitar a preparar un mensaje propio en el Archivo de Mateo. El taller permite elegir dos de las 32 entidades del conjunto CCPC federal 2024, comparar sus datos y llevar un cartel a la reunión con Inés. Está disponible en Godot web y Linux.
 
 1. Elegir dos entidades y decidir qué mostrar: cantidad de registros con participación o proporción de cada 100 con información conocida. Leer los valores disponibles; no pedir nuevas operaciones.
 2. Elegir una pregunta neutral: «¿Qué información nos falta antes de decidir?», «¿Cómo escuchamos a quienes todavía no han hablado?» o «¿Cómo revisamos después si se cumplió lo acordado?». Ninguna pide una preferencia política.
@@ -80,7 +82,7 @@ No pedir nombres, edades individuales, afiliaciones, intención de voto ni opini
 
 Después de la consulta y una pregunta de seguimiento, hablar con Inés. Revisar el cartel publicado o la comparación guiada AGS/BC por proporción, con «¿Qué información nos falta antes de decidir?». Inés envía el diseño a Luz solo dentro de la ficción: no se manda un mensaje externo. Cancelar la revisión conserva un encargo anterior; reemplazarlo requiere confirmar una nueva versión antes de imprimir.
 
-En Godot, caminar a la casa izquierda y acercarse a la prensa, a la derecha de Luz. Elegir **Imprimir cartel**; esa máquina no inicia las primeras actividades. En HTML, abrir la imprenta y usar su control de impresión. Ese paso completa la aventura una sola vez. La hoja aparece en una animación de hasta 2.5 segundos: E, Enter o el botón para omitirla llevan al final inmediatamente; movimiento reducido la omite.
+En Godot, caminar a la casa izquierda y acercarse a la prensa, a la derecha de Luz. Elegir **Imprimir cartel**; esa máquina no inicia las primeras actividades. Ese paso completa la aventura una sola vez. La hoja aparece en una animación de hasta 2.5 segundos: E, Enter o el botón para omitirla llevan al final inmediatamente; movimiento reducido la omite.
 
 **FIN · La campaña comienza contigo** mantiene el título y las acciones a la vista. **Descargar cartel PDF** es la acción principal; **Ampliar cartel** permite leer el contenido en su zona desplazable y **Seguir explorando** vuelve al mismo lugar. Reabrir el final no repite la animación.
 
@@ -96,4 +98,4 @@ Los temas para conversar son honestidad de la información, comparación justa, 
 
 ## Fuentes y materiales
 
-[Hoja de trabajo](classroom_handout.md), [glosario](glossary_es_MX.md) y [registro de fuentes](source_register.md). Datos: INE, [portal CCPC](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/) y [ZIP oficial de 2024 con diccionario](https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip). La copia local es `ccpc-2024-v1`. Los datos excluyen casillas especiales y voto desde el extranjero; no revelan preferencias partidistas ni motivos individuales.
+[Hoja de trabajo](classroom_handout.md), [glosario](glossary_es_MX.md) y [registro de fuentes](datos_y_creditos_es.md). Datos: INE, [portal CCPC](https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/) y [ZIP oficial de 2024 con diccionario](https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip). La copia local es `ccpc-2024-v1`. Los datos excluyen casillas especiales y voto desde el extranjero; no revelan preferencias partidistas ni motivos individuales.

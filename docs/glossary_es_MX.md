@@ -1,6 +1,6 @@
 # Glosario de contenido · español de México
 
-**Equipo Latas · Edición de aula · 25 de octubre de 2026.** Lenguaje para bachillerato (aproximadamente 15–18 años) y personas adultas principiantes. Las definiciones acompañan el contenido compartido y los materiales docentes. Referencias: [datos compartidos](../game/content/ccpc.json), [registro de fuentes](source_register.md) y [guía docente](facilitator.md).
+**Equipo Latas · Entrega Godot · 31 de octubre de 2026.** Lenguaje para bachillerato (aproximadamente 15–18 años) y personas adultas principiantes. Las definiciones acompañan el contenido del juego y los materiales docentes. Referencias: [datos compartidos](../game/content/ccpc.json), [datos y créditos](datos_y_creditos_es.md) y [guía docente](facilitator.md).
 
 ## Palabras para la ruta principal
 
@@ -52,6 +52,6 @@ En el dato nacional, decir **«cerca de 60 de cada 100 registros con informació
 
 La ruta esencial conserva `participation-reading`, `unknown`, `unknown-transfer`, `more-count`, `higher-rate` y `comparison-transfer`. Los ejemplos matemáticos `transfer1`/`transfer2` quedan opcionales y no sustituyen los dos casos conceptuales nuevos.
 
-`poster_workshop` define el taller opcional y sus preguntas neutrales. «Cantidad» se refiere a SV; «proporción», a `100 × SV / (SV + NV)`, con las bases visibles. NS permanece aparte. El taller permite elegir dos de las 32 entidades disponibles, revisar el mensaje y llevarlo a Inés solo durante la sesión, tanto en Godot como en HTML. No añade una respuesta correcta, no mide comprensión y no modifica resultados de consulta o reconocimiento. Los datos reales del cartel permanecen separados de los escenarios inventados de la reunión. El [registro de verificación](verification.md) delimita las comprobaciones técnicas realizadas.
+`poster_workshop` define el taller opcional y sus preguntas neutrales. «Cantidad» se refiere a SV; «proporción», a `100 × SV / (SV + NV)`, con las bases visibles. NS permanece aparte. El taller permite elegir dos de las 32 entidades disponibles, revisar el mensaje y llevarlo a Inés solo durante la sesión de Godot. No añade una respuesta correcta, no mide comprensión y no modifica resultados de consulta o reconocimiento. Los datos reales del cartel permanecen separados de los escenarios inventados de la reunión. La [verificación actual](verificacion_final_godot_es.md) delimita las comprobaciones técnicas realizadas.
 
 Puente a la ficción: **«Los datos del INE nos hablan de la participación en 2024. Esta consulta es inventada para practicar cómo escuchar y tomar decisiones».** Las tres casas son Imprenta de Luz, Archivo de Mateo y Casa de reunión de Inés, en un solo pueblo: Villa Brisa. Los datos históricos no eligen un proyecto ni predicen la conducta de quienes se acercan a su primer voto.

@@ -1,0 +1,116 @@
+1
+00:00:00,000 --> 00:00:02,500
+Latas presenta Voces de la Plaza, una aventura cívica.
+
+2
+00:00:02,500 --> 00:00:05,000
+Godot web y Linux. Meta: 10–15 minutos, sin pilotaje.
+
+3
+00:00:05,000 --> 00:00:08,500
+Caminamos con WASD. Las casas están abiertas.
+
+4
+00:00:08,500 --> 00:00:12,000
+E, Enter o el botón cercano permiten interactuar.
+
+5
+00:00:12,000 --> 00:00:15,000
+Aprendemos con Luz, Mateo e Inés, en orden.
+
+6
+00:00:15,000 --> 00:00:18,000
+La prensa de Luz imprime la campaña final.
+
+7
+00:00:18,000 --> 00:00:22,000
+CCPC federal 2024: cerca de 60 de cada 100 registros clasificados tienen marca
+de voto.
+
+8
+00:00:22,000 --> 00:00:26,000
+NS significa información desconocida. No sabemos si esas personas
+participaron.
+
+9
+00:00:26,000 --> 00:00:30,000
+Este caso 60/30/10 es inventado. Practicamos con un ejemplo nuevo.
+
+10
+00:00:30,000 --> 00:00:36,000
+Publicamos un boletín con fuente, año y conteos. NS significa que no sabemos
+si hubo participación.
+
+11
+00:00:36,000 --> 00:00:42,000
+Mateo nos invita a comparar cantidad y proporción. Son preguntas diferentes.
+
+12
+00:00:42,000 --> 00:00:46,000
+Baja California tiene más registros con marca de voto.
+
+13
+00:00:46,000 --> 00:00:50,000
+Aguascalientes tiene mayor proporción. Las bases son distintas.
+
+14
+00:00:50,000 --> 00:00:54,000
+Más participantes no implica mayor porcentaje. Los agregados no explican
+motivos.
+
+15
+00:00:54,000 --> 00:01:01,000
+El taller opcional compara dos de 32 entidades, cantidad o proporción y una
+pregunta neutral.
+
+16
+00:01:01,000 --> 00:01:08,000
+El cartel conserva bases, fuente, desconocidos y límites. Cancelar un borrador
+conserva lo publicado.
+
+17
+00:01:08,000 --> 00:01:15,000
+Inés presenta tres proyectos. La consulta y sus cifras son ficticias,
+separadas del CCPC.
+
+18
+00:01:15,000 --> 00:01:18,500
+Hay cinco acciones, incluso dejar sin marcar o no participar.
+
+19
+00:01:18,500 --> 00:01:22,000
+Ninguna elección se califica ni se guarda.
+
+20
+00:01:22,000 --> 00:01:29,000
+Inés revisa el cartel y encarga su impresión a Luz dentro de la historia, sin
+envío externo.
+
+21
+00:01:29,000 --> 00:01:36,000
+El encargo conserva el diseño de esta sesión. Salimos de Inés y regresamos a
+Luz.
+
+22
+00:01:36,000 --> 00:01:42,000
+Volvemos caminando a la casa izquierda y nos acercamos a la prensa.
+
+23
+00:01:42,000 --> 00:01:48,000
+Participar también significa conversar con información y dar seguimiento a los
+acuerdos.
+
+24
+00:01:48,000 --> 00:01:55,000
+Imprimir cartel completa la aventura. En esta demo omitimos la revelación con
+E.
+
+25
+00:01:55,000 --> 00:02:05,000
+FIN. La campaña comienza contigo. Ampliar, descargar el PDF o seguir
+explorando son opcionales.
+
+26
+00:02:05,000 --> 00:02:15,000
+Campaña ciudadana con fuente INE/CCPC. Sin pilotaje ni eficacia educativa
+demostrada.
